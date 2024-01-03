@@ -1,4 +1,4 @@
-package org.tahomaroboics.scoutingapp.server.formeditor;
+package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Cursor;
@@ -9,7 +9,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.tahomaroboics.scoutingapp.server.ScoutingServer;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
