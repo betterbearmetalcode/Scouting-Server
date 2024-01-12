@@ -1,4 +1,4 @@
-package org.tahomaroboics.scoutingapp.server.formeditor;
+package org.tahomarobotics.scouting.scoutingserver;
 
 
 import org.json.*;

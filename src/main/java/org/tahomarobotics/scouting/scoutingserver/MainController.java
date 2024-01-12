@@ -1,4 +1,4 @@
-package org.tahomaroboics.scoutingapp.server;
+package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,9 +8,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.json.JSONObject;
-import org.tahomaroboics.scoutingapp.server.formeditor.APInteraction;
-import org.tahomaroboics.scoutingapp.server.formeditor.SpreadsheetManager;
+
 ;
 
 
@@ -37,8 +35,7 @@ public class MainController extends VBox {
        System.out.println("Attempting to fetch TBA Data");
        try {
            System.out.println(APInteraction.get("/teams/0"));
-           SpreadsheetManager.setOutputFile("C:temp/asdf.xls");
-           SpreadsheetManager.write();
+
        }catch (Exception e) {
            e.printStackTrace();
        }
