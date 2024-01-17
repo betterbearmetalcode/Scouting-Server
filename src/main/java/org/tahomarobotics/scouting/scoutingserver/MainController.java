@@ -7,9 +7,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.util.APInteraction;
-
-;
+import org.tahomarobotics.scouting.scoutingserver.util.QRCodeReader;
 
 
 public class MainController extends VBox {
@@ -34,10 +34,12 @@ public class MainController extends VBox {
    protected void getTBAData(ActionEvent event) {
        System.out.println("Attempting to fetch TBA Data");
        try {
-           System.out.println(APInteraction.get("/teams/0"));
+           JSONArray array = APInteraction.get("/event/2023vapor/matches");
+
+           System.out.println(array);
            System.out.println("Finished fetching data");
-          // SpreadsheetManager.setOutputFile("C:temp/asdf.xls");
-          // SpreadsheetManager.write();
+
+           System.out.println("Text in QR Code is: " + QRCodeReader.readQRCode("C:\\Users\\Caleb\\IdeaProjects\\ScoutingServer\\src\\main\\resources\\org\\tahomarobotics\\scouting\\scoutingserver\\harderQRCode.jpg"));
        }catch (Exception e) {
            e.printStackTrace();
        }

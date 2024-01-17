@@ -27,12 +27,11 @@ public class APInteraction {
         HttpResponse<String> response =
                 client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println(response.body());
         return response.body();
     }
 
-    public static JSONObject get(String apiRequest) throws Exception{
-        return XML.toJSONObject(getAsString(apiRequest));
+    public static JSONArray get(String apiRequest) throws Exception{
+        return new JSONArray(getAsString(apiRequest));
 
     }
 
