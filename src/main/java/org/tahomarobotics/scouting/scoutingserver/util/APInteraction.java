@@ -1,4 +1,4 @@
-package org.tahomarobotics.scouting.scoutingserver;
+package org.tahomarobotics.scouting.scoutingserver.util;
 
 
 import org.json.*;

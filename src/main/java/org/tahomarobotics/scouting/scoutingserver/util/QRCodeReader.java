@@ -1,2 +1,2 @@
-package org.tahomarobotics.scouting.scoutingserver;public class QRCodeReader {
+package org.tahomarobotics.scouting.scoutingserver.util;public class QRCodeReader {
 }

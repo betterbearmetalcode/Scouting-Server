@@ -2,13 +2,12 @@ package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.json.JSONObject;
+import org.tahomarobotics.scouting.scoutingserver.util.APInteraction;
 
 ;
 
