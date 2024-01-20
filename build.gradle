@@ -11,6 +11,9 @@ version '1.0-SNAPSHOT'
 
 repositories {
   mavenCentral()
+  flatDir {
+    dirs("lib")
+  }
 }
 
 ext {
@@ -49,11 +52,10 @@ dependencies {
   // https://mvnrepository.com/artifact/com.google.zxing/javase
   implementation group: 'com.google.zxing', name: 'javase', version: '3.5.2'
 
-  //webcam API
-  // https://mvnrepository.com/artifact/com.github.sarxos.webcam-capture/webcam-capture
-  //implementation group: 'com.github.sarxos.webcam-capture', name: 'webcam-capture', version: '3d3fea0'
 
-  //compile fileTree(dir: 'lib', includes: ['*.jar']) TRY THIS
+
+
+
 
 
 }

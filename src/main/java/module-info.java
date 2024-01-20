@@ -6,7 +6,7 @@ module org.tahomarobotics.scouting.scoutingserver {
     requires java.desktop;
     requires com.google.zxing;
     requires com.google.zxing.javase;
-
+    requires java.logging;
 
 
     opens org.tahomarobotics.scouting.scoutingserver to javafx.fxml;
