@@ -20,12 +20,13 @@ import java.io.IOException;
 public class ScoutingServer extends Application {
 
 
-    public static Scene formEditScene;
+
     public static  Scene mainScene;
 
-    public static AnchorPane hamburgerMenu;
+    public static AnchorPane mainHamburgerMenu;
+    public static AnchorPane qrHamburgerMenu;
 
-
+    public static Scene qrScannerScene;
 
 
     @Override
@@ -45,9 +46,15 @@ public class ScoutingServer extends Application {
         mainScene = new Scene(mainLoader.load());
 
         FXMLLoader hamburgerLoader = new FXMLLoader(ScoutingServer.class.getResource("hamburger-menu.fxml"));
-        hamburgerMenu = new AnchorPane((AnchorPane) hamburgerLoader.load());
+        mainHamburgerMenu = new AnchorPane((AnchorPane) hamburgerLoader.load());
 
-        ((Pane) mainScene.getRoot()).getChildren().add(hamburgerMenu);
+        FXMLLoader qrhamburgerLoader = new FXMLLoader(ScoutingServer.class.getResource("hamburger-menu.fxml"));
+        qrHamburgerMenu = new AnchorPane((AnchorPane) qrhamburgerLoader.load());
+        FXMLLoader qrscannerLoader = new FXMLLoader(ScoutingServer.class.getResource("qr-scanner-scene.fxml"));
+        qrScannerScene = new Scene(qrscannerLoader.load());
+
+        ((Pane) mainScene.getRoot()).getChildren().add(mainHamburgerMenu);
+        ((Pane) qrScannerScene.getRoot()).getChildren().add(qrHamburgerMenu);
 
 
 
