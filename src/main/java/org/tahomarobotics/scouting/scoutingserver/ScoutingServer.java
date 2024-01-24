@@ -9,6 +9,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
@@ -20,7 +23,8 @@ public class ScoutingServer extends Application {
     public static Scene formEditScene;
     public static  Scene mainScene;
 
-    //private Parent root = InjectionManager.load(ScoutingServer.class.getResource("main-scene.fxml"));
+    public static AnchorPane hamburgerMenu;
+
 
 
 
@@ -36,13 +40,14 @@ public class ScoutingServer extends Application {
 
     @Override
     public void init() throws Exception {
-        FXMLLoader formLoader = new FXMLLoader(ScoutingServer.class.getResource("form-editor-scene.fxml"));
-
-        formEditScene = new Scene(formLoader.load());
 
         FXMLLoader mainLoader = new FXMLLoader(ScoutingServer.class.getResource("main-scene.fxml"));
         mainScene = new Scene(mainLoader.load());
 
+        FXMLLoader hamburgerLoader = new FXMLLoader(ScoutingServer.class.getResource("hamburger-menu.fxml"));
+        hamburgerMenu = new AnchorPane((AnchorPane) hamburgerLoader.load());
+
+        ((Pane) mainScene.getRoot()).getChildren().add(hamburgerMenu);
 
 
 
