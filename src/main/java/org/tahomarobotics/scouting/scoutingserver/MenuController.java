@@ -15,15 +15,26 @@ public class MenuController extends VBox {
     Button qrScannerButton = new Button();
     @FXML
     public void enterQRScanner(ActionEvent event) {
-        Stage mainStage = (Stage) qrScannerButton.getScene().getWindow();
+        if (ScoutingServer.currentScene != ScoutingServer.SCENES.QR_SCANNER) {
 
-        VBox parent = (VBox) ScoutingServer.qrScannerScene.getRoot();
-        SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
-        AnchorPane anchorPane = (AnchorPane) splitPane.getItems().get(0);
-        anchorPane.getChildren().add(ScoutingServer.qrHamburgerMenu);
+           /* VBox parent = (VBox) ScoutingServer.qrScannerScene.getRoot();
+            SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
+            AnchorPane anchorPane = (AnchorPane) splitPane.getItems().get(0);
+            anchorPane.getChildren().add(ScoutingServer.qrHamburgerMenu);*/
 
 
-        mainStage.setScene(ScoutingServer.qrScannerScene);
+            ScoutingServer.setCurrentScene(ScoutingServer.qrScannerScene);
+            ScoutingServer.currentScene = ScoutingServer.SCENES.QR_SCANNER;
+        }
+    }
 
+    @FXML
+    public void backToMainMenu(ActionEvent event) {
+        if (ScoutingServer.currentScene != ScoutingServer.SCENES.MAIN_MENU) {
+
+
+            ScoutingServer.setCurrentScene(ScoutingServer.mainScene);
+            ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
+        }
     }
 }
