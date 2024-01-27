@@ -23,12 +23,38 @@ public class WebcamCapture {
     //		/preview
     //		/devlist
     //
+
+    private static String selectedWebcam = "";
     private static final String exeFilepath = System.getProperty("user.dir") + "\\lib\\CommandCam.exe";
     public static void snapshotWebcam(String device) throws InterruptedException, IOException {
         System.out.println("Snapshotting");
-        System.out.println(exeFilepath + " /devname " + device);
-        execCommand(exeFilepath + " /devname \"" + device + "\"");
+        String command = exeFilepath +
+                " /devname \"" + device + "\"";
+        System.out.println(command);
+        execCommand(command);
     }
+
+    public static void snapshotWebcam(String device, boolean preview) throws InterruptedException, IOException {
+        System.out.print("Snapshotting: ");
+        String command = exeFilepath +
+                " /devname \"" + device + "\" " +
+                (preview?("/preview ):(""));
+
+        System.out.println(command);
+        execCommand(command);
+    }
+
+    public static void snapshotWebcam(String device, boolean preview, int delayInMillis) throws InterruptedException, IOException {
+        System.out.print("Snapshotting: ");
+        String command = exeFilepath +
+                " /devname \"" + device + "\" " +
+                (preview?("/preview "):("")) +
+                "/delay " + delayInMillis;
+
+        System.out.println(command);
+        execCommand(command);
+    }
+
 
     private static String execCommand(String command) throws InterruptedException, IOException {
         final Process p = Runtime.getRuntime().exec(command);
@@ -72,4 +98,12 @@ public class WebcamCapture {
         return deviceNames;
     }
 
+
+    public static void setSelectedWebcam(String str) {
+        selectedWebcam = str;
+    }
+
+    public static String getSelectedWebcam() {
+        return selectedWebcam;
+    }
 }

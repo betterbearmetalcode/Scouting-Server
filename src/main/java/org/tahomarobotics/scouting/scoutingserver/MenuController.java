@@ -1,13 +1,20 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.tahomarobotics.scouting.scoutingserver.util.WebcamCapture;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class MenuController extends VBox {
 
@@ -16,13 +23,6 @@ public class MenuController extends VBox {
     @FXML
     public void enterQRScanner(ActionEvent event) {
         if (ScoutingServer.currentScene != ScoutingServer.SCENES.QR_SCANNER) {
-
-           /* VBox parent = (VBox) ScoutingServer.qrScannerScene.getRoot();
-            SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
-            AnchorPane anchorPane = (AnchorPane) splitPane.getItems().get(0);
-            anchorPane.getChildren().add(ScoutingServer.qrHamburgerMenu);*/
-
-
             ScoutingServer.setCurrentScene(ScoutingServer.qrScannerScene);
             ScoutingServer.currentScene = ScoutingServer.SCENES.QR_SCANNER;
         }
@@ -37,4 +37,6 @@ public class MenuController extends VBox {
             ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
         }
     }
+
+
 }
