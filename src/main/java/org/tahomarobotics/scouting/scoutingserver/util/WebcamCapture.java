@@ -34,22 +34,16 @@ public class WebcamCapture {
         execCommand(command);
     }
 
-    public static void snapshotWebcam(String device, boolean preview) throws InterruptedException, IOException {
-        System.out.print("Snapshotting: ");
-        String command = exeFilepath +
-                " /devname \"" + device + "\" " +
-                (preview?("/preview ):(""));
-
-        System.out.println(command);
-        execCommand(command);
-    }
-
-    public static void snapshotWebcam(String device, boolean preview, int delayInMillis) throws InterruptedException, IOException {
+    public static void snapshotWebcam(String device, boolean preview, int delayInMillis, String filePath) throws InterruptedException, IOException {
+        if (delayInMillis == 0) {
+            delayInMillis = 1;//0 causes an error for some reason
+        }
         System.out.print("Snapshotting: ");
         String command = exeFilepath +
                 " /devname \"" + device + "\" " +
                 (preview?("/preview "):("")) +
-                "/delay " + delayInMillis;
+                "/delay " + delayInMillis +
+                " /filename \"" + filePath + "\"";
 
         System.out.println(command);
         execCommand(command);

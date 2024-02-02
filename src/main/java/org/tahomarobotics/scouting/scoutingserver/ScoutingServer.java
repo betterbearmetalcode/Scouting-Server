@@ -83,13 +83,25 @@ public class ScoutingServer extends Application {
 
 
 
-        ((Pane) mainScene.getRoot()).getChildren().add(mainHamburgerMenu);
 
+        setUpMainScene();
 
 
     }
 
+    private void setUpMainScene() {
+
+        VBox parent = (VBox) mainScene.getRoot();
+        SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
+        AnchorPane anchorPane = (AnchorPane) splitPane.getItems().get(0);
+        anchorPane.getChildren().add(mainHamburgerMenu);
+
+    }
+
+
     private void setUpQRScannerScene() {
+
+
         //add hamburger menu to qr scanner scene
         VBox parent = (VBox) qrScannerScene.getRoot();
         SplitPane splitPane = (SplitPane) parent.getChildren().get(0);

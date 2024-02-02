@@ -38,5 +38,9 @@ public class MenuController extends VBox {
         }
     }
 
+    public void debugggy(ActionEvent event) {
+
+    }
+
 
 }
