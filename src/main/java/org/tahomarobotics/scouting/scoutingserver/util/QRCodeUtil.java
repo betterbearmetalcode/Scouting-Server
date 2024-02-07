@@ -43,23 +43,24 @@ public class QRCodeUtil {
      * @throws IOException
      * @throws NotFoundException
      */
-    public static String readQRCode(String filePath) throws FileNotFoundException, IOException, NotFoundException {
+    public static String readQRCode(String filePath) throws IOException, NotFoundException {
+        FileInputStream stream = null;
+        Result qrCodeResult = null;
+        try {
+            stream = new FileInputStream(filePath);
+            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
+                    new BufferedImageLuminanceSource(
+                            ImageIO.read(stream))));
+            qrCodeResult = new MultiFormatReader().decode(binaryBitmap);
 
-        BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
-                new BufferedImageLuminanceSource(
-                        ImageIO.read(new FileInputStream(filePath)))));
-        Result qrCodeResult = new MultiFormatReader().decode(binaryBitmap);
+        }finally {
+            stream.close();
+        }
+
         return qrCodeResult.getText();
     }
 
 
-    public static String readQRCode(FileInputStream stream) throws IOException, NotFoundException {
-        BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
-                new BufferedImageLuminanceSource(
-                        ImageIO.read(stream))));
-        Result qrCodeResult = new MultiFormatReader().decode(binaryBitmap);
-        return qrCodeResult.getText();
-    }
 
     public static String decodeText(String input) throws DataFormatException {
         String compressedText  = input.split("&")[0];
@@ -82,15 +83,25 @@ public class QRCodeUtil {
             for (File child : directoryListing) {
                 try {
                     output.add(QRCodeUtil.readQRCode(child.getCanonicalPath()));
-                } catch (IOException | NotFoundException e) {
-                    System.out.println("CHild file not found or has null data");
+                } catch (IOException  e) {
 
+                    e.printStackTrace();
+                    System.err.println("Failed to read some random cached qr code...");
+                } catch (NotFoundException e) {
+                    //was unable to read data from this file. Therefore it is useless and will be deleted
+                    if (!child.delete()) {
+                        child.deleteOnExit();
+                    }
                 }
             }
             return output;
         } else {
             return output;
         }
+
+    }
+
+    public record MatchData() {
 
     }
 
