@@ -11,6 +11,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.tahomarobotics.scouting.scoutingserver.util.DataHandler;
 import org.tahomarobotics.scouting.scoutingserver.util.WebcamCapture;
 
 import java.io.IOException;

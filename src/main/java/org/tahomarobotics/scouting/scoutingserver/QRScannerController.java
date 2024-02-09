@@ -12,6 +12,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import org.tahomarobotics.scouting.scoutingserver.util.Constants;
+import org.tahomarobotics.scouting.scoutingserver.util.DataHandler;
 import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.WebcamCapture;
 
@@ -69,7 +71,7 @@ public class QRScannerController  {
         }
 
 
-        String filePath = QRCodeUtil.iamgeDataFilepath + System.currentTimeMillis()  +".bmp";
+        String filePath = Constants.IMAGE_DATA_FILEPATH + System.currentTimeMillis()  +".bmp";
         try {
 
             WebcamCapture.snapshotWebcam(selectCameraComboBox.getValue(), previewCheckbox.isSelected(), delay, filePath);
@@ -92,8 +94,10 @@ public class QRScannerController  {
         } catch (NotFoundException e) {
             qrData = "";
         }
-        QRCodeUtil.qrData.add(qrData);
         System.out.println("Scanner QR Code: " + qrData);
+        DataHandler.storeRawQRData(qrData);
+        System.out.println("Record Created: " + DataHandler.getMatchData().get(DataHandler.getMatchData().size() - 1));
+
 
     }
 

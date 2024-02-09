@@ -38,5 +38,6 @@ for a match QR code
 <auto notes>=string
 <tele notes>=string
 
+a "/" will be used as the delimiter
 
-example data string "5\2046\1\2\1\7\0\1\3\0\2046Rah!\theseAreTEleNotes"
+example data string "5/2046/1/2/1/7/0/1/3/0/2046Rah!/theseAreTEleNotes"

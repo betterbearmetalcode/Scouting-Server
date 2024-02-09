@@ -19,14 +19,13 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 public class QRCodeUtil {
-    //qr codes images are cached in this folder. Filenames are the timestamp they were created and file extensions are .bmp
-    public static final String iamgeDataFilepath = "src/main/resources/org/tahomarobotics/scouting/scoutingserver/images/";
+
     private static final Map<DecodeHintType, ErrorCorrectionLevel> decodeHintMap = new HashMap<DecodeHintType, ErrorCorrectionLevel>();
     private static final String charset = "UTF-8";
 
-    public static ArrayList<String> qrData = new ArrayList<>();
 
-//untested
+
+
     public static void createQRCode(String qrCodeData, String filePath, Map hintMap, int qrCodeheight, int qrCodewidth)
             throws WriterException, IOException {
         BitMatrix matrix = new MultiFormatWriter().encode(
@@ -61,7 +60,7 @@ public class QRCodeUtil {
     }
 
 
-
+//for text compression, probably dont neet
     public static String decodeText(String input) throws DataFormatException {
         String compressedText  = input.split("&")[0];
         //decompress
@@ -75,34 +74,8 @@ public class QRCodeUtil {
     }
 
 
-    public static ArrayList<String> getCachedQRData() {
-        ArrayList<String> output = new ArrayList<>();
-        File dir = new File(iamgeDataFilepath);
-        File[] directoryListing = dir.listFiles();
-        if (directoryListing != null) {
-            for (File child : directoryListing) {
-                try {
-                    output.add(QRCodeUtil.readQRCode(child.getCanonicalPath()));
-                } catch (IOException  e) {
 
-                    e.printStackTrace();
-                    System.err.println("Failed to read some random cached qr code...");
-                } catch (NotFoundException e) {
-                    //was unable to read data from this file. Therefore it is useless and will be deleted
-                    if (!child.delete()) {
-                        child.deleteOnExit();
-                    }
-                }
-            }
-            return output;
-        } else {
-            return output;
-        }
 
-    }
 
-    public record MatchData() {
-
-    }
 
 }
