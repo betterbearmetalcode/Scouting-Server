@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.QRScannerController">
+   <children>
+      <SplitPane dividerPositions="0.19251336898395718" prefHeight="407.0" prefWidth="600.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <VBox prefHeight="218.0" prefWidth="480.0">
+                     <children>
+                        <FlowPane prefHeight="46.0" prefWidth="600.0">
+                           <children>
+                              <Label text="Camera">
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </Label>
+                              <ComboBox fx:id="selectCameraComboBox" onAction="#cameraSelectorClicked" prefWidth="150.0" promptText="Select a camera" />
+                           </children>
+                        </FlowPane>
+                        <Separator prefWidth="200.0" />
+                        <FlowPane prefHeight="42.0" prefWidth="480.0">
+                           <children>
+                              <CheckBox fx:id="previewCheckbox" mnemonicParsing="false" selected="true" text="Preview">
+                                 <FlowPane.margin>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </FlowPane.margin>
+                              </CheckBox>
+                           </children>
+                        </FlowPane>
+                        <FlowPane prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Label text="Delay in Millis">
+                                 <FlowPane.margin>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <TextField fx:id="delayField" text="0" />
+                           </children>
+                        </FlowPane>
+                        <VBox fx:id="imageViewBox" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fx:id="imageView" fitHeight="223.0" fitWidth="478.0" pickOnBounds="true" preserveRatio="true" />
+                           </children>
+                        </VBox>
+                        <Separator prefWidth="200.0" />
+                        <FlowPane alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Button fx:id="takePictureButton" disable="true" mnemonicParsing="false" onAction="#takePicture" prefHeight="26.0" prefWidth="114.0" text="Take Picture">
+                                 <FlowPane.margin>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </FlowPane.margin>
+                              </Button>
+                           </children>
+                        </FlowPane>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</VBox>
