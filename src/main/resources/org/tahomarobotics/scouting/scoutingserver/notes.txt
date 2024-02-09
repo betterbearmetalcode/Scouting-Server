@@ -41,3 +41,7 @@ for a match QR code
 a "/" will be used as the delimiter
 
 example data string "5/2046/1/2/1/7/0/1/3/0/2046Rah!/theseAreTEleNotes"
+
+
+data storage:
+timestamp$<qr string>

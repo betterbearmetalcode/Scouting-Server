@@ -2,16 +2,17 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 
 import com.google.zxing.NotFoundException;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Vector;
 
 public class DataHandler {
 
     private final static ArrayList<MatchRecord> qrData = new ArrayList<>();
 
+    //untested, not used
     public void setUPConnection() throws ClassNotFoundException, SQLException {
         String url = "jdbc:mysql://localhost:3306/table_name"; // table details
         String username = "rootgfg"; // MySQL credentials
@@ -31,62 +32,78 @@ public class DataHandler {
         System.out.println("Connection Closed....");
     }
 
-    public static void storeRawQRData(String dataRaw) {
-        qrData.add(contstrucMatchRecord(dataRaw));
 
-        //have now added a new record to the array
-        //TODO make it so the data is also added to the sql database
-    }
+    public static void storeRawQRData(long timestamp, String dataRaw) throws IOException {
+        //adds the data to ram
+        qrData.add(contstrucMatchRecord(timestamp, dataRaw));
 
-    private static MatchRecord contstrucMatchRecord(String qrRAW) {
-        String[] data = qrRAW.split(Constants.QR_DATA_DELIMITER);
-        MatchRecord m = new MatchRecord(Integer.parseInt(data[0]),
-                Integer.parseInt(data[1]),
-                getRobotPositionFromNum(Integer.parseInt(data[2])),
-                Integer.parseInt(data[3]),
-                Integer.parseInt(data[4]),
-                Integer.parseInt(data[5]),
-                Integer.parseInt(data[6]),
-                Integer.parseInt(data[7]),
-                getEngamePositionFromNum(Integer.parseInt(data[8])),
-                (Objects.equals(data[9], "1")),
-                data[10] ,
-                data[11]);
-        return m;
+        //creates new database if there is none already and then writed the data to it
+        File data = new File(Constants.DATABASE_FILEPATH);
+        if (!data.exists()) {
+            data.createNewFile();
+        }
+            FileWriter fw = new FileWriter(data, true);
+            BufferedWriter writer = new BufferedWriter(fw);
+            writer.write(timestamp + Constants.STORED_DATA_DELIMITER + dataRaw);
+            writer.newLine();
+            writer.close();
+
+
     }
 
 
+    private static MatchRecord contstrucMatchRecord(long timestamp, String qrRAW) {
+        try {
+            String[] data = qrRAW.split(Constants.QR_DATA_DELIMITER);
+            MatchRecord m = new MatchRecord(timestamp, Integer.parseInt(data[0]),
+                    Integer.parseInt(data[1]),
+                    getRobotPositionFromNum(Integer.parseInt(data[2])),
+                    Integer.parseInt(data[3]),
+                    Integer.parseInt(data[4]),
+                    Integer.parseInt(data[5]),
+                    Integer.parseInt(data[6]),
+                    Integer.parseInt(data[7]),
+                    getEngamePositionFromNum(Integer.parseInt(data[8])),
+                    (Objects.equals(data[9], "1")),
+                    data[10] ,
+                    data[11]);
+            return m;
+        }catch (NumberFormatException e) {
+            System.err.println("Failed to construct MatchRecord, likly corruppted Data");
+            throw new RuntimeException(e);
+        }
 
-    public static ArrayList<MatchRecord> getCachedQRData() {
+    }
+
+
+
+    public static ArrayList<MatchRecord> getCachedQRData() throws IOException {
         ArrayList<MatchRecord> output = new ArrayList<>();
         ArrayList<String> qrRaws= new ArrayList<>();
-        File dir = new File(Constants.IMAGE_DATA_FILEPATH);
-        File[] directoryListing = dir.listFiles();
-        if (directoryListing != null) {
-            for (File child : directoryListing) {
-                try {
-                    qrRaws.add(QRCodeUtil.readQRCode(child.getCanonicalPath()));
-                } catch (IOException e) {
-
-                    e.printStackTrace();
-                    System.err.println("Failed to read some random cached qr code...");
-                } catch (NotFoundException e) {
-                    //was unable to read data from this file. Therefore it is useless and will be deleted
-                    if (!child.delete()) {
-                        child.deleteOnExit();
-                    }
+        File database = new File(Constants.DATABASE_FILEPATH);
+        if (database.exists()) {
+            FileReader reader = new FileReader(database);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            long beginTime = System.currentTimeMillis();
+            while (true) {
+                String line = bufferedReader.readLine();
+                if ((line == null) || (line == "")) {
+                    break;
+                }else if ((beginTime + 1000) < System.currentTimeMillis()) {
+                    //break after one second of reading data
+                    System.out.println("Reading Database Timeout");
+                    break;
                 }
+                String[] dataTokens = line.split(Constants.STORED_DATA_DELIMITER);
+                output.add(contstrucMatchRecord(Long.parseLong(dataTokens[0]), dataTokens[1]));
             }
-
-            for (String s : qrRaws) {
-                output.add(contstrucMatchRecord(s));
-            }
-
+        return output;
+        }else {
+            //then the database does not exist, return nothing
+            System.out.println("Database not found, returning nothing");
             return output;
-        } else {
-            //there were not qr codes, return empty array.
-            return output;
-        }
+        }//end if database exists
+
 
     }
 
@@ -198,7 +215,8 @@ public class DataHandler {
         }
     }
 
-    public record MatchRecord(int matchNumber,
+    public record MatchRecord(long timestamp,
+                              int matchNumber,
                               int teamNumber,
                               RobotPosition position,
                               int autoSpeaker,

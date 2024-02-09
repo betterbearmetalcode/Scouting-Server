@@ -92,11 +92,17 @@ public class QRScannerController  {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (NotFoundException e) {
-            qrData = "";
+            System.out.println("Failed to read QR Code");
+            return;
         }
-        System.out.println("Scanner QR Code: " + qrData);
-        DataHandler.storeRawQRData(qrData);
-        System.out.println("Record Created: " + DataHandler.getMatchData().get(DataHandler.getMatchData().size() - 1));
+
+        try {
+            System.out.println("Scanner QR Code: " + qrData);
+            DataHandler.storeRawQRData(System.currentTimeMillis() , qrData);
+            System.out.println("Record Created: " + DataHandler.getMatchData().get(DataHandler.getMatchData().size() - 1));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
 
     }
