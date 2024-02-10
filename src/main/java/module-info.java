@@ -8,6 +8,8 @@ module org.tahomarobotics.scouting.scoutingserver {
     requires com.google.zxing.javase;
     requires java.logging;
     requires java.sql;
+    requires org.apache.commons.compress;
+    requires com.fasterxml.aalto;
 
 
     opens org.tahomarobotics.scouting.scoutingserver to javafx.fxml;

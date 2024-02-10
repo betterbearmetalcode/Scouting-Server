@@ -27,9 +27,14 @@ public class MenuController extends VBox {
             ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
         }
     }
+    @FXML
+    public void openDataScene(ActionEvent event) {
+        if (ScoutingServer.currentScene != ScoutingServer.SCENES.DATA_SCENE) {
 
-    public void debugggy(ActionEvent event) {
 
+            ScoutingServer.setCurrentScene(ScoutingServer.dataScene);
+            ScoutingServer.currentScene = ScoutingServer.SCENES.DATA_SCENE;
+        }
     }
 
 
