@@ -1,21 +1,10 @@
-package org.tahomarobotics.scouting.scoutingserver;
+package org.tahomarobotics.scouting.scoutingserver.controller;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.SplitPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import org.tahomarobotics.scouting.scoutingserver.util.DataHandler;
-import org.tahomarobotics.scouting.scoutingserver.util.WebcamCapture;
-
-import java.io.IOException;
-import java.util.ArrayList;
+import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 
 public class MenuController extends VBox {
 

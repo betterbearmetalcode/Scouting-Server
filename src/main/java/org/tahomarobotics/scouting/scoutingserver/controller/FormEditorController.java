@@ -1,4 +1,4 @@
-package org.tahomarobotics.scouting.scoutingserver;
+package org.tahomarobotics.scouting.scoutingserver.controller;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Cursor;

@@ -1,4 +1,4 @@
-package org.tahomarobotics.scouting.scoutingserver;
+package org.tahomarobotics.scouting.scoutingserver.controller;
 
 import com.google.zxing.NotFoundException;
 import javafx.collections.FXCollections;
@@ -12,10 +12,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import org.tahomarobotics.scouting.scoutingserver.util.Constants;
-import org.tahomarobotics.scouting.scoutingserver.util.DataHandler;
+import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.tahomarobotics.scouting.scoutingserver.DataHandler;
 import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.WebcamCapture;
+import org.tahomarobotics.scouting.scoutingserver.util.WebcamUtil;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class QRScannerController  {
     @FXML
     private void initialize() {
         try {
-            ArrayList<String> devices = WebcamCapture.getDevices();
+            ArrayList<String> devices = WebcamUtil.getDevices();
             ObservableList<String> arr = FXCollections.observableArrayList(devices);
             selectCameraComboBox.setItems(arr);
         } catch (IOException | InterruptedException e) {
@@ -53,7 +53,7 @@ public class QRScannerController  {
 
     @FXML
     public void cameraSelectorClicked(ActionEvent event) {
-        WebcamCapture.setSelectedWebcam(selectCameraComboBox.getValue());
+        WebcamUtil.setSelectedWebcam(selectCameraComboBox.getValue());
         takePictureButton.setDisable(false);
     }
 
@@ -62,7 +62,7 @@ public class QRScannerController  {
     //consider this https://www.tutorialspoint.com/java_mysql/java_mysql_quick_guide.html
     @FXML
     public void takePicture(ActionEvent event) {
-        System.out.println("Taking picture on camera: " + WebcamCapture.getSelectedWebcam());
+        System.out.println("Taking picture on camera: " + WebcamUtil.getSelectedWebcam());
         int delay = 0;
         try {
             delay = Integer.parseInt(delayField.getText().replaceAll("[^0-9]", ""));
@@ -74,7 +74,7 @@ public class QRScannerController  {
         String filePath = Constants.IMAGE_DATA_FILEPATH + System.currentTimeMillis()  +".bmp";
         try {
 
-            WebcamCapture.snapshotWebcam(selectCameraComboBox.getValue(), previewCheckbox.isSelected(), delay, filePath);
+            WebcamUtil.snapshotWebcam(selectCameraComboBox.getValue(), previewCheckbox.isSelected(), delay, filePath);
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }

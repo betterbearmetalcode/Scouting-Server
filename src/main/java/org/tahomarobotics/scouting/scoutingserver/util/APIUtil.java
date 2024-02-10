@@ -2,16 +2,14 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 
 
 
-import org.json.*;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class APInteraction {
+public class APIUtil {
 
     public static final String baseURL = "https://www.thebluealliance.com/api/v3";
         private static final String apiKey = "gkV8whv2viztnwQybXkOmyQMYYJEGNh7qgbUvG0riVVdDH2YMKk57JNaRwgiTSQB";

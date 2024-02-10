@@ -1,12 +1,11 @@
-package org.tahomarobotics.scouting.scoutingserver.util;
+package org.tahomarobotics.scouting.scoutingserver;
 
-import com.google.zxing.NotFoundException;
+import org.tahomarobotics.scouting.scoutingserver.Constants;
 
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Vector;
 
 public class DataHandler {
 

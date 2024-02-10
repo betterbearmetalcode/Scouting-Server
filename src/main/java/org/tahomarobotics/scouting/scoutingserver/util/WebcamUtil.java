@@ -1,18 +1,12 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.lang.reflect.Array;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WebcamCapture {
+public class WebcamUtil {
 
     // Parse command line arguments. Available options:
     //

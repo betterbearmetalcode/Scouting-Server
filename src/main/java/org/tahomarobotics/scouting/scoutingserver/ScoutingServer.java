@@ -3,23 +3,11 @@ package org.tahomarobotics.scouting.scoutingserver;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.converter.IntegerStringConverter;
-import org.tahomarobotics.scouting.scoutingserver.util.WebcamCapture;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.function.UnaryOperator;
-import java.util.regex.Pattern;
+import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
 
 public class ScoutingServer extends Application {
 
@@ -60,17 +48,17 @@ public class ScoutingServer extends Application {
     @Override
     public void init() throws Exception {
 
-        FXMLLoader mainLoader = new FXMLLoader(ScoutingServer.class.getResource("main-scene.fxml"));
+        FXMLLoader mainLoader = new FXMLLoader(ScoutingServer.class.getResource("FXML/main-scene.fxml"));
         mainScene = new Scene(mainLoader.load());
 
 
 
-        FXMLLoader hamburgerLoader = new FXMLLoader(ScoutingServer.class.getResource("hamburger-menu.fxml"));
+        FXMLLoader hamburgerLoader = new FXMLLoader(ScoutingServer.class.getResource("FXML/hamburger-menu.fxml"));
         mainHamburgerMenu = new AnchorPane((AnchorPane) hamburgerLoader.load());
 
-        FXMLLoader qrhamburgerLoader = new FXMLLoader(ScoutingServer.class.getResource("hamburger-menu.fxml"));
+        FXMLLoader qrhamburgerLoader = new FXMLLoader(ScoutingServer.class.getResource("FXML/hamburger-menu.fxml"));
         qrHamburgerMenu = new AnchorPane((AnchorPane) qrhamburgerLoader.load());
-        FXMLLoader qrscannerLoader = new FXMLLoader(ScoutingServer.class.getResource("qr-scanner-scene.fxml"));
+        FXMLLoader qrscannerLoader = new FXMLLoader(ScoutingServer.class.getResource("FXML/qr-scanner-scene.fxml"));
         qrScannerScene = new Scene(qrscannerLoader.load());
 
        setUpQRScannerScene();
