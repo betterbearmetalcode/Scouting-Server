@@ -1,7 +1,5 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
-import org.tahomarobotics.scouting.scoutingserver.Constants;
-
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -37,7 +35,7 @@ public class DataHandler {
         qrData.add(contstrucMatchRecord(timestamp, dataRaw));
 
         //creates new database if there is none already and then writed the data to it
-        File data = new File(Constants.DATABASE_FILEPATH);
+        File data = new File(Constants.DATABASE_FILEPATH + Constants.DEFAULT_DATABASE_NAME);
         if (!data.exists()) {
             data.createNewFile();
         }
@@ -75,11 +73,10 @@ public class DataHandler {
     }
 
 
-
-    public static ArrayList<MatchRecord> getCachedQRData() throws IOException {
+    public static ArrayList<MatchRecord> readDatabase(String databaseName) throws IOException {
         ArrayList<MatchRecord> output = new ArrayList<>();
-        ArrayList<String> qrRaws= new ArrayList<>();
-        File database = new File(Constants.DATABASE_FILEPATH);
+        ArrayList<String> qrRaws = new ArrayList<>();
+        File database = new File(Constants.DATABASE_FILEPATH + databaseName);
         if (database.exists()) {
             FileReader reader = new FileReader(database);
             BufferedReader bufferedReader = new BufferedReader(reader);
@@ -96,13 +93,17 @@ public class DataHandler {
                 String[] dataTokens = line.split(Constants.STORED_DATA_DELIMITER);
                 output.add(contstrucMatchRecord(Long.parseLong(dataTokens[0]), dataTokens[1]));
             }
-        return output;
+            return output;
         }else {
             //then the database does not exist, return nothing
             System.out.println("Database not found, returning nothing");
             return output;
         }//end if database exists
+    }
 
+    public static ArrayList<MatchRecord> readDatabase() throws IOException {
+
+        return readDatabase(Constants.DEFAULT_DATABASE_NAME);
 
     }
 

@@ -6,6 +6,8 @@ plugins {
   id 'org.beryx.jlink' version '2.25.0'
 }
 
+mainClassName = 'org.tahomarobotics.scouting.scoutingserver.ScoutingServer'
+
 group 'org.tahomarobotics.scouting'
 version '1.0-SNAPSHOT'
 
@@ -88,4 +90,10 @@ jlink {
 
 jlinkZip {
   group = 'distribution'
+}
+
+jar {
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
 }

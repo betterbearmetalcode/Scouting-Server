@@ -27,7 +27,7 @@ public class MainController extends VBox {
         }*/
 
         try {
-            System.out.println("Locally Cached QR Data: " + DataHandler.getCachedQRData());
+            System.out.println("Locally Cached QR Data: " + DataHandler.readDatabase());
             QRCodeUtil.createQRCode("5/2046/1/2/1/7/0/1/3/0/150they lost comms and tipped over. Really fast drive, can't do trap. Red card for battle bots. ljf;aldsjf;alksdjf;alksjdf;lafa;lfjkljadkljdsjfjfjfjf/ ", "C:\\Users\\Caleb\\IdeaProjects\\ScoutingServer\\src\\main\\resources\\org\\tahomarobotics\\scouting\\scoutingserver\\generatedQRCode.jpg", null,500,500);
             DataHandler.storeRawQRData(System.currentTimeMillis(), QRCodeUtil.readQRCode("C:\\Users\\Caleb\\IdeaProjects\\ScoutingServer\\src\\main\\resources\\org\\tahomarobotics\\scouting\\scoutingserver\\generatedQRCode.jpg"));
             System.out.println("Successfullly created qrcode for funsies");
