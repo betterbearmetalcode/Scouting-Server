@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DataHandler;
@@ -19,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class DataController {
-    public TreeView treeView;
     public Button newTabButton;
     @FXML
     private TabPane tabPane;
@@ -46,12 +46,16 @@ public class DataController {
                     alert.setHeaderText("Wrong Database");
                     alert.setHeaderText("Database is already open");
                     alert.showAndWait();
+                    tabPane.getSelectionModel().selectPrevious();
                     return;
                 }
             }
             if ( selectedFile != null && selectedFile.isFile() && new File(Constants.DATABASE_FILEPATH, selectedFile.getName()).exists()) {
+
+
+
                     //get the data from that database
-                ArrayList<DataHandler.MatchRecord> databaseData = DataHandler.readDatabase(selectedFile.getName());
+                LinkedList<DataHandler.MatchRecord> databaseData = DataHandler.readDatabase(selectedFile.getName());
                 TabController controller = new TabController(databaseData, selectedFile);
                 tabLoader.setController(controller);
 
@@ -73,7 +77,13 @@ public class DataController {
                             }
                         }
                     }
-                });//remove controllers from the list when the tab is closed
+                });
+                //pass the tree view to the controller class
+                AnchorPane anotherPane = (AnchorPane) pane.getChildren().get(0);
+                VBox box = (VBox) anotherPane.getChildren().get(0);
+                controller.initialize((TreeView<String>) box.getChildren().get(0));
+
+               //remove controllers from the list when the tab is closed
                 tabPane.getTabs().add(tabPane.getTabs().size() - 1, tab);
                 tabPane.getSelectionModel().select(tab);
                 controllers.add(controller);

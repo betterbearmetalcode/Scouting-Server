@@ -3,6 +3,7 @@ package org.tahomarobotics.scouting.scoutingserver;
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Objects;
 
 public class DataHandler {
@@ -73,9 +74,9 @@ public class DataHandler {
     }
 
 
-    public static ArrayList<MatchRecord> readDatabase(String databaseName) throws IOException {
-        ArrayList<MatchRecord> output = new ArrayList<>();
-        ArrayList<String> qrRaws = new ArrayList<>();
+    public static LinkedList<MatchRecord> readDatabase(String databaseName) throws IOException {
+        LinkedList<MatchRecord> output = new LinkedList<>();
+        LinkedList<String> qrRaws = new LinkedList<>();
         File database = new File(Constants.DATABASE_FILEPATH + databaseName);
         if (database.exists()) {
             FileReader reader = new FileReader(database);
@@ -101,7 +102,7 @@ public class DataHandler {
         }//end if database exists
     }
 
-    public static ArrayList<MatchRecord> readDatabase() throws IOException {
+    public static LinkedList<MatchRecord> readDatabase() throws IOException {
 
         return readDatabase(Constants.DEFAULT_DATABASE_NAME);
 
