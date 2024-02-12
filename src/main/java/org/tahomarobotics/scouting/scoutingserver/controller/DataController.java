@@ -32,7 +32,7 @@ public class DataController {
 
         try {
 
-            FXMLLoader tabLoader = new FXMLLoader(ScoutingServer.class.getResource("FXML/data-tab-anchor-pane.fxml"));
+            FXMLLoader tabLoader = new FXMLLoader(new File(System.getProperty("user.dir") + "/resources/FXML/data-tab-anchor-pane.fxml").toURI().toURL());
             //ask the user to select a database location
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Select Database");

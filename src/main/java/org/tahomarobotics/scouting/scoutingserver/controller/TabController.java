@@ -24,7 +24,7 @@ public class TabController {
 
 
     Tab myTab;
-    private final LinkedList<DataHandler.MatchRecord> databaseData;
+    private LinkedList<DataHandler.MatchRecord> databaseData;
     public File database;
 
     private TreeView<String> treeView;
@@ -41,38 +41,62 @@ public class TabController {
     public void selectItem(Event event) {
 
     }
-
+    @FXML
     public void expandAll(Event e) {
+        System.out.println("Expand All Button Pressed");
         setExpansionAll(rootItem, true);
 
     }
 
+    @FXML
+    public void collapseAll() {
+        System.out.println("Collapse All Button Pressed");
+        setExpansionAll(rootItem, false);
+    }
+
     private void setExpansionAll(TreeItem treeItem, boolean val) {
-        treeItem.setExpanded(val);
+        if (treeItem.getValue().equals("root-item")) {
+            //then we are dealing with the root item
+            treeItem.setExpanded(true);
+        }else {
+            treeItem.setExpanded(val);
+
+        }
         if (!treeItem.getChildren().isEmpty()) {
             for ( TreeItem t  :  (ObservableList<TreeItem>) treeItem.getChildren()) {
                 setExpansionAll(t, val);
             }
         }
 
+
     }
 
 
     public void initialize(TreeView<String> view) {
         treeView = view;
+        rootItem = new TreeItem<>("root-item");
         if (!databaseData.isEmpty()) {
             constructTree();
-        }else {
-            rootItem = new TreeItem<>("");
         }
         treeView.setShowRoot(false);
         treeView.setRoot(rootItem);
 
 
     }
+    @FXML
+    public void refresh(Event e) {
+        System.out.println("Refreshing");
+        rootItem.getChildren().clear();
+        try {
+            databaseData = DataHandler.readDatabase(database.getName());
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        constructTree();
+    }
 
     private void constructTree() {
-        rootItem = new TreeItem<>(database.getName().substring(0, database.getName().length() - 4));
+
 
         //need to sort the database data by match number and team position
         databaseData.sort(new MatchDataComparator());//this is actually nessacary as it assures that the robot positon indexes appear sequentially
@@ -98,8 +122,13 @@ public class TabController {
                     }
                     //if the dataPoint we are looking at right now is the next position sequentially (we haven't skipped a position)
                     //add all this dataPoint's data to leaf items
-                    TreeItem<String> positonItem = new TreeItem<String>(r.position().toString());
+                    TreeItem<String> positonItem = new TreeItem<String>(r.position().toString() + ": " + r.teamNumber());
                     matchItem.getChildren().add(robotPositionIndex, positonItem);
+
+                    for (String s : r.getDisplayableDataAsList()) {
+                        positonItem.getChildren().add(new TreeItem<String>(s));
+                    }
+
                     robotPositionIndex++;
                 }else {
                     //we have gone through all 6 robot positions for this match so it is guarenteed that there will be no more of this match

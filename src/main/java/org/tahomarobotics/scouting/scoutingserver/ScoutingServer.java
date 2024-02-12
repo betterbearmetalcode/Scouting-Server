@@ -9,6 +9,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
 
+import java.io.File;
+import java.net.URL;
+
 public class ScoutingServer extends Application {
 
     public enum SCENES {
@@ -52,23 +55,21 @@ public class ScoutingServer extends Application {
     @Override
     public void init() throws Exception {
 
-        FXMLLoader mainLoader = new FXMLLoader(ScoutingServer.class.getResource("FXML/main-scene.fxml"));
+        FXMLLoader mainLoader = new FXMLLoader(new File(System.getProperty("user.dir") + "/resources/FXML/main-scene.fxml").toURI().toURL());
         mainScene = new Scene(mainLoader.load());
 
-
-
-        FXMLLoader hamburgerLoader = new FXMLLoader(ScoutingServer.class.getResource("FXML/hamburger-menu.fxml"));
+        FXMLLoader hamburgerLoader = new FXMLLoader(new File(System.getProperty("user.dir") + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
         mainHamburgerMenu = new AnchorPane((AnchorPane) hamburgerLoader.load());
 
-        FXMLLoader qrhamburgerLoader = new FXMLLoader(ScoutingServer.class.getResource("FXML/hamburger-menu.fxml"));
+        FXMLLoader qrhamburgerLoader = new FXMLLoader(new File(System.getProperty("user.dir") + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
         qrHamburgerMenu = new AnchorPane((AnchorPane) qrhamburgerLoader.load());
-        FXMLLoader qrscannerLoader = new FXMLLoader(ScoutingServer.class.getResource("FXML/qr-scanner-scene.fxml"));
+        FXMLLoader qrscannerLoader = new FXMLLoader(new File(System.getProperty("user.dir") + "/resources/FXML/qr-scanner-scene.fxml").toURI().toURL());
         qrScannerScene = new Scene(qrscannerLoader.load());
 
-        FXMLLoader dataLoader = new FXMLLoader(ScoutingServer.class.getResource("FXML/data-scene.fxml"));
+        FXMLLoader dataLoader = new FXMLLoader(new File(System.getProperty("user.dir") + "/resources/FXML/data-scene.fxml").toURI().toURL());
         dataScene = new Scene(dataLoader.load());
 
-        FXMLLoader dataHamburgerLoader = new FXMLLoader(ScoutingServer.class.getResource("FXML/hamburger-menu.fxml"));
+        FXMLLoader dataHamburgerLoader = new FXMLLoader(new File(System.getProperty("user.dir") + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
         dataHamburgerMenu = new AnchorPane((AnchorPane) dataHamburgerLoader.load());
 
        setUpQRScannerScene();

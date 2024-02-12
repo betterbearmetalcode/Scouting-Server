@@ -230,6 +230,20 @@ public class DataHandler {
                               String autoNotes,
                               String teleNotes
     ) {
+        //for displaying the data in the server
+        public LinkedList<String> getDisplayableDataAsList() {
+            LinkedList<String> output = new LinkedList<>();
+            output.add("Auto Speaker: " + autoSpeaker);
+            output.add("Auto Amp: " + autoAmp);
+            output.add("Tele-OP Speaker: " + teleSpeaker);
+            output.add("Tele-OP Amp: " + teleAmp);
+            output.add("Tele-OP trap: " + teleTrap);
+            output.add("Endgame: " + endgamePosition);
+            output.add(lostComms?("Lost Comms"):("Didn't lose Comms"));
+            output.add("Auto Notes: " + autoNotes);
+            output.add("Tele Notes: " + teleNotes);
+            return output;
+        }
 
     }
 

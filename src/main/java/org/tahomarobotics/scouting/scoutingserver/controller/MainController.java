@@ -19,31 +19,16 @@ public class MainController extends VBox {
 
     public void debugggy(ActionEvent event) {
        System.out.println("Debug button pressed");
-
-        /*try {
-            SpreadsheetUtil.initializeExcelDatabase(Constants.EXCEL_DATABASE);
+        try {
+            QRCodeUtil.createQRCode("8/2051/5/2/4/7/0/1/3/0/test3/teleNotes", "C:\\Users\\Caleb\\IdeaProjects\\ScoutingServer\\resources\\testQrCode.png", null, 500,500);
+        } catch (WriterException e) {
+            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }*/
-
-        try {
-            System.out.println("Locally Cached QR Data: " + DataHandler.readDatabase());
-            QRCodeUtil.createQRCode("5/2046/1/2/1/7/0/1/3/0/150they lost comms and tipped over. Really fast drive, can't do trap. Red card for battle bots. ljf;aldsjf;alksdjf;alksjdf;lafa;lfjkljadkljdsjfjfjfjf/ ", "C:\\Users\\Caleb\\IdeaProjects\\ScoutingServer\\src\\main\\resources\\org\\tahomarobotics\\scouting\\scoutingserver\\generatedQRCode.jpg", null,500,500);
-            DataHandler.storeRawQRData(System.currentTimeMillis(), QRCodeUtil.readQRCode("C:\\Users\\Caleb\\IdeaProjects\\ScoutingServer\\src\\main\\resources\\org\\tahomarobotics\\scouting\\scoutingserver\\generatedQRCode.jpg"));
-            System.out.println("Successfullly created qrcode for funsies");
-        } catch (WriterException | IOException e) {
-            throw new RuntimeException(e);
-        } catch (NotFoundException e) {
-            System.err.println("Could not read qr data");
         }
-        System.out.println("QR data Cached in RAM" + DataHandler.getMatchData());
+
     }
     @FXML
     public void debugButton2(ActionEvent event) {
-        try {
-            SpreadsheetUtil.addDataRow(null, Constants.EXCEL_DATABASE);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
