@@ -1,0 +1,129 @@
+package org.tahomarobotics.scouting.scoutingserver.util;
+
+import org.tahomarobotics.scouting.scoutingserver.Constants;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSetMetaData;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
+import java.util.ArrayList;
+
+public class DatabaseManager {
+    
+    private static Connection connection;
+    private static String databaseName;
+    private static final Object[] EMPTY_PARAMS = {};
+
+
+
+    public static void addTable(String tableName, String schema ) throws SQLException, IllegalArgumentException{
+        String statement =  "CREATE TABLE IF NOT EXISTS " + tableName + "(" + schema + ")";
+        System.out.println(statement);
+        execNoReturn(statement);
+        System.out.println("Added table: " + tableName  + "with Schema: " + schema);
+    }
+
+    private static void setParam(PreparedStatement statement, Integer index, Object param) throws SQLException{
+        if (param instanceof String){
+            statement.setString(index, param.toString());
+        } else if (param instanceof Integer){
+            statement.setInt(index, (int) param);
+        } else if (param instanceof Boolean){
+            statement.setBoolean(index, (Boolean) param);
+        }
+    }
+
+    public static void execNoReturn(String statement) throws SQLException, IllegalArgumentException{
+        execNoReturn(statement, DatabaseManager.EMPTY_PARAMS);
+    }
+
+    public static void execNoReturn(String statement, Object[] params) throws SQLException, IllegalArgumentException{
+        try {
+            PreparedStatement toExec = connection.prepareStatement(statement);
+            Integer count = 1;
+            for (Object param : params){
+                setParam(toExec, count, param);
+                count++;
+            }
+            toExec.executeUpdate();
+            connection.commit();
+            toExec.close();
+        } catch (SQLException err){
+            System.err.println("SQLException while executing statement '" + statement + "'.");
+            System.err.println("Rolling back transaction.");
+            connection.rollback();
+            throw err;
+        }
+    }
+
+    public static ArrayList<HashMap<String, Object>> exec(String statement) throws SQLException, IllegalArgumentException{
+        return exec(statement, DatabaseManager.EMPTY_PARAMS);
+    }
+
+    public static ArrayList<HashMap<String, Object>> exec(String statement, Object[] params) throws SQLException, IllegalArgumentException{
+        try {
+            PreparedStatement toExec = connection.prepareStatement(statement);
+            Integer count = 1;
+            for (Object param : params){
+                setParam(toExec, count, param);
+                count++;
+            }
+            ResultSet results = toExec.executeQuery();
+            connection.commit();
+            ArrayList<HashMap<String, Object>> toReturn = processResultSet(results);
+            results.close();
+            toExec.close();
+            return toReturn;
+        } catch (SQLException err){
+            System.err.println("SQLException while executing statement '" + statement + "'.");
+            System.err.println("Rolling back transaction.");
+            connection.rollback();
+            throw err;
+        }
+    }
+
+    public static ArrayList<HashMap<String, Object>> processResultSet(ResultSet data) throws SQLException{
+        ResultSetMetaData md = data.getMetaData();
+        int columns = md.getColumnCount();
+        ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+        while (data.next()){
+            HashMap<String, Object> row = new HashMap<String, Object>(columns);
+            for (int i=1; i<=columns; ++i) {           
+                row.put(md.getColumnName(i), data.getObject(i));
+            }
+            list.add(row);
+        }
+        return list;
+    }
+
+    public static void initialize(String db) throws SQLException{
+        databaseName = db;
+        System.out.println("Opening connection to database: " + databaseName);
+        connection = DriverManager.getConnection("jdbc:sqlite:" + databaseName);
+        connection.setAutoCommit(false);
+    }
+
+    public enum SQLDatatype {
+        INTEGER,
+        TEXT
+
+    }
+
+    public static String createTableSchem(ArrayList<Constants.ColumnType> columns) {//the input is a hashmap of all the colums for a table, the key is the column name and the value is the database name
+
+        StringBuilder builder = new StringBuilder();
+        for (Constants.ColumnType type : columns) {
+            builder.append(type.name().toString());
+            builder.append(" " + type.datatype().toString() + ", ");
+        }
+        String str = builder.toString();
+        return str.substring(0, str.length() -2);
+    }
+
+}

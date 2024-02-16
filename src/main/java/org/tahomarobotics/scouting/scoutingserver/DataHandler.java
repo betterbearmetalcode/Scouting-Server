@@ -1,14 +1,17 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
+import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
+
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Objects;
 
 public class DataHandler {
 
-    private final static ArrayList<MatchRecord> qrData = new ArrayList<>();
+   // private final static ArrayList<MatchRecord> qrData = new ArrayList<>();
 
     //untested, not used
     public void setUPConnection() throws ClassNotFoundException, SQLException {
@@ -33,10 +36,12 @@ public class DataHandler {
 
     public static void storeRawQRData(long timestamp, String dataRaw) throws IOException {
         //adds the data to ram
-        qrData.add(contstrucMatchRecord(timestamp, dataRaw));
+        //qrData.add(contstrucMatchRecord(timestamp, dataRaw));
 
+        MatchRecord m = contstrucMatchRecord(timestamp, dataRaw);
+/*
         //creates new database if there is none already and then writed the data to it
-        File data = new File(Constants.DATABASE_FILEPATH + Constants.DEFAULT_DATABASE_NAME);
+        File data = new File(Constants.DATABASE_FILEPATH + Constants.DEFAULT_JANK_DATABASE_NAME);
         if (!data.exists()) {
             data.createNewFile();
         }
@@ -44,9 +49,13 @@ public class DataHandler {
             BufferedWriter writer = new BufferedWriter(fw);
             writer.write(timestamp + Constants.STORED_DATA_DELIMITER + dataRaw);
             writer.newLine();
-            writer.close();
-
-
+            writer.close();*/
+            //INSERT INTO <table name> VALUES (<values>)
+        try {
+            DatabaseManager.execNoReturn("INSERT INTO " + Constants.DEFAULT_SQL_TABLE_NAME + " VALUES (" +m.getDataForSQL() + ")");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -76,37 +85,35 @@ public class DataHandler {
 
     public static LinkedList<MatchRecord> readDatabase(String databaseName) throws IOException {
         LinkedList<MatchRecord> output = new LinkedList<>();
-        LinkedList<String> qrRaws = new LinkedList<>();
-        File database = new File(Constants.DATABASE_FILEPATH + databaseName);
-        if (database.exists()) {
-            FileReader reader = new FileReader(database);
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            long beginTime = System.currentTimeMillis();
-            while (true) {
-                String line = bufferedReader.readLine();
-                if ((line == null) || (line == "")) {
-                    break;
-                }else if ((beginTime + 1000) < System.currentTimeMillis()) {
-                    //break after one second of reading data
-                    System.out.println("Reading Database Timeout");
-                    break;
-                }
-                String[] dataTokens = line.split(Constants.STORED_DATA_DELIMITER);
-                output.add(contstrucMatchRecord(Long.parseLong(dataTokens[0]), dataTokens[1]));
+        try {
+            ArrayList<HashMap<String, Object>> data = DatabaseManager.exec("SELECT * FROM " + Constants.DEFAULT_SQL_TABLE_NAME);
+            for (HashMap<String, Object> row : data) {
+                //for each row in the sql database
+                output.add(new MatchRecord(
+                        (long) row.get(Constants.ColumnName.TIMESTAMP.toString().toUpperCase()),
+                        (int) row.get(Constants.ColumnName.MATCH_NUM.toString()),
+                        (int) row.get(Constants.ColumnName.TEAM_NUM.toString()),
+                        getRobotPositionFromNum((int) row.get(Constants.ColumnName.ALLIANCE_POS.toString())),
+                        (int) row.get(Constants.ColumnName.AUTO_SPEAKER.toString()),
+                        (int) row.get(Constants.ColumnName.AUTO_AMP.toString()),
+                        (int) row.get(Constants.ColumnName.TELE_SPEAKER.toString()),
+                        (int) row.get(Constants.ColumnName.TELE_AMP.toString()),
+                        (int) row.get(Constants.ColumnName.TELE_TRAP.toString()),
+                        getEngamePositionFromNum((int) row.get(Constants.ColumnName.ENDGAME_POS.toString())),
+                        ( ((int)row.get(Constants.ColumnName.LOST_COMMS.toString())) == 1),
+                        (String) row.get(Constants.ColumnName.AUTO_NOTES.toString()),
+                        (String) row.get(Constants.ColumnName.TELE_NOTES.toString())
+
+                        ));
             }
-            return output;
-        }else {
-            //then the database does not exist, return nothing
-            System.out.println("Database not found, returning nothing");
-            return output;
-        }//end if database exists
+        } catch (SQLException e) {
+
+            throw new RuntimeException(e);
+        }
+        return output;
     }
 
-    public static LinkedList<MatchRecord> readDatabase() throws IOException {
 
-        return readDatabase(Constants.DEFAULT_DATABASE_NAME);
-
-    }
 
 
 
@@ -245,12 +252,27 @@ public class DataHandler {
             return output;
         }
 
+        public String getDataForSQL() {
+            StringBuilder builder = new StringBuilder();
+            builder.append(timestamp).append(", ");
+            builder.append(matchNumber).append(", ");
+            builder.append(teamNumber).append(", ");
+            builder.append(position.ordinal()).append(", ");
+            builder.append(autoAmp).append(", ");
+            builder.append(autoSpeaker).append(", ");
+            builder.append(teleSpeaker).append(", ");
+            builder.append(teleAmp).append(", ");
+            builder.append(teleTrap).append(", ");
+            builder.append(endgamePosition.ordinal()).append(", ");
+            builder.append(lostComms?("1"):("0")).append(", ");
+            builder.append("\"").append(autoNotes).append("\", ");
+            builder.append("\"").append(teleNotes).append("\"");
+            return  builder.toString();
+
+        }
+
     }
 
-
-    public static ArrayList<MatchRecord> getMatchData() {
-        return qrData;
-    }
 
 
 }

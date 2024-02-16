@@ -8,9 +8,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
+import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
 
 import java.io.File;
-import java.net.URL;
+import java.sql.SQLException;
+import java.util.HashMap;
 
 public class ScoutingServer extends Application {
 
@@ -35,6 +37,7 @@ public class ScoutingServer extends Application {
 
     public static Stage mainStage;
 
+
     public static QRScannerController qrScannerController = new QRScannerController();
     @Override
     public void start(Stage stage) {
@@ -43,7 +46,13 @@ public class ScoutingServer extends Application {
         mainStage.setScene(mainScene);
         currentScene = SCENES.MAIN_MENU;
         mainStage.show();
-
+        //set up database
+        try {
+            DatabaseManager.initialize(Constants.DATABASE_FILEPATH + Constants.SQL_DATABASE_NAME);
+            DatabaseManager.addTable(Constants.DEFAULT_SQL_TABLE_NAME, DatabaseManager.createTableSchem(Constants.RAW_TABLE_SCHEMA));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
 
     }

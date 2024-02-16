@@ -33,12 +33,17 @@ public class WebcamUtil {
             delayInMillis = 1;//0 causes an error for some reason
         }
         System.out.print("Snapshotting: ");
-        String command = exeFilepath +
+        /*String command = exeFilepath +
                 " /devname \"" + device + "\" " +
                 (preview?("/preview "):("")) +
                 "/delay " + delayInMillis +
-                " /filename \"" + filePath + "\"";
+                " /filename \"" + filePath + "\"";*/
 
+        String command = exeFilepath +
+                " /devnum \"" + 2 + "\" " +
+                (preview?("/preview "):("")) +
+                "/delay " + delayInMillis +
+                " /filename \"" + filePath + "\"";
         System.out.println(command);
         execCommand(command);
     }
