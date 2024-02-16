@@ -76,4 +76,20 @@ public class Constants {
 
     public record ColumnType(ColumnName name, SQLDatatype datatype){
     }
+
+
+    public static int AUTO_AMP_NOTE_POINTS = 2;
+    public static int AUTO_SPEAKER_NOTE_POINTS = 5;
+
+    public static int TELE_SPEAKER_NOTE_POINTS = 2;
+    public static int TELE_AMP_NOTE_POINTS = 1;
+    public static int TELE_TRAP_POINTS = 5;
+
+    public static Map<DataHandler.EndgamePosition, Integer> endgamePoints  = Map.ofEntries(entry(DataHandler.EndgamePosition.NONE, 0),
+            entry(DataHandler.EndgamePosition.PARKED, 1),
+            entry(DataHandler.EndgamePosition.CLIMBED, 3),
+            entry(DataHandler.EndgamePosition.HARMONIZED, 5));
+
+
+
 }

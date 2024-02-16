@@ -9,6 +9,7 @@ import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
+import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DataHandler;
 
 import java.io.*;
@@ -72,26 +73,80 @@ public class SpreadsheetUtil {
         try (OutputStream os = Files.newOutputStream(Paths.get(path)); Workbook wb = new Workbook(os, "Scouting Excel Database", "1.0")) {
             Worksheet ws = wb.newWorksheet(SpreadsheetUtil.RAW_DATA_SHEET_NAME);
            initializeTopRowOfRawSheet(ws);
-
+           //export raw data
             for (int rowNum = 1; rowNum < data.size(); rowNum++) {
                 //for each row in the data or spreadsheet
                 for (int i = 0; i < data.get(rowNum).getDataAsList().size(); i ++) {
                     //for each element of data
                     ws.value(rowNum, i,data.get(rowNum).getDataAsList().get(i));
                 }
+
+                if (exportFormulas) {
+                    //TODO make it export the formulas
+                    for (int i = 13; i < 19; i++) {
+                        int autoNotes = (data.get(rowNum).autoAmp() + data.get(rowNum).autoSpeaker());
+                        int teleNotes = (data.get(rowNum).teleAmp() + data.get(rowNum).teleSpeaker());
+
+                        int teleAmpPoints = data.get(rowNum).teleAmp() * Constants.TELE_AMP_NOTE_POINTS;
+                        int teleSpeakerPoints = data.get(rowNum).teleSpeaker() * Constants.TELE_SPEAKER_NOTE_POINTS;
+                        int trapPoints = data.get(rowNum).teleTrap() * Constants.TELE_TRAP_POINTS;
+                        int climbPoints = Constants.endgamePoints.get(data.get(rowNum).endgamePosition());
+                        int telePoints = teleAmpPoints + teleSpeakerPoints + trapPoints + climbPoints;
+                        int autoPoints = (data.get(rowNum).autoAmp() * Constants.AUTO_AMP_NOTE_POINTS) + (data.get(rowNum).autoSpeaker() * Constants.AUTO_SPEAKER_NOTE_POINTS);
+
+                        switch (i) {
+                            case 13: {
+                                //total auto notes
+                                ws.value(rowNum, i, autoNotes);
+                                break;
+                            }
+                            case 14: {
+                                //total tele notes
+                                ws.value(rowNum, i, teleNotes);
+                                break;
+                            }
+                            case 15: {
+                                //auto points added
+                                //this will only include points from notes
+                                ws.value(rowNum, i, autoPoints);
+                                break;
+                            }
+                            case 16: {
+                                //tele will  include notes in speaker an amp, not counting it they are amplified,
+                                //trap points
+                                //clinb points
+                                ws.value(rowNum, i, telePoints);
+                                break;
+
+                            } case 17: {
+                                //total points added
+                                ws.value(rowNum, i,(telePoints + autoPoints));
+                                break;
+                            } case 18 : {
+                                //total notes
+                                ws.value(rowNum, i, (teleNotes + autoNotes));
+                                break;
+                            }
+                        }
+                    }
+                    //TODO also fix the webcam issue
+                }//end exporting formulas for this row
             }
+
+
+
 
         }
     }
 
     private static void initializeTopRowOfRawSheet(Worksheet ws) {
-        for (int i = 0; i < 13; i++) {
-            ws.width(i, 15);
+        for (int i = 0; i < 19; i++) {
+            ws.width(i, 20);
         }
 
         //first read all the data that may already be there and write it into the workbook.
 
-        ws.range(0, 0, 0, 12).style().fontSize(12).fillColor("FFFF33").set();
+        ws.range(0, 0, 0, 17).style().fontSize(12).fillColor("FFFF33").set();
         ws.value(0, 0, "Timestamp");
         ws.value(0, 1, "Match Number");
         ws.value(0, 2, "Team Number");
@@ -105,5 +160,11 @@ public class SpreadsheetUtil {
         ws.value(0, 10, "Lost Comms");
         ws.value(0, 11, "Auto Notes");
         ws.value(0, 12, "Tele Notes");
+        ws.value(0,13,"Total Auto Notes");
+        ws.value(0,14,"Total Tele Notes");
+        ws.value(0,15,"Auto Points Added");
+        ws.value(0,16,"Tele Points Added");
+        ws.value(0,17,"Total Points Added");
+        ws.value(0,18,"Total Notes");
     }
 }

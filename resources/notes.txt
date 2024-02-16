@@ -24,17 +24,22 @@ for a match QR code
     4=B1
     5=B2
     6=B3
+<auto leave>=boolean
 <auto speaker>= whole number
 <auto amp>= whole number
+<auto collected>=whole number
+<auto speaker missed>=whole number
+<auto amp missed>=whole number
 <tele speaker>= whole number
 <tele amp> = whole number
 <tele trap>=whole number
+<tele speaker missed>
+<tele amp missed>
 <endgame pos> = a number from 1-x according to this key
     1=none
     2=parked
     3=climbed
     4=harmonized
-<lost coms>= boolean, 0 is false, 1 is true
 <auto notes>=string
 <tele notes>=string
 
@@ -45,3 +50,27 @@ example data string "5/2046/1/2/1/7/0/1/3/0/2046Rah!/theseAreTEleNotes"
 
 data storage:
 timestamp$<qr string>
+
+
+=================================
+stuff that we need to have tableau be able to
+
+
+points or quantity of notes in auto tele and total
+climb precentage
+average quantity of notes in the speaker or the amp
+average points and occurances of harmony
+how often they lost communication
+trap points/occurances
+all of a teams comments
+average cycle time
+
+
+colums needed in the raw results section of the spreadsheet
+total autoNotes
+total teleNotes
+auto points added excluding leave
+tele points added not considering amplification
+total points added
+
+
