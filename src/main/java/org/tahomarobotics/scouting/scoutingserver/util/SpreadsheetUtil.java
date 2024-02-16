@@ -14,10 +14,7 @@ import org.tahomarobotics.scouting.scoutingserver.DataHandler;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class SpreadsheetUtil {
@@ -61,42 +58,52 @@ public class SpreadsheetUtil {
 
             Worksheet ws = wb.newWorksheet(SpreadsheetUtil.RAW_DATA_SHEET_NAME);
 
-            for (int i = 0; i < 13; i++) {
-                ws.width(i, 15);
-            }
+            initializeTopRowOfRawSheet(ws);//write in the column headings
 
-            //first read all the data that may already be there and write it into the workbook.
-
-            ws.range(0, 0, 0, 12).style().fontSize(12).fillColor("FFFF33").set();
-            ws.value(0, 0, "Timestamp");
-            ws.value(0, 1, "Match Number");
-            ws.value(0, 2, "Team Number");
-            ws.value(0, 3, "Alliance Position");
-            ws.value(0, 4, "Auto Speaker");
-            ws.value(0, 5, "Auto Amp");
-            ws.value(0, 6, "Tele Speaker");
-            ws.value(0, 7, "Tele Amp");
-            ws.value(0, 8, "Tele Trap");
-            ws.value(0, 9, "Endgame Position");
-            ws.value(0, 10, "Lost Comms");
-            ws.value(0, 11, "Auto Notes");
-            ws.value(0, 12, "Tele Notes");
 
         }
         System.out.println("Finished initializing workbook");
 
     }
 
-    public static void addDataRow(DataHandler.MatchRecord data, String filename) throws IOException {
-        File currDir = new File(filename);
+    public static void writeToSpreadSheet(LinkedList<DataHandler.MatchRecord> data, File currDir, boolean exportFormulas) throws IOException {
         String path = currDir.getAbsolutePath();
-        String fileLocation = path.substring(0, path.length() - 1);
-        try (OutputStream os = Files.newOutputStream(Paths.get(fileLocation)); Workbook wb = new Workbook(os, "Scouting Excel Database", "1.0")) {
+        //String fileLocation = path.substring(0, path.length() - 1);
+        try (OutputStream os = Files.newOutputStream(Paths.get(path)); Workbook wb = new Workbook(os, "Scouting Excel Database", "1.0")) {
             Worksheet ws = wb.newWorksheet(SpreadsheetUtil.RAW_DATA_SHEET_NAME);
-            ws.value(1, 0 , "Testing");
+           initializeTopRowOfRawSheet(ws);
 
-
+            for (int rowNum = 1; rowNum < data.size(); rowNum++) {
+                //for each row in the data or spreadsheet
+                for (int i = 0; i < data.get(rowNum).getDataAsList().size(); i ++) {
+                    //for each element of data
+                    ws.value(rowNum, i,data.get(rowNum).getDataAsList().get(i));
+                }
+            }
 
         }
+    }
+
+    private static void initializeTopRowOfRawSheet(Worksheet ws) {
+        for (int i = 0; i < 13; i++) {
+            ws.width(i, 15);
+        }
+
+        //first read all the data that may already be there and write it into the workbook.
+
+        ws.range(0, 0, 0, 12).style().fontSize(12).fillColor("FFFF33").set();
+        ws.value(0, 0, "Timestamp");
+        ws.value(0, 1, "Match Number");
+        ws.value(0, 2, "Team Number");
+        ws.value(0, 3, "Alliance Position");
+        ws.value(0, 4, "Auto Speaker");
+        ws.value(0, 5, "Auto Amp");
+        ws.value(0, 6, "Tele Speaker");
+        ws.value(0, 7, "Tele Amp");
+        ws.value(0, 8, "Tele Trap");
+        ws.value(0, 9, "Endgame Position");
+        ws.value(0, 10, "Lost Comms");
+        ws.value(0, 11, "Auto Notes");
+        ws.value(0, 12, "Tele Notes");
     }
 }

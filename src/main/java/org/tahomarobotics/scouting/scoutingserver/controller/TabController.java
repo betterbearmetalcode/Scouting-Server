@@ -6,13 +6,18 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
+import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DataHandler;
+import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchDataComparator;
+import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,11 +40,25 @@ public class TabController {
     public TabController(LinkedList<DataHandler.MatchRecord> databaseData, File d) {
         this.databaseData = databaseData;
         database = d;
-        System.out.println("In contoller constuctor" + databaseData);
     }
 
-    public void selectItem(Event event) {
 
+    public void export(Event e) {
+        System.out.println("exporting");
+        refresh(null);
+        try {
+            FileChooser chooser = new FileChooser();
+            chooser.setInitialDirectory(new File(Constants.DATABASE_FILEPATH));
+            chooser.setTitle("Select Export Location");
+            chooser.setInitialFileName("export");
+            chooser.getExtensionFilters().add(0, new FileChooser.ExtensionFilter("Excel Files", ".xls"));
+
+            File file = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+            SpreadsheetUtil.writeToSpreadSheet(databaseData, file, true);//should add button later if buranik insists to export raw wihtout formulas
+        } catch (IOException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to export data: IO Exception");
+            alert.showAndWait();
+        }
     }
     @FXML
     public void expandAll(Event e) {

@@ -20,18 +20,7 @@ public class MainController extends VBox {
 
     public void debugggy(ActionEvent event) {
        System.out.println("Debug button pressed");
-        try {
-            QRCodeUtil.createQRCode("8/2051/5/2/4/7/0/1/3/0/test3/teleNotes", "C:\\Users\\Caleb\\IdeaProjects\\ScoutingServer\\resources\\testQrCode.png", null, 500,500);
-        } catch (WriterException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            System.out.println(DataHandler.readDatabase(Constants.DEFAULT_SQL_TABLE_NAME));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
 
     }
     @FXML

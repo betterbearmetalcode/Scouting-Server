@@ -252,6 +252,25 @@ public class DataHandler {
             return output;
         }
 
+        //for exporting
+        public LinkedList<String> getDataAsList() {
+            LinkedList<String> output = new LinkedList<>();
+            output.add(String.valueOf(timestamp));
+            output.add(String.valueOf(matchNumber));
+            output.add(String.valueOf(teamNumber));
+            output.add(String.valueOf(position.ordinal()));
+            output.add(String.valueOf(autoSpeaker));
+            output.add(String.valueOf(autoAmp));
+            output.add(String.valueOf(teleSpeaker));
+            output.add(String.valueOf(teleAmp));
+            output.add(String.valueOf(teleTrap));
+            output.add(String.valueOf(endgamePosition.ordinal()));
+            output.add(lostComms?("1"):("0"));
+            output.add(autoNotes);
+            output.add(teleNotes);
+            return output;
+        }
+
         public String getDataForSQL() {
             StringBuilder builder = new StringBuilder();
             builder.append(timestamp).append(", ");

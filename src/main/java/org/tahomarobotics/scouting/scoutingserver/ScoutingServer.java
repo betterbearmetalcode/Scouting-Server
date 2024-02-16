@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
 import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -53,6 +54,7 @@ public class ScoutingServer extends Application {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
 
 
     }
