@@ -95,43 +95,7 @@ public class DataController {
 
     }
 
-/*    private String getSelectedTableFromUser() {
-        // Create the custom dialog.
-        Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Select Database");
-        dialog.setHeaderText("Select or create database");
 
-
-// Set the button types.
-        ButtonType loginButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
-
-
-        //create the list view
-        ListView<String> listView = new ListView<>();
-
-// Enable/Disable login button depending on whether a username was entered.
-        Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
-        loginButton.setDisable(true);
-
-
-        dialog.getDialogPane().setContent(listView);
-
-// Request focus on the username field by default.
-        Platform.runLater(() -> username.requestFocus());
-
-// Convert the result to a username-password-pair when the login button is clicked.
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == loginButtonType) {
-                return new Pair<>(username.getText(), password.getText());
-            }
-            return null;
-        });
-
-        Optional<Pair<String, String>> result = dialog.showAndWait();
-
-
-    }*/
 
 
 }

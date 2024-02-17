@@ -11,46 +11,13 @@ import java.util.Objects;
 
 public class DataHandler {
 
-   // private final static ArrayList<MatchRecord> qrData = new ArrayList<>();
-
-    //untested, not used
-    public void setUPConnection() throws ClassNotFoundException, SQLException {
-        String url = "jdbc:mysql://localhost:3306/table_name"; // table details
-        String username = "rootgfg"; // MySQL credentials
-        String password = "gfg123";
-        String query = "select *from students"; // query to be run
-        Class.forName("com.mysql.cj.jdbc.Driver"); // Driver name
-        Connection con = DriverManager.getConnection(url, username, password);
-        System.out.println("Connection Established successfully");
-        Statement st = con.createStatement();
-        ResultSet rs = st.executeQuery(query); // Execute query
-        rs.next();
-        String name = rs.getString("name"); // Retrieve name from db
-
-        System.out.println(name); // Print result on console
-        st.close(); // close statement
-        con.close(); // close connection
-        System.out.println("Connection Closed....");
-    }
 
 
     public static void storeRawQRData(long timestamp, String dataRaw) throws IOException {
-        //adds the data to ram
-        //qrData.add(contstrucMatchRecord(timestamp, dataRaw));
+
 
         MatchRecord m = contstrucMatchRecord(timestamp, dataRaw);
-/*
-        //creates new database if there is none already and then writed the data to it
-        File data = new File(Constants.DATABASE_FILEPATH + Constants.DEFAULT_JANK_DATABASE_NAME);
-        if (!data.exists()) {
-            data.createNewFile();
-        }
-            FileWriter fw = new FileWriter(data, true);
-            BufferedWriter writer = new BufferedWriter(fw);
-            writer.write(timestamp + Constants.STORED_DATA_DELIMITER + dataRaw);
-            writer.newLine();
-            writer.close();*/
-            //INSERT INTO <table name> VALUES (<values>)
+
         try {
             DatabaseManager.execNoReturn("INSERT INTO " + Constants.DEFAULT_SQL_TABLE_NAME + " VALUES (" +m.getDataForSQL() + ")");
         } catch (SQLException e) {
@@ -62,18 +29,25 @@ public class DataHandler {
     private static MatchRecord contstrucMatchRecord(long timestamp, String qrRAW) {
         try {
             String[] data = qrRAW.split(Constants.QR_DATA_DELIMITER);
-            MatchRecord m = new MatchRecord(timestamp, Integer.parseInt(data[0]),
-                    Integer.parseInt(data[1]),
-                    getRobotPositionFromNum(Integer.parseInt(data[2])),
-                    Integer.parseInt(data[3]),
-                    Integer.parseInt(data[4]),
-                    Integer.parseInt(data[5]),
-                    Integer.parseInt(data[6]),
-                    Integer.parseInt(data[7]),
-                    getEngamePositionFromNum(Integer.parseInt(data[8])),
-                    (Objects.equals(data[9], "1")),
-                    data[10] ,
-                    data[11]);
+            MatchRecord m = new MatchRecord(timestamp,
+                    Integer.parseInt(data[0]),//match num
+                    Integer.parseInt(data[1]),//team num
+                    getRobotPositionFromNum(Integer.parseInt(data[2])),//allinace pos
+                    (Objects.equals(data[3], "1")),//auto leave
+                    Integer.parseInt(data[4]),//auto speaker
+                    Integer.parseInt(data[5]),//auto amp
+                    Integer.parseInt(data[6]),//auto collected
+                    Integer.parseInt(data[7]),//auto speaker missed
+                    Integer.parseInt(data[8]),//auto amp missed
+                    Integer.parseInt(data[9]),//tele speaker
+                    Integer.parseInt(data[10]),//tele amp
+                    Integer.parseInt(data[11]),//tele trap
+                    Integer.parseInt(data[12]),//tele speakermissed
+                    Integer.parseInt(data[13]),//tele amp missed
+
+                    getEngamePositionFromNum(Integer.parseInt(data[14])),//endgame pos
+                    data[15] ,//auto notes
+                    data[16]);//tele notes
             return m;
         }catch (NumberFormatException e) {
             System.err.println("Failed to construct MatchRecord, likly corruppted Data");
@@ -94,13 +68,19 @@ public class DataHandler {
                         (int) row.get(Constants.ColumnName.MATCH_NUM.toString()),
                         (int) row.get(Constants.ColumnName.TEAM_NUM.toString()),
                         getRobotPositionFromNum((int) row.get(Constants.ColumnName.ALLIANCE_POS.toString())),
+                        ( ((int)row.get(Constants.ColumnName.AUTO_LEAVE.toString())) == 1),
                         (int) row.get(Constants.ColumnName.AUTO_SPEAKER.toString()),
                         (int) row.get(Constants.ColumnName.AUTO_AMP.toString()),
+                        (int) row.get(Constants.ColumnName.AUTO_COLLECTED.toString()),
+                        (int) row.get(Constants.ColumnName.AUTO_SPEAKER_MISSED.toString()),
+                        (int) row.get(Constants.ColumnName.AUTO_AMP_MISSED.toString()),
+
                         (int) row.get(Constants.ColumnName.TELE_SPEAKER.toString()),
                         (int) row.get(Constants.ColumnName.TELE_AMP.toString()),
                         (int) row.get(Constants.ColumnName.TELE_TRAP.toString()),
+                        (int) row.get(Constants.ColumnName.TELE_SPEAKER_MISSED.toString()),
+                        (int) row.get(Constants.ColumnName.TELE_AMP_MISSED.toString()),
                         getEngamePositionFromNum((int) row.get(Constants.ColumnName.ENDGAME_POS.toString())),
-                        ( ((int)row.get(Constants.ColumnName.LOST_COMMS.toString())) == 1),
                         (String) row.get(Constants.ColumnName.AUTO_NOTES.toString()),
                         (String) row.get(Constants.ColumnName.TELE_NOTES.toString())
 
@@ -227,26 +207,39 @@ public class DataHandler {
                               int matchNumber,
                               int teamNumber,
                               RobotPosition position,
+                              boolean autoLeave,
                               int autoSpeaker,
                               int autoAmp,
+                              int autoCollected,
+                              int autoSpeakerMissed,
+                              int autoAmpMissed,
+
+
                               int teleSpeaker,
                               int teleAmp,
                               int teleTrap,
+                              int teleSpeakerMissed,
+                              int teleAmpMissed,
                               EndgamePosition endgamePosition,
-                              boolean lostComms,
                               String autoNotes,
                               String teleNotes
     ) {
         //for displaying the data in the server
         public LinkedList<String> getDisplayableDataAsList() {
             LinkedList<String> output = new LinkedList<>();
+            output.add("AutoLeave: " + (autoLeave?("Left"):("Didn't leave")));
             output.add("Auto Speaker: " + autoSpeaker);
             output.add("Auto Amp: " + autoAmp);
+            output.add("Auto Collected: " + autoCollected);
+            output.add("Auto Speaker Missed: " + autoSpeakerMissed);
+            output.add("Auto Amp Missed: " + autoAmpMissed);
+
             output.add("Tele-OP Speaker: " + teleSpeaker);
             output.add("Tele-OP Amp: " + teleAmp);
             output.add("Tele-OP trap: " + teleTrap);
+            output.add("Tele Speaker Missed: " + teleSpeakerMissed);
+            output.add("Tele Amp Missed: " + teleAmpMissed);
             output.add("Endgame: " + endgamePosition);
-            output.add(lostComms?("Lost Comms"):("Didn't lose Comms"));
             output.add("Auto Notes: " + autoNotes);
             output.add("Tele Notes: " + teleNotes);
             return output;
@@ -259,13 +252,18 @@ public class DataHandler {
             output.add(String.valueOf(matchNumber));
             output.add(String.valueOf(teamNumber));
             output.add(String.valueOf(position.ordinal()));
+            output.add(autoLeave?("1"):("0"));
             output.add(String.valueOf(autoSpeaker));
             output.add(String.valueOf(autoAmp));
+            output.add(String.valueOf(autoCollected));
+            output.add(String.valueOf(autoSpeakerMissed));
+            output.add(String.valueOf(autoAmpMissed));
             output.add(String.valueOf(teleSpeaker));
             output.add(String.valueOf(teleAmp));
             output.add(String.valueOf(teleTrap));
+            output.add(String.valueOf(teleSpeakerMissed));
+            output.add(String.valueOf(teleAmpMissed));
             output.add(String.valueOf(endgamePosition.ordinal()));
-            output.add(lostComms?("1"):("0"));
             output.add(autoNotes);
             output.add(teleNotes);
             return output;
@@ -277,13 +275,18 @@ public class DataHandler {
             builder.append(matchNumber).append(", ");
             builder.append(teamNumber).append(", ");
             builder.append(position.ordinal()).append(", ");
-            builder.append(autoAmp).append(", ");
+            builder.append(autoLeave?("1"):("0")).append(", ");
             builder.append(autoSpeaker).append(", ");
+            builder.append(autoAmp).append(", ");
+            builder.append(autoCollected).append(", ");
+            builder.append(autoSpeakerMissed).append(", ");
+            builder.append(autoAmpMissed).append(", ");
             builder.append(teleSpeaker).append(", ");
             builder.append(teleAmp).append(", ");
             builder.append(teleTrap).append(", ");
+            builder.append(teleSpeakerMissed).append(", ");
+            builder.append(teleAmpMissed).append(", ");
             builder.append(endgamePosition.ordinal()).append(", ");
-            builder.append(lostComms?("1"):("0")).append(", ");
             builder.append("\"").append(autoNotes).append("\", ");
             builder.append("\"").append(teleNotes).append("\"");
             return  builder.toString();

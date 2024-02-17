@@ -22,6 +22,8 @@ public class SpreadsheetUtil {
 
     private static final String RAW_DATA_SHEET_NAME = "Raw Data";
 
+    private static final String CALCULATED_DATA_SHEET_NAME = "Calculated Data";
+
     public static Map<Integer, List<String>> readFromSpreadSheet(String fileLocation) {
         Map<Integer, List<String>> data = new HashMap<>();
 
@@ -83,7 +85,15 @@ public class SpreadsheetUtil {
 
                 if (exportFormulas) {
                     //TODO make it export the formulas
-                    for (int i = 13; i < 19; i++) {
+                    ws = wb.newWorksheet(SpreadsheetUtil.CALCULATED_DATA_SHEET_NAME);
+
+                    ws.value(0,0,"Total Auto Notes");
+                    ws.value(0,1,"Total Tele Notes");
+                    ws.value(0,2,"Auto Points Added");
+                    ws.value(0,3,"Tele Points Added");
+                    ws.value(0,4,"Total Points Added");
+                    ws.value(0,5,"Total Notes");
+                    for (int i = 0; i < 6; i++) {
                         int autoNotes = (data.get(rowNum).autoAmp() + data.get(rowNum).autoSpeaker());
                         int teleNotes = (data.get(rowNum).teleAmp() + data.get(rowNum).teleSpeaker());
 
@@ -95,34 +105,34 @@ public class SpreadsheetUtil {
                         int autoPoints = (data.get(rowNum).autoAmp() * Constants.AUTO_AMP_NOTE_POINTS) + (data.get(rowNum).autoSpeaker() * Constants.AUTO_SPEAKER_NOTE_POINTS);
 
                         switch (i) {
-                            case 13: {
+                            case 0: {
                                 //total auto notes
                                 ws.value(rowNum, i, autoNotes);
                                 break;
                             }
-                            case 14: {
+                            case 1: {
                                 //total tele notes
                                 ws.value(rowNum, i, teleNotes);
                                 break;
                             }
-                            case 15: {
+                            case 2: {
                                 //auto points added
                                 //this will only include points from notes
                                 ws.value(rowNum, i, autoPoints);
                                 break;
                             }
-                            case 16: {
+                            case 3: {
                                 //tele will  include notes in speaker an amp, not counting it they are amplified,
                                 //trap points
                                 //clinb points
                                 ws.value(rowNum, i, telePoints);
                                 break;
 
-                            } case 17: {
+                            } case 4: {
                                 //total points added
                                 ws.value(rowNum, i,(telePoints + autoPoints));
                                 break;
-                            } case 18 : {
+                            } case 5 : {
                                 //total notes
                                 ws.value(rowNum, i, (teleNotes + autoNotes));
                                 break;
@@ -140,31 +150,30 @@ public class SpreadsheetUtil {
     }
 
     private static void initializeTopRowOfRawSheet(Worksheet ws) {
-        for (int i = 0; i < 19; i++) {
+        for (int i = 0; i < 23; i++) {
             ws.width(i, 20);
         }
 
         //first read all the data that may already be there and write it into the workbook.
 
-        ws.range(0, 0, 0, 17).style().fontSize(12).fillColor("FFFF33").set();
+        ws.range(0, 0, 0, 13).style().fontSize(12).fillColor("FFFF33").set();
         ws.value(0, 0, "Timestamp");
         ws.value(0, 1, "Match Number");
         ws.value(0, 2, "Team Number");
         ws.value(0, 3, "Alliance Position");
-        ws.value(0, 4, "Auto Speaker");
-        ws.value(0, 5, "Auto Amp");
-        ws.value(0, 6, "Tele Speaker");
-        ws.value(0, 7, "Tele Amp");
-        ws.value(0, 8, "Tele Trap");
-        ws.value(0, 9, "Endgame Position");
-        ws.value(0, 10, "Lost Comms");
-        ws.value(0, 11, "Auto Notes");
-        ws.value(0, 12, "Tele Notes");
-        ws.value(0,13,"Total Auto Notes");
-        ws.value(0,14,"Total Tele Notes");
-        ws.value(0,15,"Auto Points Added");
-        ws.value(0,16,"Tele Points Added");
-        ws.value(0,17,"Total Points Added");
-        ws.value(0,18,"Total Notes");
+        ws.value(0, 4, "Auto Leave");
+        ws.value(0, 5, "Auto Speaker");
+        ws.value(0, 6, "Auto Amp");
+        ws.value(0, 7, "Auto Collected");
+        ws.value(0, 8, "Auto Speaker Missed");
+        ws.value(0, 9, "Auto Amp Missed");
+        ws.value(0, 10, "Tele Speaker");
+        ws.value(0, 11, "Tele Amp");
+        ws.value(0, 12, "Tele Trap");
+        ws.value(0, 13, "Tele Speaker Missed");
+        ws.value(0, 14, "Tele Amp Missed");
+        ws.value(0, 15, "Endgame Position");
+        ws.value(0, 16, "Auto Notes");
+        ws.value(0, 17, "Tele Notes");
     }
 }
