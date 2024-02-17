@@ -12,6 +12,7 @@ import org.tahomarobotics.scouting.scoutingserver.DataHandler;
 import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.WebcamUtil;
 
 import java.io.IOException;
 

@@ -5,10 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -70,42 +67,46 @@ public class QRScannerController  {
             delay = 1000;//just in case the user screws things up, set a default delay
         }
 
-
         String filePath = Constants.IMAGE_DATA_FILEPATH + System.currentTimeMillis()  +".bmp";
         try {
 
             WebcamUtil.snapshotWebcam(selectCameraComboBox.getValue(), previewCheckbox.isSelected(), delay, filePath);
+            totheThing(filePath);
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
-        }
-
-        String qrData;
-        try {
-
-            //if we have got this far in the code, than the iamge has succesfully be written to the disk
-            FileInputStream input = new FileInputStream(filePath);
-            Image image = new Image(input);
-            imageView.setImage(image);
-            qrData = QRCodeUtil.readQRCode(filePath);
-            input.close();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } catch (NotFoundException e) {
-            System.out.println("Failed to read QR Code");
-            return;
-        }
+            try {
+                WebcamUtil.snapshotWebcam(selectCameraComboBox.getValue(), previewCheckbox.isSelected(), delay, filePath, 2);
+                totheThing(filePath);
+            } catch (NotFoundException ex) {
+                System.out.println("Failed to read QR Code");
+                Alert aler = new Alert(Alert.AlertType.WARNING, "Failed to read QR Code");
+                aler.showAndWait();
 
-        try {
-            System.out.println("Scanner QR Code: " + qrData);
-            DataHandler.storeRawQRData(System.currentTimeMillis() , qrData);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
+                return;
+            } catch (IOException | InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+
+        }
 
     }
 
+private void totheThing(String filePath) throws NotFoundException {
+    try {
+        //if we have got this far in the code, than the iamge has succesfully be written to the disk
+        FileInputStream input = new FileInputStream(filePath);
+        Image image = new Image(input);
+        imageView.setImage(image);
+        String qrData = QRCodeUtil.readQRCode(filePath);
+        input.close();
+        System.out.println("Scanner QR Code: " + qrData);
+        DataHandler.storeRawQRData(System.currentTimeMillis() , qrData);
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+}
 
 
 

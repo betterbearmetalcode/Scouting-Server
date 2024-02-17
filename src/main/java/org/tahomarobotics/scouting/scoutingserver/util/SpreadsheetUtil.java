@@ -71,7 +71,6 @@ public class SpreadsheetUtil {
 
     public static void writeToSpreadSheet(LinkedList<DataHandler.MatchRecord> data, File currDir, boolean exportFormulas) throws IOException {
         String path = currDir.getAbsolutePath();
-        //String fileLocation = path.substring(0, path.length() - 1);
         try (OutputStream os = Files.newOutputStream(Paths.get(path)); Workbook wb = new Workbook(os, "Scouting Excel Database", "1.0")) {
             Worksheet ws = wb.newWorksheet(SpreadsheetUtil.RAW_DATA_SHEET_NAME);
            initializeTopRowOfRawSheet(ws);
@@ -83,17 +82,11 @@ public class SpreadsheetUtil {
                     ws.value(rowNum, i,data.get(rowNum).getDataAsList().get(i));
                 }
 
-                if (exportFormulas) {
-                    //TODO make it export the formulas
-                    ws = wb.newWorksheet(SpreadsheetUtil.CALCULATED_DATA_SHEET_NAME);
 
-                    ws.value(0,0,"Total Auto Notes");
-                    ws.value(0,1,"Total Tele Notes");
-                    ws.value(0,2,"Auto Points Added");
-                    ws.value(0,3,"Tele Points Added");
-                    ws.value(0,4,"Total Points Added");
-                    ws.value(0,5,"Total Notes");
-                    for (int i = 0; i < 6; i++) {
+                if (exportFormulas) {
+                    //TODO make it export the formulas);
+
+                    for (int i = 18; i < 24; i++) {
                         int autoNotes = (data.get(rowNum).autoAmp() + data.get(rowNum).autoSpeaker());
                         int teleNotes = (data.get(rowNum).teleAmp() + data.get(rowNum).teleSpeaker());
 
@@ -105,34 +98,34 @@ public class SpreadsheetUtil {
                         int autoPoints = (data.get(rowNum).autoAmp() * Constants.AUTO_AMP_NOTE_POINTS) + (data.get(rowNum).autoSpeaker() * Constants.AUTO_SPEAKER_NOTE_POINTS);
 
                         switch (i) {
-                            case 0: {
+                            case 18: {
                                 //total auto notes
                                 ws.value(rowNum, i, autoNotes);
                                 break;
                             }
-                            case 1: {
+                            case 19: {
                                 //total tele notes
                                 ws.value(rowNum, i, teleNotes);
                                 break;
                             }
-                            case 2: {
+                            case 20: {
                                 //auto points added
                                 //this will only include points from notes
                                 ws.value(rowNum, i, autoPoints);
                                 break;
                             }
-                            case 3: {
+                            case 21: {
                                 //tele will  include notes in speaker an amp, not counting it they are amplified,
                                 //trap points
                                 //clinb points
                                 ws.value(rowNum, i, telePoints);
                                 break;
 
-                            } case 4: {
+                            } case 22: {
                                 //total points added
                                 ws.value(rowNum, i,(telePoints + autoPoints));
                                 break;
-                            } case 5 : {
+                            } case 23 : {
                                 //total notes
                                 ws.value(rowNum, i, (teleNotes + autoNotes));
                                 break;
@@ -156,7 +149,7 @@ public class SpreadsheetUtil {
 
         //first read all the data that may already be there and write it into the workbook.
 
-        ws.range(0, 0, 0, 13).style().fontSize(12).fillColor("FFFF33").set();
+        ws.range(0, 0, 0, 24).style().fontSize(12).fillColor("FFFF33").set();
         ws.value(0, 0, "Timestamp");
         ws.value(0, 1, "Match Number");
         ws.value(0, 2, "Team Number");
@@ -175,5 +168,12 @@ public class SpreadsheetUtil {
         ws.value(0, 15, "Endgame Position");
         ws.value(0, 16, "Auto Notes");
         ws.value(0, 17, "Tele Notes");
+
+        ws.value(0,18,"Total Auto Notes");
+        ws.value(0,19,"Total Tele Notes");
+        ws.value(0,20,"Auto Points Added");
+        ws.value(0,21,"Tele Points Added");
+        ws.value(0,22,"Total Points Added");
+        ws.value(0,23,"Total Notes");
     }
 }

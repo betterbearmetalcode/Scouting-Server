@@ -33,20 +33,37 @@ public class WebcamUtil {
             delayInMillis = 1;//0 causes an error for some reason
         }
         System.out.print("Snapshotting: ");
-        /*String command = exeFilepath +
+        String command = exeFilepath +
                 " /devname \"" + device + "\" " +
                 (preview?("/preview "):("")) +
                 "/delay " + delayInMillis +
+                " /filename \"" + filePath + "\"";
+
+        /*String command = exeFilepath +
+                " /devnum \"" + 2 + "\" " +
+                (preview?("/preview "):("")) +
+                "/delay " + delayInMillis +
                 " /filename \"" + filePath + "\"";*/
+        System.out.println(command);
+        execCommand(command);
+    }
+
+    public static void snapshotWebcam(String device, boolean preview, int delayInMillis, String filePath, int devnum) throws InterruptedException, IOException {
+        if (delayInMillis == 0) {
+            delayInMillis = 1;//0 causes an error for some reason
+        }
+        System.out.print("Snapshotting: ");
 
         String command = exeFilepath +
-                " /devnum \"" + 2 + "\" " +
+                " /devnum \"" + devnum + "\" " +
                 (preview?("/preview "):("")) +
                 "/delay " + delayInMillis +
                 " /filename \"" + filePath + "\"";
         System.out.println(command);
         execCommand(command);
     }
+
+
 
 
     private static String execCommand(String command) throws InterruptedException, IOException {
