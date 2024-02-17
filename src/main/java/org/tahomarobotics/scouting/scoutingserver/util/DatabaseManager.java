@@ -2,17 +2,11 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSetMetaData;
+import java.sql.*;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class DatabaseManager {
     
@@ -23,10 +17,8 @@ public class DatabaseManager {
 
 
     public static void addTable(String tableName, String schema ) throws SQLException, IllegalArgumentException{
-        String statement =  "CREATE TABLE IF NOT EXISTS " + tableName + "(" + schema + ")";
-        System.out.println(statement);
+        String statement =  "CREATE TABLE IF NOT EXISTS \"" + tableName + "\"(" + schema + ")";
         execNoReturn(statement);
-        System.out.println("Added table: " + tableName  + "with Schema: " + schema);
     }
 
     private static void setParam(PreparedStatement statement, Integer index, Object param) throws SQLException{
@@ -54,6 +46,7 @@ public class DatabaseManager {
             toExec.executeUpdate();
             connection.commit();
             toExec.close();
+            System.out.println("Executed sql Query: " + statement);
         } catch (SQLException err){
             System.err.println("SQLException while executing statement '" + statement + "'.");
             System.err.println("Rolling back transaction.");
@@ -79,6 +72,7 @@ public class DatabaseManager {
             ArrayList<HashMap<String, Object>> toReturn = processResultSet(results);
             results.close();
             toExec.close();
+            System.out.println("Executed sql query: " + statement);
             return toReturn;
         } catch (SQLException err){
             System.err.println("SQLException while executing statement '" + statement + "'.");
@@ -124,6 +118,19 @@ public class DatabaseManager {
         }
         String str = builder.toString();
         return str.substring(0, str.length() -2);
+    }
+
+    public static ArrayList<String> getTableNames() throws SQLException {
+        ArrayList<String> output = new ArrayList<>();
+        DatabaseMetaData md = connection.getMetaData();
+        ResultSet rs = md.getTables(null, null, "%", null);
+        while (rs.next()) {
+            if (!Objects.equals(rs.getString(3), "sqlite_schema")) {
+                output.add(rs.getString(3));
+            }
+
+        }
+        return output;
     }
 
 }

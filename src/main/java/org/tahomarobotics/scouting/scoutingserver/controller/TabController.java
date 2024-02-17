@@ -30,16 +30,16 @@ public class TabController {
 
     Tab myTab;
     private LinkedList<DataHandler.MatchRecord> databaseData;
-    public File database;
+    public String tableName;
 
     private TreeView<String> treeView;
 
     private TreeItem<String> rootItem;
 
 
-    public TabController(LinkedList<DataHandler.MatchRecord> databaseData, File d) {
+    public TabController(LinkedList<DataHandler.MatchRecord> databaseData, String table) {
         this.databaseData = databaseData;
-        database = d;
+        tableName = table;
     }
 
 
@@ -107,7 +107,7 @@ public class TabController {
         System.out.println("Refreshing");
         rootItem.getChildren().clear();
         try {
-            databaseData = DataHandler.readDatabase(database.getName());
+            databaseData = DataHandler.readDatabase(tableName);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

@@ -16,7 +16,6 @@ public class Constants {
     public static final String IMAGE_DATA_FILEPATH = System.getProperty("user.dir") + "/resources/images/";
     //public static final String DATABASE_FILEPATH = "src/main/resources/org/tahomarobotics/scouting/scoutingserver/database/";
     public static final String DATABASE_FILEPATH = System.getProperty("user.dir") + "/resources/database/";
-    public static final String DEFAULT_JANK_DATABASE_NAME = "jankDatabase.txt";
 
     public static final String SQL_DATABASE_NAME = "database.db";
 
@@ -82,7 +81,9 @@ public class Constants {
             new ColumnType(ColumnName.TELE_NOTES, SQLDatatype.INTEGER)
 
             ));
-    public static final String DEFAULT_SQL_TABLE_NAME = "matchData";
+    public static final String DEFAULT_SQL_TABLE_NAME = "Default_Table";
+
+    public static final String TEST_SQL_TABLE_NAME = "debug_table";
 
     public record ColumnType(ColumnName name, SQLDatatype datatype){
     }

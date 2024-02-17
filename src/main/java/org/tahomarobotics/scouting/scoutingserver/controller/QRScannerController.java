@@ -15,11 +15,12 @@ import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.WebcamUtil;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class QRScannerController  {
-
+    private static String activeTable = Constants.DEFAULT_SQL_TABLE_NAME;
 
     //fxml variables
     @FXML
@@ -71,42 +72,35 @@ public class QRScannerController  {
         try {
 
             WebcamUtil.snapshotWebcam(selectCameraComboBox.getValue(), previewCheckbox.isSelected(), delay, filePath);
-            totheThing(filePath);
+            FileInputStream input = new FileInputStream(filePath);
+            Image image = new Image(input);
+            imageView.setImage(image);
+            input.close();
+           readStoredImage(filePath, activeTable);
+
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         } catch (NotFoundException e) {
-            try {
-                WebcamUtil.snapshotWebcam(selectCameraComboBox.getValue(), previewCheckbox.isSelected(), delay, filePath, 2);
-                totheThing(filePath);
-            } catch (NotFoundException ex) {
-                System.out.println("Failed to read QR Code");
-                Alert aler = new Alert(Alert.AlertType.WARNING, "Failed to read QR Code");
-                aler.showAndWait();
+
+            System.out.println("Failed to read QR Code");
+            Alert aler = new Alert(Alert.AlertType.WARNING, "Failed to read QR Code");
+            aler.showAndWait();
 
 
-                return;
-            } catch (IOException | InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
+            return;
 
         }
 
     }
 
-private void totheThing(String filePath) throws NotFoundException {
-    try {
+    public static void readStoredImage(String fp, String tableName) throws IOException, NotFoundException {
         //if we have got this far in the code, than the iamge has succesfully be written to the disk
-        FileInputStream input = new FileInputStream(filePath);
-        Image image = new Image(input);
-        imageView.setImage(image);
-        String qrData = QRCodeUtil.readQRCode(filePath);
-        input.close();
+
+        String qrData = QRCodeUtil.readQRCode(fp);
         System.out.println("Scanner QR Code: " + qrData);
-        DataHandler.storeRawQRData(System.currentTimeMillis() , qrData);
-    } catch (IOException e) {
-        throw new RuntimeException(e);
+        DataHandler.storeRawQRData(System.currentTimeMillis() , qrData, tableName);
     }
-}
+
 
 
 

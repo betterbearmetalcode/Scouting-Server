@@ -13,13 +13,14 @@ public class DataHandler {
 
 
 
-    public static void storeRawQRData(long timestamp, String dataRaw) throws IOException {
+
+    public static void storeRawQRData(long timestamp, String dataRaw, String tablename) throws IOException {
 
 
         MatchRecord m = contstrucMatchRecord(timestamp, dataRaw);
 
         try {
-            DatabaseManager.execNoReturn("INSERT INTO " + Constants.DEFAULT_SQL_TABLE_NAME + " VALUES (" +m.getDataForSQL() + ")");
+            DatabaseManager.execNoReturn("INSERT INTO " + tablename + " VALUES (" +m.getDataForSQL() + ")");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -57,10 +58,10 @@ public class DataHandler {
     }
 
 
-    public static LinkedList<MatchRecord> readDatabase(String databaseName) throws IOException {
+    public static LinkedList<MatchRecord> readDatabase(String tableName) throws IOException {
         LinkedList<MatchRecord> output = new LinkedList<>();
         try {
-            ArrayList<HashMap<String, Object>> data = DatabaseManager.exec("SELECT * FROM " + Constants.DEFAULT_SQL_TABLE_NAME);
+            ArrayList<HashMap<String, Object>> data = DatabaseManager.exec("SELECT * FROM \"" + tableName + "\"");
             for (HashMap<String, Object> row : data) {
                 //for each row in the sql database
                 output.add(new MatchRecord(

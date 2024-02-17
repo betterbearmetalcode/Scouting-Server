@@ -35,14 +35,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.MainController">
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.MainController">
    <children>
       <SplitPane dividerPositions="0.22117794486215533" prefHeight="399.0" prefWidth="640.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <Button fx:id="debug" layoutX="142.0" layoutY="123.0" mnemonicParsing="false" onAction="#debugggy" text="Debug Button" />
+                  <Button fx:id="debug" layoutX="142.0" layoutY="123.0" mnemonicParsing="false" onAction="#debugggy" text="CreateDummyDatabase" />
                   <Button fx:id="debug2" layoutX="142.0" layoutY="199.0" mnemonicParsing="false" onAction="#debugButton2" text="Debug Button 2" />
                </children>
             </AnchorPane>

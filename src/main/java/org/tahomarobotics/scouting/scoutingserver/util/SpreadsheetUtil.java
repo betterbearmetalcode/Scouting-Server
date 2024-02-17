@@ -166,8 +166,8 @@ public class SpreadsheetUtil {
         ws.value(0, 13, "Tele Speaker Missed");
         ws.value(0, 14, "Tele Amp Missed");
         ws.value(0, 15, "Endgame Position");
-        ws.value(0, 16, "Auto Notes");
-        ws.value(0, 17, "Tele Notes");
+        ws.value(0, 16, "Auto Comments");
+        ws.value(0, 17, "Tele Comments");
 
         ws.value(0,18,"Total Auto Notes");
         ws.value(0,19,"Total Tele Notes");
