@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Accordion?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.DataController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="408.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.DataController">
    <children>
-      <SplitPane dividerPositions="0.22240802675585283" prefHeight="401.0" prefWidth="600.0">
+      <SplitPane dividerPositions="0.22240802675585283" prefHeight="412.0" prefWidth="600.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
@@ -19,18 +14,24 @@
                </children></AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <TabPane fx:id="tabPane" prefHeight="398.0" prefWidth="462.0" tabClosingPolicy="ALL_TABS">
-                    <tabs>
-                      <Tab closable="false">
-                           <graphic>
-                              <Button fx:id="newTabButton" graphicTextGap="0.0" mnemonicParsing="false" onAction="#makeNewTab" prefHeight="5.0" prefWidth="26.0" style="-fx-background-color: f4f4f4;" text="+">
-                                 <font>
-                                    <Font size="11.0" />
-                                 </font></Button>
-                           </graphic>
-                      </Tab>
-                    </tabs>
-                  </TabPane>
+                  <VBox>
+                     <children>
+                        <Label text="Use the + button to open a database" />
+                        <TabPane fx:id="tabPane" prefHeight="387.0" prefWidth="462.0" tabClosingPolicy="ALL_TABS">
+                          <tabs>
+                            <Tab closable="false">
+                                 <graphic>
+                                    <Button fx:id="newTabButton" graphicTextGap="0.0" mnemonicParsing="false" onAction="#makeNewTab" prefHeight="5.0" prefWidth="26.0" style="-fx-background-color: f4f4f4;" text="+">
+                                       <font>
+                                          <Font size="11.0" />
+                                       </font>
+                                    </Button>
+                                 </graphic>
+                            </Tab>
+                          </tabs>
+                        </TabPane>
+                     </children>
+                  </VBox>
                </children>
             </AnchorPane>
         </items>
