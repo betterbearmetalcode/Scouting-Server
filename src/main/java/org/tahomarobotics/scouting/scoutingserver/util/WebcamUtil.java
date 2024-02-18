@@ -21,7 +21,7 @@ public class WebcamUtil {
     //
 
     private static String selectedWebcam = "";
-    private static final String exeFilepath = Constants.BASE_FILEPATH + "/resources/CommandCam.exe";
+    private static final String exeFilepath = Constants.BASE_READ_ONLY_FILEPATH + "/resources/CommandCam.exe";
     public static void snapshotWebcam(String device) throws InterruptedException, IOException {
         System.out.println("Snapshotting");
         String command = exeFilepath +

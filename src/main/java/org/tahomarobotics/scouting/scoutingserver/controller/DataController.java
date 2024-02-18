@@ -29,7 +29,7 @@ public class DataController {
     public void makeNewTab(ActionEvent event) {
         try {
 
-            FXMLLoader tabLoader = new FXMLLoader(new File(Constants.BASE_FILEPATH + "/resources/FXML/data-tab-anchor-pane.fxml").toURI().toURL());
+            FXMLLoader tabLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/data-tab-anchor-pane.fxml").toURI().toURL());
             //get selected table name or competition from user
             String selectedTable = getSelectedTableFromUser();
             if (Objects.equals(selectedTable, "")) {

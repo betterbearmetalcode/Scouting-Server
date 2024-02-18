@@ -9,11 +9,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
 import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
-import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.HashMap;
 
 public class ScoutingServer extends Application {
 
@@ -47,6 +45,21 @@ public class ScoutingServer extends Application {
         mainStage.setScene(mainScene);
         currentScene = SCENES.MAIN_MENU;
         mainStage.show();
+
+        //set up resources folder if not already created
+        File databseFilepath = new File(Constants.DATABASE_FILEPATH);
+        if (!databseFilepath.exists()) {
+            databseFilepath.mkdirs();
+        }
+        File imageDataFilepath = new File(Constants.IMAGE_DATA_FILEPATH);
+        if (!imageDataFilepath.exists()) {
+            imageDataFilepath.mkdirs();
+        }
+        File testImageFilepath = new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/testImages");
+        if (!testImageFilepath.exists()) {
+            testImageFilepath.mkdirs();
+        }
+
         //set up database
         try {
             DatabaseManager.initialize(Constants.DATABASE_FILEPATH + Constants.SQL_DATABASE_NAME);
@@ -66,21 +79,21 @@ public class ScoutingServer extends Application {
     @Override
     public void init() throws Exception {
 
-        FXMLLoader mainLoader = new FXMLLoader(new File(Constants.BASE_FILEPATH + "/resources/FXML/main-scene.fxml").toURI().toURL());
+        FXMLLoader mainLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/main-scene.fxml").toURI().toURL());
         mainScene = new Scene(mainLoader.load());
 
-        FXMLLoader hamburgerLoader = new FXMLLoader(new File(Constants.BASE_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
+        FXMLLoader hamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
         mainHamburgerMenu = new AnchorPane((AnchorPane) hamburgerLoader.load());
 
-        FXMLLoader qrhamburgerLoader = new FXMLLoader(new File(Constants.BASE_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
+        FXMLLoader qrhamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
         qrHamburgerMenu = new AnchorPane((AnchorPane) qrhamburgerLoader.load());
-        FXMLLoader qrscannerLoader = new FXMLLoader(new File(Constants.BASE_FILEPATH + "/resources/FXML/qr-scanner-scene.fxml").toURI().toURL());
+        FXMLLoader qrscannerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/qr-scanner-scene.fxml").toURI().toURL());
         qrScannerScene = new Scene(qrscannerLoader.load());
 
-        FXMLLoader dataLoader = new FXMLLoader(new File(Constants.BASE_FILEPATH + "/resources/FXML/data-scene.fxml").toURI().toURL());
+        FXMLLoader dataLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/data-scene.fxml").toURI().toURL());
         dataScene = new Scene(dataLoader.load());
 
-        FXMLLoader dataHamburgerLoader = new FXMLLoader(new File(Constants.BASE_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
+        FXMLLoader dataHamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
         dataHamburgerMenu = new AnchorPane((AnchorPane) dataHamburgerLoader.load());
 
        setUpQRScannerScene();
