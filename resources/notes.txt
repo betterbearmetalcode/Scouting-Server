@@ -1,0 +1,275 @@
+match number
+team number
+alliance pos, r1,r2,b1 etc
+autoSpeakerNum
+autoAmpNUm
+TeleSpeakerNUm
+TeleAmpNUm
+teleTrapNUm
+endgamePos
+lost comms
+autoNotes
+TeleNOtes
+
+for a match QR code
+
+"<match num>,<team num>,<alliance pos>,<auto Speaker>,<auto amp>,<tele speaker>,<tele amp>,<tele trap>,<endgame pos>,<lost comms>,<auto notes>,<tele notes>"
+
+<match num>= whole number
+<team num>= whole number
+<alliance pos>= a number from 1-6 according to this key
+    1=R1
+    2=R2
+    3=R3
+    4=B1
+    5=B2
+    6=B3
+<auto leave>=boolean
+<auto speaker>= whole number
+<auto amp>= whole number
+<auto collected>=whole number
+<auto speaker missed>=whole number
+<auto amp missed>=whole number
+<tele speaker>= whole number
+<tele amp> = whole number
+<tele trap>=whole number
+<tele speaker missed>
+<tele amp missed>
+<endgame pos> = a number from 1-x according to this key
+    1=none
+    2=parked
+    3=climbed
+    4=harmonized
+<auto notes>=string
+<tele notes>=string
+
+a "/" will be used as the delimiter
+
+test data strings
+1/2046/0/1/1/2/3/4/5/6/7/8/9/10/0/autoNotesTest1/teleNotes
+1/4414/1/10/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest2/teleNotes
+1/1323/2/10/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest3/teleNotes
+
+2/2046/0/1/1/2/3/4/5/6/7/8/9/10/0/autoNotesTest4/teleNotes
+2/4414/1/10/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest5/teleNotes
+2/1323/2/10/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest6/teleNotes
+2/254/3/1/1/2/3/4/5/6/7/8/9/10/0/autoNotesTest7/teleNotes
+2/1678/4/10/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest8/teleNotes
+2/2056/5/10/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest9/teleNotes
+
+
+data storage:
+timestamp$<qr string>
+
+
+=================================
+stuff that we need to have tableau be able to
+
+
+points or quantity of notes in auto tele and total
+climb precentage
+average quantity of notes in the speaker or the amp
+average points and occurances of harmony
+how often they lost communication
+trap points/occurances
+all of a teams comments
+average cycle time
+
+
+colums needed in the raw results section of the spreadsheet
+total autoNotes
+total teleNotes
+auto points added excluding leave
+tele points added not considering amplification
+total points added
+
+
+test event key 2024week0
+Match keys
+[
+  "2024week0_f1m1",
+  "2024week0_f1m2",
+  "2024week0_f1m3",
+  "2024week0_qm1",
+  "2024week0_qm10",
+  "2024week0_qm11",
+  "2024week0_qm12",
+  "2024week0_qm13",
+  "2024week0_qm14",
+  "2024week0_qm15",
+  "2024week0_qm16",
+  "2024week0_qm2",
+  "2024week0_qm3",
+  "2024week0_qm4",
+  "2024week0_qm5",
+  "2024week0_qm6",
+  "2024week0_qm7",
+  "2024week0_qm8",
+  "2024week0_qm9",
+  "2024week0_sf10m1",
+  "2024week0_sf11m1",
+  "2024week0_sf12m1",
+  "2024week0_sf13m1",
+  "2024week0_sf1m1",
+  "2024week0_sf2m1",
+  "2024week0_sf3m1",
+  "2024week0_sf4m1",
+  "2024week0_sf5m1",
+  "2024week0_sf6m1",
+  "2024week0_sf7m1",
+  "2024week0_sf8m1",
+  "2024week0_sf9m1"
+]
+
+
+match 2024week0_qm15:
+{
+  "actual_time": 1708188378,
+  "alliances": {
+    "blue": {
+      "dq_team_keys": [],
+      "score": 20,
+      "surrogate_team_keys": [],
+      "team_keys": [
+        "frc6153",
+        "frc4041",
+        "frc501"
+      ]
+    },
+    "red": {
+      "dq_team_keys": [],
+      "score": 30,
+      "surrogate_team_keys": [],
+      "team_keys": [
+        "frc8567",
+        "frc58",
+        "frc3467"
+      ]
+    }
+  },
+  "comp_level": "qm",
+  "event_key": "2024week0",
+  "key": "2024week0_qm15",
+  "match_number": 15,
+  "post_result_time": 1708188580,
+  "predicted_time": 1708188362,
+  "score_breakdown": {
+    "blue": {
+      "adjustPoints": 0,
+      "autoAmpNoteCount": 0,
+      "autoAmpNotePoints": 0,
+      "autoLeavePoints": 2,
+      "autoLineRobot1": "No",
+      "autoLineRobot2": "Yes",
+      "autoLineRobot3": "No",
+      "autoPoints": 7,
+      "autoSpeakerNoteCount": 1,
+      "autoSpeakerNotePoints": 5,
+      "autoTotalNotePoints": 5,
+      "coopNotePlayed": false,
+      "coopertitionBonusAchieved": false,
+      "coopertitionCriteriaMet": false,
+      "endGameHarmonyPoints": 0,
+      "endGameNoteInTrapPoints": 0,
+      "endGameOnStagePoints": 0,
+      "endGameParkPoints": 3,
+      "endGameRobot1": "Parked",
+      "endGameRobot2": "Parked",
+      "endGameRobot3": "Parked",
+      "endGameSpotLightBonusPoints": 0,
+      "endGameTotalStagePoints": 3,
+      "ensembleBonusAchieved": false,
+      "ensembleBonusOnStageRobotsThreshold": 2,
+      "ensembleBonusStagePointsThreshold": 10,
+      "foulCount": 0,
+      "foulPoints": 0,
+      "g206Penalty": false,
+      "g408Penalty": false,
+      "g424Penalty": false,
+      "melodyBonusAchieved": false,
+      "melodyBonusThreshold": 18,
+      "melodyBonusThresholdCoop": 15,
+      "melodyBonusThresholdNonCoop": 18,
+      "micCenterStage": false,
+      "micStageLeft": true,
+      "micStageRight": false,
+      "rp": 0,
+      "techFoulCount": 0,
+      "teleopAmpNoteCount": 0,
+      "teleopAmpNotePoints": 0,
+      "teleopPoints": 13,
+      "teleopSpeakerNoteAmplifiedCount": 0,
+      "teleopSpeakerNoteAmplifiedPoints": 0,
+      "teleopSpeakerNoteCount": 5,
+      "teleopSpeakerNotePoints": 10,
+      "teleopTotalNotePoints": 10,
+      "totalPoints": 20,
+      "trapCenterStage": false,
+      "trapStageLeft": false,
+      "trapStageRight": false
+    },
+    "red": {
+      "adjustPoints": 0,
+      "autoAmpNoteCount": 0,
+      "autoAmpNotePoints": 0,
+      "autoLeavePoints": 2,
+      "autoLineRobot1": "No",
+      "autoLineRobot2": "No",
+      "autoLineRobot3": "Yes",
+      "autoPoints": 17,
+      "autoSpeakerNoteCount": 3,
+      "autoSpeakerNotePoints": 15,
+      "autoTotalNotePoints": 15,
+      "coopNotePlayed": false,
+      "coopertitionBonusAchieved": false,
+      "coopertitionCriteriaMet": false,
+      "endGameHarmonyPoints": 0,
+      "endGameNoteInTrapPoints": 0,
+      "endGameOnStagePoints": 3,
+      "endGameParkPoints": 1,
+      "endGameRobot1": "None",
+      "endGameRobot2": "Parked",
+      "endGameRobot3": "StageRight",
+      "endGameSpotLightBonusPoints": 0,
+      "endGameTotalStagePoints": 4,
+      "ensembleBonusAchieved": false,
+      "ensembleBonusOnStageRobotsThreshold": 2,
+      "ensembleBonusStagePointsThreshold": 10,
+      "foulCount": 0,
+      "foulPoints": 0,
+      "g206Penalty": false,
+      "g408Penalty": false,
+      "g424Penalty": false,
+      "melodyBonusAchieved": false,
+      "melodyBonusThreshold": 18,
+      "melodyBonusThresholdCoop": 15,
+      "melodyBonusThresholdNonCoop": 18,
+      "micCenterStage": false,
+      "micStageLeft": false,
+      "micStageRight": false,
+      "rp": 2,
+      "techFoulCount": 0,
+      "teleopAmpNoteCount": 1,
+      "teleopAmpNotePoints": 1,
+      "teleopPoints": 13,
+      "teleopSpeakerNoteAmplifiedCount": 0,
+      "teleopSpeakerNoteAmplifiedPoints": 0,
+      "teleopSpeakerNoteCount": 4,
+      "teleopSpeakerNotePoints": 8,
+      "teleopTotalNotePoints": 9,
+      "totalPoints": 30,
+      "trapCenterStage": false,
+      "trapStageLeft": false,
+      "trapStageRight": false
+    }
+  },
+  "set_number": 1,
+  "time": 1708185660,
+  "videos": [
+    {
+      "key": "Oh4_WBhv8uk",
+      "type": "youtube"
+    }
+  ],
+  "winning_alliance": "red"
+}

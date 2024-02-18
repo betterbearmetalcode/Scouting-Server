@@ -60,19 +60,6 @@ public class QRCodeUtil {
     }
 
 
-//for text compression, probably dont neet
-    public static String decodeText(String input) throws DataFormatException {
-        String compressedText  = input.split("&")[0];
-        //decompress
-        Inflater decompressor = new Inflater();
-        decompressor.setInput(input.getBytes(StandardCharsets.UTF_8), 0, compressedText.length());
-        byte[] result = new byte[100];
-        int resultLength = decompressor.inflate(result);
-        decompressor.end();
-
-        return new String(result, 0, resultLength, StandardCharsets.UTF_8);
-    }
-
 
 
 

@@ -3,23 +3,15 @@ package org.tahomarobotics.scouting.scoutingserver;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.converter.IntegerStringConverter;
-import org.tahomarobotics.scouting.scoutingserver.util.WebcamCapture;
+import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
+import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.function.UnaryOperator;
-import java.util.regex.Pattern;
+import java.io.File;
+import java.sql.SQLException;
 
 public class ScoutingServer extends Application {
 
@@ -27,7 +19,7 @@ public class ScoutingServer extends Application {
         MAIN_MENU,
         QR_SCANNER,
         API_INTERACTION,
-        DATA_MANIPULATION
+        DATA_SCENE
     }
 
     public static SCENES currentScene;
@@ -36,9 +28,14 @@ public class ScoutingServer extends Application {
     public static AnchorPane mainHamburgerMenu;
     public static AnchorPane qrHamburgerMenu;
 
+    public static AnchorPane dataHamburgerMenu;
+
     public static Scene qrScannerScene;
 
-    protected static Stage mainStage;
+    public static Scene dataScene;
+
+    public static Stage mainStage;
+
 
     public static QRScannerController qrScannerController = new QRScannerController();
     @Override
@@ -48,6 +45,28 @@ public class ScoutingServer extends Application {
         mainStage.setScene(mainScene);
         currentScene = SCENES.MAIN_MENU;
         mainStage.show();
+
+        //set up resources folder if not already created
+        File databseFilepath = new File(Constants.DATABASE_FILEPATH);
+        if (!databseFilepath.exists()) {
+            databseFilepath.mkdirs();
+        }
+        File imageDataFilepath = new File(Constants.IMAGE_DATA_FILEPATH);
+        if (!imageDataFilepath.exists()) {
+            imageDataFilepath.mkdirs();
+        }
+        File testImageFilepath = new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/testImages");
+        if (!testImageFilepath.exists()) {
+            testImageFilepath.mkdirs();
+        }
+
+        //set up database
+        try {
+            DatabaseManager.initialize(Constants.DATABASE_FILEPATH + Constants.SQL_DATABASE_NAME);
+            DatabaseManager.addTable(Constants.DEFAULT_SQL_TABLE_NAME, DatabaseManager.createTableSchem(Constants.RAW_TABLE_SCHEMA));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
 
 
@@ -60,22 +79,26 @@ public class ScoutingServer extends Application {
     @Override
     public void init() throws Exception {
 
-        FXMLLoader mainLoader = new FXMLLoader(ScoutingServer.class.getResource("main-scene.fxml"));
+        FXMLLoader mainLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/main-scene.fxml").toURI().toURL());
         mainScene = new Scene(mainLoader.load());
 
-
-
-        FXMLLoader hamburgerLoader = new FXMLLoader(ScoutingServer.class.getResource("hamburger-menu.fxml"));
+        FXMLLoader hamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
         mainHamburgerMenu = new AnchorPane((AnchorPane) hamburgerLoader.load());
 
-        FXMLLoader qrhamburgerLoader = new FXMLLoader(ScoutingServer.class.getResource("hamburger-menu.fxml"));
+        FXMLLoader qrhamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
         qrHamburgerMenu = new AnchorPane((AnchorPane) qrhamburgerLoader.load());
-        FXMLLoader qrscannerLoader = new FXMLLoader(ScoutingServer.class.getResource("qr-scanner-scene.fxml"));
+        FXMLLoader qrscannerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/qr-scanner-scene.fxml").toURI().toURL());
         qrScannerScene = new Scene(qrscannerLoader.load());
+
+        FXMLLoader dataLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/data-scene.fxml").toURI().toURL());
+        dataScene = new Scene(dataLoader.load());
+
+        FXMLLoader dataHamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
+        dataHamburgerMenu = new AnchorPane((AnchorPane) dataHamburgerLoader.load());
 
        setUpQRScannerScene();
 
-
+        setUpDataScene();
 
 
         setUpMainScene();
@@ -83,6 +106,13 @@ public class ScoutingServer extends Application {
 
     }
 
+    private void setUpDataScene() {
+
+        VBox parent = (VBox) dataScene.getRoot();
+        SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
+        AnchorPane anchorPane = (AnchorPane) splitPane.getItems().get(0);
+        anchorPane.getChildren().add(dataHamburgerMenu);
+    }
     private void setUpMainScene() {
 
         VBox parent = (VBox) mainScene.getRoot();

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="110.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="130.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.MenuController">
+   <children>
+      <Button fx:id="dataButton" layoutX="41.0" layoutY="84.0" mnemonicParsing="false" onAction="#openDataScene" text="Data" />
+      <Button fx:id="qrScannerButton" layoutX="23.0" layoutY="144.0" mnemonicParsing="false" onAction="#enterQRScanner" text="QR Scanner" />
+      <Button layoutX="13.0" layoutY="187.0" mnemonicParsing="false" text="TBA Interaction" />
+      <Button fx:id="mainMenuButton" layoutX="24.0" layoutY="14.0" mnemonicParsing="false" onAction="#backToMainMenu" text="Main Menu" />
+   </children>
+</AnchorPane>
