@@ -13,6 +13,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DataHandler;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
@@ -144,8 +145,8 @@ public class TabController {
                     TreeItem<String> positonItem = new TreeItem<String>(r.position().toString() + ": " + r.teamNumber());
                     matchItem.getChildren().add(robotPositionIndex, positonItem);
 
-                    for (String s : r.getDisplayableDataAsList()) {
-                        positonItem.getChildren().add(new TreeItem<String>(s));
+                    for (Pair<String, String> s : r.getDataAsList()) {
+                        positonItem.getChildren().add(new TreeItem<String>(s.getValue() + ": " + s.getKey()));
                     }
 
                     robotPositionIndex++;

@@ -1,5 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
+import javafx.util.Pair;
+import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
 
 import java.io.*;
@@ -247,26 +249,48 @@ public class DataHandler {
         }
 
         //for exporting
-        public LinkedList<String> getDataAsList() {
-            LinkedList<String> output = new LinkedList<>();
-            output.add(String.valueOf(timestamp));
-            output.add(String.valueOf(matchNumber));
-            output.add(String.valueOf(teamNumber));
-            output.add(String.valueOf(position.ordinal()));
-            output.add(autoLeave?("1"):("0"));
-            output.add(String.valueOf(autoSpeaker));
-            output.add(String.valueOf(autoAmp));
-            output.add(String.valueOf(autoCollected));
-            output.add(String.valueOf(autoSpeakerMissed));
-            output.add(String.valueOf(autoAmpMissed));
-            output.add(String.valueOf(teleSpeaker));
-            output.add(String.valueOf(teleAmp));
-            output.add(String.valueOf(teleTrap));
-            output.add(String.valueOf(teleSpeakerMissed));
-            output.add(String.valueOf(teleAmpMissed));
-            output.add(String.valueOf(endgamePosition.ordinal()));
-            output.add(autoNotes);
-            output.add(teleNotes);
+        public LinkedList<Pair<String, String>> getDataAsList() {
+            LinkedList<Pair<String, String>> output = new LinkedList<>();
+
+
+
+            output.add(new Pair<>("Timestamp",String.valueOf(timestamp)));
+            output.add(new Pair<>("Match Number",String.valueOf(matchNumber)));
+            output.add(new Pair<>("Team Number",String.valueOf(teamNumber)));
+            output.add(new Pair<>("Robot Position",String.valueOf(position.ordinal())));
+            output.add(new Pair<>("Auto Leave",autoLeave?("1"):("0")));
+            output.add(new Pair<>("Auto Speaker",String.valueOf(autoSpeaker)));
+            output.add(new Pair<>("Auto Amp",String.valueOf(autoAmp)));
+            output.add(new Pair<>("Auto Collected",String.valueOf(autoCollected)));
+            output.add(new Pair<>("Auto Speaker Missed",String.valueOf(autoSpeakerMissed)));
+            output.add(new Pair<>("Auto Amp Missed",String.valueOf(autoAmpMissed)));
+            output.add(new Pair<>("Tele Speaker",String.valueOf(teleSpeaker)));
+            output.add(new Pair<>("Tele Amp",String.valueOf(teleAmp)));
+            output.add(new Pair<>("Tele Trap",String.valueOf(teleTrap)));
+            output.add(new Pair<>("Tele Speaker Missed",String.valueOf(teleSpeakerMissed)));
+            output.add(new Pair<>("Tele Amp Missed",String.valueOf(teleAmpMissed)));
+            output.add(new Pair<>("Endgame Position",String.valueOf(endgamePosition.ordinal())));
+            output.add(new Pair<>("Auto Comments",autoNotes));
+            output.add(new Pair<>("Tele Comments",teleNotes));
+
+
+
+            int teleAmpPoints = teleAmp * Constants.TELE_AMP_NOTE_POINTS;
+            int teleSpeakerPoints = teleSpeaker * Constants.TELE_SPEAKER_NOTE_POINTS;
+            int trapPoints = teleTrap * Constants.TELE_TRAP_POINTS;
+            int climbPoints = Constants.endgamePoints.get(endgamePosition);
+            int telePoints = teleAmpPoints + teleSpeakerPoints + trapPoints + climbPoints;
+            int autoPoints = (autoAmp * Constants.AUTO_AMP_NOTE_POINTS) + (autoSpeaker * Constants.AUTO_SPEAKER_NOTE_POINTS);
+            int toalNotesScored = autoAmp + autoSpeaker + teleAmp + teleSpeaker;
+            int toalNotesMissed = autoAmpMissed + autoSpeakerMissed + teleAmpMissed + teleSpeakerMissed;
+            output.add(new Pair<>("Total Auto Notes", String.valueOf(autoAmp + autoSpeaker)));
+            output.add(new Pair<>("Total Tele Notes", String.valueOf(teleAmp + teleSpeaker)));
+            output.add(new Pair<>("Auto Points Added", String.valueOf(autoPoints)));
+            output.add(new Pair<>("Tele Points Added", String.valueOf(telePoints)));
+            output.add(new Pair<>("Total Points Added", String.valueOf(autoPoints + telePoints)));
+            output.add(new Pair<>("Total Notes Scored", String.valueOf(toalNotesScored)));
+            output.add(new Pair<>("Total Notes Missed", String.valueOf(toalNotesMissed)));
+            output.add(new Pair<>("Total Notes", String.valueOf(toalNotesMissed + toalNotesScored)));
             return output;
         }
 
@@ -293,6 +317,11 @@ public class DataHandler {
             return  builder.toString();
 
         }
+
+/*        public JSONObject toJSON() {
+            JSONObject output = new JSONObject();
+
+        }*/
 
     }
 
