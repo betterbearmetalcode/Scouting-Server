@@ -11,9 +11,9 @@ public class MenuController extends VBox {
 @FXML
     Button qrScannerButton = new Button();
     @FXML
-    public void enterQRScanner(ActionEvent event) {
+    public void enterDataCollectionScene(ActionEvent event) {
         if (ScoutingServer.currentScene != ScoutingServer.SCENES.QR_SCANNER) {
-            ScoutingServer.setCurrentScene(ScoutingServer.qrScannerScene);
+            ScoutingServer.setCurrentScene(ScoutingServer.dataCollectionScene);
             ScoutingServer.currentScene = ScoutingServer.SCENES.QR_SCANNER;
         }
     }

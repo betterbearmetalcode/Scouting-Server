@@ -14,6 +14,8 @@ import org.tahomarobotics.scouting.scoutingserver.DataHandler;
 import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -58,6 +60,7 @@ public class MainController extends VBox {
         try {
             System.out.println("Using debug table to generate simulated JSON inputs from the Scouting App");
             LinkedList<DataHandler.MatchRecord> data = DataHandler.readDatabase(Constants.TEST_SQL_TABLE_NAME);
+            int j = 0;
             for (DataHandler.MatchRecord datum : data) {
                 JSONArray arr = new JSONArray();
                 LinkedList<Pair<String, String>> matchData = datum.getDataAsList();
@@ -66,12 +69,14 @@ public class MainController extends VBox {
 
 
                 }
-                DatabaseManager.addTable("json imported data", DatabaseManager.createTableSchem(Constants.RAW_TABLE_SCHEMA));
-                DataHandler.storeRawQRData(System.currentTimeMillis(), arr, "\"json imported data\"");
+                File outFile = new File(Constants.BASE_APP_DATA_FILEPATH + "/testJSON" + j + ".json" );
+                FileOutputStream out = new FileOutputStream(outFile);
+                out.write(arr.toString().getBytes());
+                out.flush();
+                out.close();
+                j++;
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }

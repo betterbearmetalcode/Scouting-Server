@@ -97,6 +97,11 @@ public class TableChooserDialog extends Dialog<String> {
             @Override
             public void handle(ActionEvent event) {
                 try {
+                    if (listView.getSelectionModel().getSelectedItem().equals(Constants.DEFAULT_SQL_TABLE_NAME)) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Default Table Cannot be Deleted");
+                        alert.showAndWait();
+                        return;
+                    }
                     DatabaseManager.execNoReturn("DROP TABLE IF EXISTS \'" + listView.getSelectionModel().getSelectedItem() + "\'");
                     listView.getItems().remove(listView.getSelectionModel().getSelectedItem());
                 } catch (SQLException e) {

@@ -30,7 +30,7 @@ public class ScoutingServer extends Application {
 
     public static AnchorPane dataHamburgerMenu;
 
-    public static Scene qrScannerScene;
+    public static Scene dataCollectionScene;
 
     public static Scene dataScene;
 
@@ -85,10 +85,10 @@ public class ScoutingServer extends Application {
         FXMLLoader hamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
         mainHamburgerMenu = new AnchorPane((AnchorPane) hamburgerLoader.load());
 
-        FXMLLoader qrhamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
-        qrHamburgerMenu = new AnchorPane((AnchorPane) qrhamburgerLoader.load());
-        FXMLLoader qrscannerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/qr-scanner-scene.fxml").toURI().toURL());
-        qrScannerScene = new Scene(qrscannerLoader.load());
+        FXMLLoader dataCollectionHamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
+        qrHamburgerMenu = new AnchorPane((AnchorPane) dataCollectionHamburgerLoader.load());
+        FXMLLoader dataCollectionLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/data-collection.fxml").toURI().toURL());
+        dataCollectionScene = new Scene(dataCollectionLoader.load());
 
         FXMLLoader dataLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/data-scene.fxml").toURI().toURL());
         dataScene = new Scene(dataLoader.load());
@@ -127,7 +127,7 @@ public class ScoutingServer extends Application {
 
 
         //add hamburger menu to qr scanner scene
-        VBox parent = (VBox) qrScannerScene.getRoot();
+        VBox parent = (VBox) dataCollectionScene.getRoot();
         SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
         AnchorPane anchorPane = (AnchorPane) splitPane.getItems().get(0);
         anchorPane.getChildren().add(qrHamburgerMenu);
