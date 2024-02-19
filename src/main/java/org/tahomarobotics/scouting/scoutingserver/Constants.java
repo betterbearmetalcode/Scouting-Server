@@ -55,7 +55,8 @@ public class Constants {
 
         ENDGAME_POS,
         AUTO_NOTES,
-        TELE_NOTES
+        TELE_NOTES,
+
     }
 
 
@@ -78,8 +79,8 @@ public class Constants {
             new ColumnType(ColumnName.TELE_SPEAKER_MISSED, SQLDatatype.INTEGER),
             new ColumnType(ColumnName.TELE_AMP_MISSED, SQLDatatype.INTEGER),
             new ColumnType(ColumnName.ENDGAME_POS, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.AUTO_NOTES, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.TELE_NOTES, SQLDatatype.INTEGER)
+            new ColumnType(ColumnName.AUTO_NOTES, SQLDatatype.TEXT),
+            new ColumnType(ColumnName.TELE_NOTES, SQLDatatype.TEXT)
 
             ));
     public static final String DEFAULT_SQL_TABLE_NAME = "Default_Table";

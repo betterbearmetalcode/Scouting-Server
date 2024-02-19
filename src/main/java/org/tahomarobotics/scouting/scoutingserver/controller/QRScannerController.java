@@ -9,15 +9,22 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DataHandler;
+import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
+import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.TableChooserDialog;
 import org.tahomarobotics.scouting.scoutingserver.util.WebcamUtil;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class QRScannerController  {
     private static String activeTable = Constants.DEFAULT_SQL_TABLE_NAME;
@@ -29,6 +36,9 @@ public class QRScannerController  {
     public ComboBox<String> selectCameraComboBox;
     @FXML
     public TextField delayField;
+
+    @FXML
+    public Label selectedDatabaseLabel;
 
     public CheckBox previewCheckbox;
 
@@ -44,7 +54,21 @@ public class QRScannerController  {
             ArrayList<String> devices = WebcamUtil.getDevices();
             ObservableList<String> arr = FXCollections.observableArrayList(devices);
             selectCameraComboBox.setItems(arr);
+            selectedDatabaseLabel.setText(Constants.DEFAULT_SQL_TABLE_NAME);
         } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void selectTargetTable(ActionEvent event) {
+        try {
+            TableChooserDialog dialog = new TableChooserDialog(DatabaseManager.getTableNames());
+            Optional<String> result = dialog.showAndWait();
+            AtomicReference<String> selectedTable = new AtomicReference<>("");
+            result.ifPresent(selectedDatabaseLabel::setText);
+            result.ifPresent(this::setActiveTable);
+            result.ifPresent(System.out::println);
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -53,6 +77,32 @@ public class QRScannerController  {
     public void cameraSelectorClicked(ActionEvent event) {
         WebcamUtil.setSelectedWebcam(selectCameraComboBox.getValue());
         takePictureButton.setDisable(false);
+    }
+    @FXML
+    public void importJSON(ActionEvent event) {
+        try {
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Select JSON File");
+            chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+            List<File> selectedFile = chooser.showOpenMultipleDialog(ScoutingServer.mainStage.getOwner());
+            if (selectedFile != null) {
+                for (File file : selectedFile) {
+                    if (file.exists()) {
+                        FileInputStream inputStream = new FileInputStream(file);
+                        DataHandler.storeRawQRData(System.currentTimeMillis(), new JSONArray(new String(inputStream.readAllBytes())), Constants.DEFAULT_SQL_TABLE_NAME);
+                        inputStream.close();
+                    }
+
+                }
+            }
+
+
+        }catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -86,9 +136,6 @@ public class QRScannerController  {
             Alert aler = new Alert(Alert.AlertType.WARNING, "Failed to read QR Code");
             aler.showAndWait();
 
-
-            return;
-
         }
 
     }
@@ -102,6 +149,9 @@ public class QRScannerController  {
     }
 
 
+    public void setActiveTable(String s)  {
+        activeTable = s;
+    }
 
 
 

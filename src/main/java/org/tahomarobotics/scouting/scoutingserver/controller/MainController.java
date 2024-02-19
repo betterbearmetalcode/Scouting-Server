@@ -8,13 +8,18 @@ import javafx.scene.layout.VBox;
 
 ;
 import javafx.util.Pair;
+import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.tahomarobotics.scouting.scoutingserver.DataHandler;
 import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 
 public class MainController extends VBox {
@@ -52,5 +57,27 @@ public class MainController extends VBox {
     }
     @FXML
     public void debugButton2(ActionEvent event) {
+        try {
+            System.out.println("Using debug table to generate simulated JSON inputs from the Scouting App");
+            LinkedList<DataHandler.MatchRecord> data = DataHandler.readDatabase(Constants.TEST_SQL_TABLE_NAME);
+            int j = 0;
+            for (DataHandler.MatchRecord datum : data) {
+                JSONArray arr = new JSONArray();
+                LinkedList<Pair<String, String>> matchData = datum.getDataAsList();
+                for (int i = 1; i < matchData.size(); i++) {
+                    arr.put(matchData.get(i).getValue().replace("\"", ""));
+
+
+                }
+                File outFile = new File(Constants.BASE_APP_DATA_FILEPATH + "/testJSON" + j + ".json" );
+                FileOutputStream out = new FileOutputStream(outFile);
+                out.write(arr.toString().getBytes());
+                out.flush();
+                out.close();
+                j++;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
