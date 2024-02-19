@@ -1,10 +1,12 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.util.Pair;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,21 +19,8 @@ public class DataHandler {
 
 
     public static void storeRawQRData(long timestamp, String dataRaw, String tablename) throws IOException {
-
-
-        MatchRecord m = contstrucMatchRecord(timestamp, dataRaw);
-
         try {
-            DatabaseManager.execNoReturn("INSERT INTO " + tablename + " VALUES (" +m.getDataForSQL() + ")");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    private static MatchRecord contstrucMatchRecord(long timestamp, String qrRAW) {
-        try {
-            String[] data = qrRAW.split(Constants.QR_DATA_DELIMITER);
+            String[] data = dataRaw.split(Constants.QR_DATA_DELIMITER);
             MatchRecord m = new MatchRecord(timestamp,
                     Integer.parseInt(data[0]),//match num
                     Integer.parseInt(data[1]),//team num
@@ -51,13 +40,49 @@ public class DataHandler {
                     getEngamePositionFromNum(Integer.parseInt(data[14])),//endgame pos
                     data[15] ,//auto notes
                     data[16]);//tele notes
-            return m;
+            DatabaseManager.execNoReturn("INSERT INTO " + tablename + " VALUES (" +m.getDataForSQL() + ")");
         }catch (NumberFormatException e) {
             System.err.println("Failed to construct MatchRecord, likly corruppted Data");
             throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-
     }
+
+    public static void storeRawQRData(long timestamp, JSONArray dataJSON, String tablename) throws IOException {
+        try {
+
+            MatchRecord m = new MatchRecord(timestamp,
+                    dataJSON.getInt(0),//match num
+                    dataJSON.getInt(1),//team num
+                    getRobotPositionFromNum(dataJSON.getInt(2)),
+                    dataJSON.getInt(3) == 1,//auto leave
+                    dataJSON.getInt(4),//auto speaker
+                    dataJSON.getInt(5),//auto amp
+                    dataJSON.getInt(6),//auto collected
+                    dataJSON.getInt(7),//auto speaker missed
+                    dataJSON.getInt(8),//auto amp missed
+                    dataJSON.getInt(9),//tele speaker
+                    dataJSON.getInt(10),//tele amp
+                    dataJSON.getInt(11),//tele trap
+                    dataJSON.getInt(12),//tele speaker missed
+                    dataJSON.getInt(13),//tele amp missed
+                    getEngamePositionFromNum(dataJSON.getInt(14)),//endgame pos
+                    dataJSON.getString(15),//auto notes
+                    dataJSON.getString(16)//tele notes
+                    );
+
+            DatabaseManager.execNoReturn("INSERT INTO " + tablename + " VALUES (" +m.getDataForSQL() + ")");
+        }catch (NumberFormatException e) {
+            System.err.println("Failed to construct MatchRecord, likly corruppted Data");
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
 
 
     public static LinkedList<MatchRecord> readDatabase(String tableName) throws IOException {
@@ -111,30 +136,7 @@ public class DataHandler {
         B3
     }
 
-    public static int getRobotPositionNum(RobotPosition position) {
-        switch (position) {
 
-            case R1 -> {
-                return 0;
-            }
-            case R2 -> {
-                return 1;
-            }
-            case R3 -> {
-                return 2;
-            }
-            case B1 -> {
-                return 3;
-            }
-            case B2 -> {
-                return 4;
-            }
-            case B3 -> {
-                return 5;
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + position);
-        }
-    }
 
     public static RobotPosition getRobotPositionFromNum(int num) {
         switch (num) {
@@ -168,24 +170,7 @@ public class DataHandler {
         HARMONIZED
     }
 
-    public static int getEngamePosition(EndgamePosition pos) {
-        switch (pos) {
 
-            case NONE -> {
-                return 0;
-            }
-            case PARKED -> {
-                return 1;
-            }
-            case CLIMBED -> {
-                return 2;
-            }
-            case HARMONIZED -> {
-                return 3;
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + pos);
-        }
-    }
 
     public static EndgamePosition getEngamePositionFromNum(int pos) {
         switch (pos) {
@@ -227,26 +212,6 @@ public class DataHandler {
                               String autoNotes,
                               String teleNotes
     ) {
-        //for displaying the data in the server
-        public LinkedList<String> getDisplayableDataAsList() {
-            LinkedList<String> output = new LinkedList<>();
-            output.add("AutoLeave: " + (autoLeave?("Left"):("Didn't leave")));
-            output.add("Auto Speaker: " + autoSpeaker);
-            output.add("Auto Amp: " + autoAmp);
-            output.add("Auto Collected: " + autoCollected);
-            output.add("Auto Speaker Missed: " + autoSpeakerMissed);
-            output.add("Auto Amp Missed: " + autoAmpMissed);
-
-            output.add("Tele-OP Speaker: " + teleSpeaker);
-            output.add("Tele-OP Amp: " + teleAmp);
-            output.add("Tele-OP trap: " + teleTrap);
-            output.add("Tele Speaker Missed: " + teleSpeakerMissed);
-            output.add("Tele Amp Missed: " + teleAmpMissed);
-            output.add("Endgame: " + endgamePosition);
-            output.add("Auto Notes: " + autoNotes);
-            output.add("Tele Notes: " + teleNotes);
-            return output;
-        }
 
         //for exporting
         public LinkedList<Pair<String, String>> getDataAsList() {
@@ -270,8 +235,8 @@ public class DataHandler {
             output.add(new Pair<>("Tele Speaker Missed",String.valueOf(teleSpeakerMissed)));
             output.add(new Pair<>("Tele Amp Missed",String.valueOf(teleAmpMissed)));
             output.add(new Pair<>("Endgame Position",String.valueOf(endgamePosition.ordinal())));
-            output.add(new Pair<>("Auto Comments",autoNotes));
-            output.add(new Pair<>("Tele Comments",teleNotes));
+            output.add(new Pair<>("Auto Comments","\"" + autoNotes + "\""));
+            output.add(new Pair<>("Tele Comments","\"" + teleNotes + "\""));
 
 
 
@@ -295,33 +260,45 @@ public class DataHandler {
         }
 
         public String getDataForSQL() {
-            StringBuilder builder = new StringBuilder();
-            builder.append(timestamp).append(", ");
-            builder.append(matchNumber).append(", ");
-            builder.append(teamNumber).append(", ");
-            builder.append(position.ordinal()).append(", ");
-            builder.append(autoLeave?("1"):("0")).append(", ");
-            builder.append(autoSpeaker).append(", ");
-            builder.append(autoAmp).append(", ");
-            builder.append(autoCollected).append(", ");
-            builder.append(autoSpeakerMissed).append(", ");
-            builder.append(autoAmpMissed).append(", ");
-            builder.append(teleSpeaker).append(", ");
-            builder.append(teleAmp).append(", ");
-            builder.append(teleTrap).append(", ");
-            builder.append(teleSpeakerMissed).append(", ");
-            builder.append(teleAmpMissed).append(", ");
-            builder.append(endgamePosition.ordinal()).append(", ");
-            builder.append("\"").append(autoNotes).append("\", ");
-            builder.append("\"").append(teleNotes).append("\"");
-            return  builder.toString();
+            return timestamp + ", " +
+                    matchNumber + ", " +
+                    teamNumber + ", " +
+                    position.ordinal() + ", " +
+                    (autoLeave ? ("1") : ("0")) + ", " +
+                    autoSpeaker + ", " +
+                    autoAmp + ", " +
+                    autoCollected + ", " +
+                    autoSpeakerMissed + ", " +
+                    autoAmpMissed + ", " +
+                    teleSpeaker + ", " +
+                    teleAmp + ", " +
+                    teleTrap + ", " +
+                    teleSpeakerMissed + ", " +
+                    teleAmpMissed + ", " +
+                    endgamePosition.ordinal() + ", " +
+                    "\"" + autoNotes + "\", " +
+                    "\"" + teleNotes + "\"";
+/*            StringBuilder  builder = new StringBuilder();
+            LinkedList<Pair<String, String>> data = getDataAsList();
+            for (Pair<String, String> pair : data) {
+                if (data.peekLast().equals(pair)) {
+                    builder.append(pair.getValue());
+                }else {
+                    builder.append(pair.getValue()).append(", ");
+                }
 
+            }
+            return builder.toString();*/
         }
 
-/*        public JSONObject toJSON() {
-            JSONObject output = new JSONObject();
-
-        }*/
+        public JSONArray toJSON() {
+            JSONArray output = new JSONArray();
+            LinkedList<Pair<String, String>> data = this.getDataAsList();
+            for (Pair<String, String> pair : data) {
+                output.put(new JSONObject(pair.getKey(), pair.getValue()));
+            }
+            return output;
+        }
 
     }
 

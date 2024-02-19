@@ -146,7 +146,7 @@ public class TabController {
                     matchItem.getChildren().add(robotPositionIndex, positonItem);
 
                     for (Pair<String, String> s : r.getDataAsList()) {
-                        positonItem.getChildren().add(new TreeItem<String>(s.getValue() + ": " + s.getKey()));
+                        positonItem.getChildren().add(new TreeItem<String>(s.getKey() + ": " + s.getValue()));
                     }
 
                     robotPositionIndex++;
