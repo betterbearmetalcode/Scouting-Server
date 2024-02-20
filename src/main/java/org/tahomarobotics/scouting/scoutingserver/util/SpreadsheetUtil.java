@@ -1,16 +1,13 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 
-
-
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
 import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
-import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.DataHandler;
+import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -50,11 +47,7 @@ public class SpreadsheetUtil {
     }
 
 
-
-
-
-
-    public static void writeToSpreadSheet(LinkedList<DataHandler.MatchRecord> data, File currDir, boolean exportFormulas) throws IOException {
+    public static void writeToSpreadSheet(LinkedList<DatabaseManager.MatchRecord> data, File currDir, boolean exportFormulas) throws IOException {
         String path = currDir.getAbsolutePath();
         try (OutputStream os = Files.newOutputStream(Paths.get(path)); Workbook wb = new Workbook(os, "Scouting Excel Database", "1.0")) {
             Worksheet ws = wb.newWorksheet(SpreadsheetUtil.RAW_DATA_SHEET_NAME);
@@ -66,23 +59,21 @@ public class SpreadsheetUtil {
             //first read all the data that may already be there and write it into the workbook.
 
             ws.range(0, 0, 0, data.get(0).getDataAsList().size()).style().fontSize(12).fillColor("FFFF33").set();
-           //export raw data
+            //export raw data
             for (int rowNum = 0; rowNum < data.size(); rowNum++) {
                 //for each row in the data or spreadsheet
 
-                for (int i = 0; i < data.get(rowNum).getDataAsList().size(); i ++) {
+                for (int i = 0; i < data.get(rowNum).getDataAsList().size(); i++) {
                     //for each element of data
                     if (rowNum == 0) {
                         //then we need to write the header
                         ws.value(rowNum, i, data.get(rowNum).getDataAsList().get(i).getKey());
-                    }else {
-                        ws.value(rowNum, i,data.get(rowNum).getDataAsList().get(i).getValue());
+                    } else {
+                        ws.value(rowNum, i, data.get(rowNum).getDataAsList().get(i).getValue());
                     }
 
                 }
             }
-
-
 
 
         }

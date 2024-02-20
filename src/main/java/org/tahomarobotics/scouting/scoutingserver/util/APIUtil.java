@@ -1,7 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 
-
 import org.json.JSONArray;
 
 import java.net.URI;
@@ -12,8 +11,7 @@ import java.net.http.HttpResponse;
 public class APIUtil {
 
     public static final String baseURL = "https://www.thebluealliance.com/api/v3";
-        private static final String apiKey = "gkV8whv2viztnwQybXkOmyQMYYJEGNh7qgbUvG0riVVdDH2YMKk57JNaRwgiTSQB";
-
+    private static final String apiKey = "gkV8whv2viztnwQybXkOmyQMYYJEGNh7qgbUvG0riVVdDH2YMKk57JNaRwgiTSQB";
 
 
     public static String getAsString(String apiRequest) throws Exception {
@@ -29,7 +27,7 @@ public class APIUtil {
         return response.body();
     }
 
-    public static JSONArray get(String apiRequest) throws Exception{
+    public static JSONArray get(String apiRequest) throws Exception {
         return new JSONArray(getAsString(apiRequest));
 
     }

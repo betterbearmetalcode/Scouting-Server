@@ -1,36 +1,31 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.DataHandler;
+import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchDataComparator;
 import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class TabController {
 
 
     Tab myTab;
-    private LinkedList<DataHandler.MatchRecord> databaseData;
+    private LinkedList<DatabaseManager.MatchRecord> databaseData;
     public String tableName;
 
     private TreeView<String> treeView;
@@ -38,7 +33,7 @@ public class TabController {
     private TreeItem<String> rootItem;
 
 
-    public TabController(LinkedList<DataHandler.MatchRecord> databaseData, String table) {
+    public TabController(LinkedList<DatabaseManager.MatchRecord> databaseData, String table) {
         this.databaseData = databaseData;
         tableName = table;
     }
@@ -61,6 +56,7 @@ public class TabController {
             alert.showAndWait();
         }
     }
+
     @FXML
     public void expandAll(Event e) {
         System.out.println("Expand All Button Pressed");
@@ -78,12 +74,12 @@ public class TabController {
         if (treeItem.getValue().equals("root-item")) {
             //then we are dealing with the root item
             treeItem.setExpanded(true);
-        }else {
+        } else {
             treeItem.setExpanded(val);
 
         }
         if (!treeItem.getChildren().isEmpty()) {
-            for ( TreeItem t  :  (ObservableList<TreeItem>) treeItem.getChildren()) {
+            for (TreeItem t : (ObservableList<TreeItem>) treeItem.getChildren()) {
                 setExpansionAll(t, val);
             }
         }
@@ -103,12 +99,13 @@ public class TabController {
 
 
     }
+
     @FXML
     public void refresh(Event e) {
         System.out.println("Refreshing");
         rootItem.getChildren().clear();
         try {
-            databaseData = DataHandler.readDatabase(tableName);
+            databaseData = DatabaseManager.readDatabase(tableName);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -120,7 +117,7 @@ public class TabController {
 
         //need to sort the database data by match number and team position
         databaseData.sort(new MatchDataComparator());//this is actually nessacary as it assures that the robot positon indexes appear sequentially
-        List<DataHandler.MatchRecord> tempList = new LinkedList<>(databaseData.stream().toList());
+        List<DatabaseManager.MatchRecord> tempList = new LinkedList<>(databaseData.stream().toList());
         for (int i = 1; i <= databaseData.get(databaseData.size() - 1).matchNumber(); i++) {
             //for all the matches that there may or may not be data for up to the last match with data for it
             //i will be set to all valid match numbers
@@ -129,12 +126,11 @@ public class TabController {
             TreeItem<String> matchItem = new TreeItem<>("Match: " + i);
 
 
-
             //now we will loop through the data taking all relevant matches and adding them to this branch
             //then removing them from the temporart dataset to improve effiency
             int robotPositionIndex = 0;
 
-            for (DataHandler.MatchRecord r : tempList) {
+            for (DatabaseManager.MatchRecord r : tempList) {
                 //for each datapoint
                 if (r.matchNumber() == i) {
                     if (robotPositionIndex == 0) {
@@ -150,15 +146,15 @@ public class TabController {
                     }
 
                     robotPositionIndex++;
-                }else {
+                } else {
                     //we have gone through all 6 robot positions for this match so it is guarenteed that there will be no more of this match
                     break;
                 }
             }//end for each dataPoint loop
             final int finalI = i;
-            tempList.removeIf(new Predicate<DataHandler.MatchRecord>() {
+            tempList.removeIf(new Predicate<DatabaseManager.MatchRecord>() {
                 @Override
-                public boolean test(DataHandler.MatchRecord matchRecord) {
+                public boolean test(DatabaseManager.MatchRecord matchRecord) {
                     return matchRecord.matchNumber() == finalI;
                 }
             });

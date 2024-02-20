@@ -3,19 +3,16 @@ package org.tahomarobotics.scouting.scoutingserver;
 import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 
-import java.io.*;
-import java.lang.reflect.Field;
-import java.sql.*;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Objects;
 
-public class DataHandler {
-
-
+public class DatabaseManager {
 
 
     public static void storeRawQRData(long timestamp, String dataRaw, String tablename) throws IOException {
@@ -38,10 +35,10 @@ public class DataHandler {
                     Integer.parseInt(data[13]),//tele amp missed
 
                     getEngamePositionFromNum(Integer.parseInt(data[14])),//endgame pos
-                    data[15] ,//auto notes
+                    data[15],//auto notes
                     data[16]);//tele notes
-            DatabaseManager.execNoReturn("INSERT INTO " + tablename + " VALUES (" +m.getDataForSQL() + ")");
-        }catch (NumberFormatException e) {
+            SQLUtil.execNoReturn("INSERT INTO " + tablename + " VALUES (" + m.getDataForSQL() + ")");
+        } catch (NumberFormatException e) {
             System.err.println("Failed to construct MatchRecord, likly corruppted Data");
             throw new RuntimeException(e);
         } catch (SQLException e) {
@@ -70,10 +67,10 @@ public class DataHandler {
                     getEngamePositionFromNum(dataJSON.getInt(14)),//endgame pos
                     dataJSON.getString(15),//auto notes
                     dataJSON.getString(16)//tele notes
-                    );
+            );
 
-            DatabaseManager.execNoReturn("INSERT INTO " + tablename + " VALUES (" +m.getDataForSQL() + ")");
-        }catch (NumberFormatException e) {
+            SQLUtil.execNoReturn("INSERT INTO " + tablename + " VALUES (" + m.getDataForSQL() + ")");
+        } catch (NumberFormatException e) {
             System.err.println("Failed to construct MatchRecord, likly corruppted Data");
             throw new RuntimeException(e);
         } catch (SQLException e) {
@@ -82,13 +79,10 @@ public class DataHandler {
     }
 
 
-
-
-
     public static LinkedList<MatchRecord> readDatabase(String tableName) throws IOException {
         LinkedList<MatchRecord> output = new LinkedList<>();
         try {
-            ArrayList<HashMap<String, Object>> data = DatabaseManager.exec("SELECT * FROM \"" + tableName + "\"");
+            ArrayList<HashMap<String, Object>> data = SQLUtil.exec("SELECT * FROM \"" + tableName + "\"");
             for (HashMap<String, Object> row : data) {
                 //for each row in the sql database
                 output.add(new MatchRecord(
@@ -96,7 +90,7 @@ public class DataHandler {
                         (int) row.get(Constants.ColumnName.MATCH_NUM.toString()),
                         (int) row.get(Constants.ColumnName.TEAM_NUM.toString()),
                         getRobotPositionFromNum((int) row.get(Constants.ColumnName.ALLIANCE_POS.toString())),
-                        ( ((int)row.get(Constants.ColumnName.AUTO_LEAVE.toString())) == 1),
+                        (((int) row.get(Constants.ColumnName.AUTO_LEAVE.toString())) == 1),
                         (int) row.get(Constants.ColumnName.AUTO_SPEAKER.toString()),
                         (int) row.get(Constants.ColumnName.AUTO_AMP.toString()),
                         (int) row.get(Constants.ColumnName.AUTO_COLLECTED.toString()),
@@ -112,7 +106,7 @@ public class DataHandler {
                         (String) row.get(Constants.ColumnName.AUTO_NOTES.toString()),
                         (String) row.get(Constants.ColumnName.TELE_NOTES.toString())
 
-                        ));
+                ));
             }
         } catch (SQLException e) {
 
@@ -120,9 +114,6 @@ public class DataHandler {
         }
         return output;
     }
-
-
-
 
 
     //utility methods
@@ -135,7 +126,6 @@ public class DataHandler {
         B2,
         B3
     }
-
 
 
     public static RobotPosition getRobotPositionFromNum(int num) {
@@ -169,7 +159,6 @@ public class DataHandler {
         CLIMBED,
         HARMONIZED
     }
-
 
 
     public static EndgamePosition getEngamePositionFromNum(int pos) {
@@ -218,26 +207,24 @@ public class DataHandler {
             LinkedList<Pair<String, String>> output = new LinkedList<>();
 
 
-
-            output.add(new Pair<>("Timestamp",String.valueOf(timestamp)));
-            output.add(new Pair<>("Match Number",String.valueOf(matchNumber)));
-            output.add(new Pair<>("Team Number",String.valueOf(teamNumber)));
-            output.add(new Pair<>("Robot Position",String.valueOf(position.ordinal())));
-            output.add(new Pair<>("Auto Leave",autoLeave?("1"):("0")));
-            output.add(new Pair<>("Auto Speaker",String.valueOf(autoSpeaker)));
-            output.add(new Pair<>("Auto Amp",String.valueOf(autoAmp)));
-            output.add(new Pair<>("Auto Collected",String.valueOf(autoCollected)));
-            output.add(new Pair<>("Auto Speaker Missed",String.valueOf(autoSpeakerMissed)));
-            output.add(new Pair<>("Auto Amp Missed",String.valueOf(autoAmpMissed)));
-            output.add(new Pair<>("Tele Speaker",String.valueOf(teleSpeaker)));
-            output.add(new Pair<>("Tele Amp",String.valueOf(teleAmp)));
-            output.add(new Pair<>("Tele Trap",String.valueOf(teleTrap)));
-            output.add(new Pair<>("Tele Speaker Missed",String.valueOf(teleSpeakerMissed)));
-            output.add(new Pair<>("Tele Amp Missed",String.valueOf(teleAmpMissed)));
-            output.add(new Pair<>("Endgame Position",String.valueOf(endgamePosition.ordinal())));
-            output.add(new Pair<>("Auto Comments","\"" + autoNotes + "\""));
-            output.add(new Pair<>("Tele Comments","\"" + teleNotes + "\""));
-
+            output.add(new Pair<>("Timestamp", String.valueOf(timestamp)));
+            output.add(new Pair<>("Match Number", String.valueOf(matchNumber)));
+            output.add(new Pair<>("Team Number", String.valueOf(teamNumber)));
+            output.add(new Pair<>("Robot Position", String.valueOf(position.ordinal())));
+            output.add(new Pair<>("Auto Leave", autoLeave ? ("1") : ("0")));
+            output.add(new Pair<>("Auto Speaker", String.valueOf(autoSpeaker)));
+            output.add(new Pair<>("Auto Amp", String.valueOf(autoAmp)));
+            output.add(new Pair<>("Auto Collected", String.valueOf(autoCollected)));
+            output.add(new Pair<>("Auto Speaker Missed", String.valueOf(autoSpeakerMissed)));
+            output.add(new Pair<>("Auto Amp Missed", String.valueOf(autoAmpMissed)));
+            output.add(new Pair<>("Tele Speaker", String.valueOf(teleSpeaker)));
+            output.add(new Pair<>("Tele Amp", String.valueOf(teleAmp)));
+            output.add(new Pair<>("Tele Trap", String.valueOf(teleTrap)));
+            output.add(new Pair<>("Tele Speaker Missed", String.valueOf(teleSpeakerMissed)));
+            output.add(new Pair<>("Tele Amp Missed", String.valueOf(teleAmpMissed)));
+            output.add(new Pair<>("Endgame Position", String.valueOf(endgamePosition.ordinal())));
+            output.add(new Pair<>("Auto Comments", "\"" + autoNotes + "\""));
+            output.add(new Pair<>("Tele Comments", "\"" + teleNotes + "\""));
 
 
             int teleAmpPoints = teleAmp * Constants.TELE_AMP_NOTE_POINTS;
@@ -301,7 +288,6 @@ public class DataHandler {
         }
 
     }
-
 
 
 }

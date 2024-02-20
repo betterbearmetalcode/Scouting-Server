@@ -5,18 +5,24 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.DataHandler;
-import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.TableChooserDialog;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class DataController {
@@ -25,6 +31,7 @@ public class DataController {
     private TabPane tabPane;
 
     List<TabController> controllers = new LinkedList<>();
+
     @FXML
     public void makeNewTab(ActionEvent event) {
         try {
@@ -40,7 +47,7 @@ public class DataController {
 
 
             //get the data from that database
-            LinkedList<DataHandler.MatchRecord> databaseData = DataHandler.readDatabase(selectedTable);
+            LinkedList<DatabaseManager.MatchRecord> databaseData = DatabaseManager.readDatabase(selectedTable);
             TabController controller = new TabController(databaseData, selectedTable);
             tabLoader.setController(controller);
 
@@ -74,7 +81,6 @@ public class DataController {
             controllers.add(controller);
 
 
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -84,7 +90,7 @@ public class DataController {
     private String getSelectedTableFromUser() {
         String output = Constants.DEFAULT_SQL_TABLE_NAME;
         try {
-            TableChooserDialog dialog = new TableChooserDialog(DatabaseManager.getTableNames());
+            TableChooserDialog dialog = new TableChooserDialog(SQLUtil.getTableNames());
             Optional<String> result = dialog.showAndWait();
             AtomicReference<String> selectedTable = new AtomicReference<>("");
             result.ifPresent(selectedTable::set);
@@ -97,8 +103,6 @@ public class DataController {
 
         return output;
     }
-
-
 
 
 }

@@ -10,7 +10,7 @@ module org.tahomarobotics.scouting.scoutingserver {
     requires java.sql;
     requires org.apache.commons.compress;
     requires com.fasterxml.aalto;
-
+    requires org.controlsfx.controls;
 
     opens org.tahomarobotics.scouting.scoutingserver to javafx.fxml;
     exports org.tahomarobotics.scouting.scoutingserver;

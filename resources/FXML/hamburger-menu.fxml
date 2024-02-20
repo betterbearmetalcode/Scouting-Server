@@ -7,7 +7,7 @@
    <children>
       <Button fx:id="dataButton" layoutY="78.0" mnemonicParsing="false" onAction="#openDataScene" text="Database Managment" />
       <Button fx:id="dataCollectionButton" layoutX="23.0" layoutY="144.0" mnemonicParsing="false" onAction="#enterDataCollectionScene" text="Data Collection" />
-      <Button layoutX="13.0" layoutY="187.0" mnemonicParsing="false" text="TBA Interaction" />
+      <Button layoutX="13.0" layoutY="187.0" mnemonicParsing="false" onAction="#enterDataCorrectionScene" text="Data Correction" />
       <Button fx:id="mainMenuButton" layoutX="24.0" layoutY="14.0" mnemonicParsing="false" onAction="#backToMainMenu" text="Main Menu" />
    </children>
 </AnchorPane>
