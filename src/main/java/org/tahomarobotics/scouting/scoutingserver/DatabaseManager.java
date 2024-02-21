@@ -1,8 +1,8 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
-import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.tahomarobotics.scouting.scoutingserver.util.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 
 import java.io.IOException;
@@ -103,8 +103,8 @@ public class DatabaseManager {
                         (int) row.get(Constants.ColumnName.TELE_SPEAKER_MISSED.toString()),
                         (int) row.get(Constants.ColumnName.TELE_AMP_MISSED.toString()),
                         getEngamePositionFromNum((int) row.get(Constants.ColumnName.ENDGAME_POS.toString())),
-                        (String) row.get(Constants.ColumnName.AUTO_NOTES.toString()),
-                        (String) row.get(Constants.ColumnName.TELE_NOTES.toString())
+                        (String) row.get(Constants.ColumnName.AUTO_COMMENTS.toString()),
+                        (String) row.get(Constants.ColumnName.TELE_COMMENTS.toString())
 
                 ));
             }
@@ -203,28 +203,28 @@ public class DatabaseManager {
     ) {
 
         //for exporting
-        public LinkedList<Pair<String, String>> getDataAsList() {
-            LinkedList<Pair<String, String>> output = new LinkedList<>();
+        public LinkedList<DataPoint> getDataAsList() {
+            LinkedList<DataPoint> output = new LinkedList<>();
 
 
-            output.add(new Pair<>("Timestamp", String.valueOf(timestamp)));
-            output.add(new Pair<>("Match Number", String.valueOf(matchNumber)));
-            output.add(new Pair<>("Team Number", String.valueOf(teamNumber)));
-            output.add(new Pair<>("Robot Position", String.valueOf(position.ordinal())));
-            output.add(new Pair<>("Auto Leave", autoLeave ? ("1") : ("0")));
-            output.add(new Pair<>("Auto Speaker", String.valueOf(autoSpeaker)));
-            output.add(new Pair<>("Auto Amp", String.valueOf(autoAmp)));
-            output.add(new Pair<>("Auto Collected", String.valueOf(autoCollected)));
-            output.add(new Pair<>("Auto Speaker Missed", String.valueOf(autoSpeakerMissed)));
-            output.add(new Pair<>("Auto Amp Missed", String.valueOf(autoAmpMissed)));
-            output.add(new Pair<>("Tele Speaker", String.valueOf(teleSpeaker)));
-            output.add(new Pair<>("Tele Amp", String.valueOf(teleAmp)));
-            output.add(new Pair<>("Tele Trap", String.valueOf(teleTrap)));
-            output.add(new Pair<>("Tele Speaker Missed", String.valueOf(teleSpeakerMissed)));
-            output.add(new Pair<>("Tele Amp Missed", String.valueOf(teleAmpMissed)));
-            output.add(new Pair<>("Endgame Position", String.valueOf(endgamePosition.ordinal())));
-            output.add(new Pair<>("Auto Comments", "\"" + autoNotes + "\""));
-            output.add(new Pair<>("Tele Comments", "\"" + teleNotes + "\""));
+            output.add(new DataPoint(Constants.ColumnName.TIMESTAMP.toString(), String.valueOf(timestamp)));
+            output.add(new DataPoint(Constants.ColumnName.MATCH_NUM.toString(), String.valueOf(matchNumber)));
+            output.add(new DataPoint(Constants.ColumnName.TEAM_NUM.toString(), String.valueOf(teamNumber)));
+            output.add(new DataPoint(Constants.ColumnName.ALLIANCE_POS.toString(), String.valueOf(position.ordinal())));
+            output.add(new DataPoint(Constants.ColumnName.AUTO_LEAVE.toString(), autoLeave ? ("1") : ("0")));
+            output.add(new DataPoint(Constants.ColumnName.AUTO_SPEAKER.toString(), String.valueOf(autoSpeaker)));
+            output.add(new DataPoint(Constants.ColumnName.AUTO_AMP.toString(), String.valueOf(autoAmp)));
+            output.add(new DataPoint(Constants.ColumnName.AUTO_COLLECTED.toString(), String.valueOf(autoCollected)));
+            output.add(new DataPoint(Constants.ColumnName.AUTO_SPEAKER_MISSED.toString(), String.valueOf(autoSpeakerMissed)));
+            output.add(new DataPoint(Constants.ColumnName.AUTO_AMP_MISSED.toString(), String.valueOf(autoAmpMissed)));
+            output.add(new DataPoint(Constants.ColumnName.TELE_SPEAKER.toString(), String.valueOf(teleSpeaker)));
+            output.add(new DataPoint(Constants.ColumnName.TELE_AMP.toString(), String.valueOf(teleAmp)));
+            output.add(new DataPoint(Constants.ColumnName.TELE_TRAP.toString(), String.valueOf(teleTrap)));
+            output.add(new DataPoint(Constants.ColumnName.TELE_SPEAKER_MISSED.toString(), String.valueOf(teleSpeakerMissed)));
+            output.add(new DataPoint(Constants.ColumnName.TELE_AMP_MISSED.toString(), String.valueOf(teleAmpMissed)));
+            output.add(new DataPoint(Constants.ColumnName.ENDGAME_POS.toString(), String.valueOf(endgamePosition.ordinal())));
+            output.add(new DataPoint(Constants.ColumnName.AUTO_COMMENTS.toString(), "\"" + autoNotes + "\""));
+            output.add(new DataPoint(Constants.ColumnName.TELE_COMMENTS.toString(), "\"" + teleNotes + "\""));
 
 
             int teleAmpPoints = teleAmp * Constants.TELE_AMP_NOTE_POINTS;
@@ -235,14 +235,14 @@ public class DatabaseManager {
             int autoPoints = (autoAmp * Constants.AUTO_AMP_NOTE_POINTS) + (autoSpeaker * Constants.AUTO_SPEAKER_NOTE_POINTS);
             int toalNotesScored = autoAmp + autoSpeaker + teleAmp + teleSpeaker;
             int toalNotesMissed = autoAmpMissed + autoSpeakerMissed + teleAmpMissed + teleSpeakerMissed;
-            output.add(new Pair<>("Total Auto Notes", String.valueOf(autoAmp + autoSpeaker)));
-            output.add(new Pair<>("Total Tele Notes", String.valueOf(teleAmp + teleSpeaker)));
-            output.add(new Pair<>("Auto Points Added", String.valueOf(autoPoints)));
-            output.add(new Pair<>("Tele Points Added", String.valueOf(telePoints)));
-            output.add(new Pair<>("Total Points Added", String.valueOf(autoPoints + telePoints)));
-            output.add(new Pair<>("Total Notes Scored", String.valueOf(toalNotesScored)));
-            output.add(new Pair<>("Total Notes Missed", String.valueOf(toalNotesMissed)));
-            output.add(new Pair<>("Total Notes", String.valueOf(toalNotesMissed + toalNotesScored)));
+            output.add(new DataPoint("Total Auto Notes", String.valueOf(autoAmp + autoSpeaker)));
+            output.add(new DataPoint("Total Tele Notes", String.valueOf(teleAmp + teleSpeaker)));
+            output.add(new DataPoint("Auto Points Added", String.valueOf(autoPoints)));
+            output.add(new DataPoint("Tele Points Added", String.valueOf(telePoints)));
+            output.add(new DataPoint("Total Points Added", String.valueOf(autoPoints + telePoints)));
+            output.add(new DataPoint("Total Notes Scored", String.valueOf(toalNotesScored)));
+            output.add(new DataPoint("Total Notes Missed", String.valueOf(toalNotesMissed)));
+            output.add(new DataPoint("Total Notes", String.valueOf(toalNotesMissed + toalNotesScored)));
             return output;
         }
 
@@ -280,9 +280,9 @@ public class DatabaseManager {
 
         public JSONArray toJSON() {
             JSONArray output = new JSONArray();
-            LinkedList<Pair<String, String>> data = this.getDataAsList();
-            for (Pair<String, String> pair : data) {
-                output.put(new JSONObject(pair.getKey(), pair.getValue()));
+            LinkedList<DataPoint> data = this.getDataAsList();
+            for (DataPoint dataPoint : data) {
+                output.put(new JSONObject(dataPoint.getName(), dataPoint.getValue()));
             }
             return output;
         }

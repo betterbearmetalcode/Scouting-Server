@@ -56,7 +56,7 @@ public class MainController extends VBox {
 
     @FXML
     public void debugButton2(ActionEvent event) {
-        try {
+       /* try {
             System.out.println("Using debug table to generate simulated JSON inputs from the Scouting App");
             LinkedList<DatabaseManager.MatchRecord> data = DatabaseManager.readDatabase(Constants.TEST_SQL_TABLE_NAME);
             int j = 0;
@@ -77,6 +77,7 @@ public class MainController extends VBox {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+        }*/
+        //TabController.validateData(null);
     }
 }

@@ -67,7 +67,7 @@ public class SpreadsheetUtil {
                     //for each element of data
                     if (rowNum == 0) {
                         //then we need to write the header
-                        ws.value(rowNum, i, data.get(rowNum).getDataAsList().get(i).getKey());
+                        ws.value(rowNum, i, data.get(rowNum).getDataAsList().get(i).getName());
                     } else {
                         ws.value(rowNum, i, data.get(rowNum).getDataAsList().get(i).getValue());
                     }

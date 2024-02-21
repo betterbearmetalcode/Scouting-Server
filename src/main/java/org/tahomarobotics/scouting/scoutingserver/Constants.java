@@ -52,8 +52,8 @@ public class Constants {
         TELE_AMP_MISSED,
 
         ENDGAME_POS,
-        AUTO_NOTES,
-        TELE_NOTES,
+        AUTO_COMMENTS,
+        TELE_COMMENTS
 
     }
 
@@ -77,8 +77,8 @@ public class Constants {
             new ColumnType(ColumnName.TELE_SPEAKER_MISSED, SQLDatatype.INTEGER),
             new ColumnType(ColumnName.TELE_AMP_MISSED, SQLDatatype.INTEGER),
             new ColumnType(ColumnName.ENDGAME_POS, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.AUTO_NOTES, SQLDatatype.TEXT),
-            new ColumnType(ColumnName.TELE_NOTES, SQLDatatype.TEXT)
+            new ColumnType(ColumnName.AUTO_COMMENTS, SQLDatatype.TEXT),
+            new ColumnType(ColumnName.TELE_COMMENTS, SQLDatatype.TEXT)
 
     ));
     public static final String DEFAULT_SQL_TABLE_NAME = "Default_Table";
@@ -102,4 +102,6 @@ public class Constants {
             entry(DatabaseManager.EndgamePosition.HARMONIZED, 5));
 
     public static final ArrayList<Pair<String, String>> competitons = new ArrayList<>(List.of(new Pair<>("2024orsal", "Oregon State Fairgrounds"), new Pair<>("2024wabon", "Bonney Lake"), new Pair<>("2024wasam", "Sammamish"), new Pair<>("2024pncmp", "Pacific Northwest")));//list of competions we are going to, first event code, second short name
+
+    public static int LOW_ERROR_THRESHOLD = 3;
 }

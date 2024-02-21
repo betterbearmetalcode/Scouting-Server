@@ -4,7 +4,7 @@ import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 
 import java.util.Comparator;
 
-public class MatchDataComparator implements Comparator<DatabaseManager.MatchRecord> {
+public class MatchRecordComparator implements Comparator<DatabaseManager.MatchRecord> {
     @Override
     public int compare(DatabaseManager.MatchRecord o1, DatabaseManager.MatchRecord o2) {
         //first check match number
