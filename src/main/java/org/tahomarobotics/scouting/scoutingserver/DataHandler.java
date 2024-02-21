@@ -4,6 +4,7 @@ import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.util.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -43,9 +44,9 @@ public class DataHandler {
             DatabaseManager.execNoReturn("INSERT INTO " + tablename + " VALUES (" +m.getDataForSQL() + ")");
         }catch (NumberFormatException e) {
             System.err.println("Failed to construct MatchRecord, likly corruppted Data");
-            throw new RuntimeException(e);
+            Logging.logError(e);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            Logging.logError(e);
         }
     }
 
@@ -75,9 +76,9 @@ public class DataHandler {
             DatabaseManager.execNoReturn("INSERT INTO " + tablename + " VALUES (" +m.getDataForSQL() + ")");
         }catch (NumberFormatException e) {
             System.err.println("Failed to construct MatchRecord, likly corruppted Data");
-            throw new RuntimeException(e);
+            Logging.logError(e);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            Logging.logError(e);
         }
     }
 
@@ -115,8 +116,7 @@ public class DataHandler {
                         ));
             }
         } catch (SQLException e) {
-
-            throw new RuntimeException(e);
+            Logging.logError(e);
         }
         return output;
     }

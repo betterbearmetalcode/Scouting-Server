@@ -17,6 +17,7 @@ import javafx.util.Pair;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DataHandler;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
+import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchDataComparator;
 import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 
@@ -57,8 +58,7 @@ public class TabController {
             File file = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
             SpreadsheetUtil.writeToSpreadSheet(databaseData, file, true);//should add button later if buranik insists to export raw wihtout formulas
         } catch (IOException ex) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to export data: IO Exception");
-            alert.showAndWait();
+            Logging.logError(ex);
         }
     }
     @FXML
@@ -110,7 +110,7 @@ public class TabController {
         try {
             databaseData = DataHandler.readDatabase(tableName);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            Logging.logError(ex);
         }
         constructTree();
     }
