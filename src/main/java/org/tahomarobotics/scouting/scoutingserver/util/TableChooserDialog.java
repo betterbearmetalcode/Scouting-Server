@@ -2,12 +2,10 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 
 import java.sql.SQLException;
@@ -16,6 +14,7 @@ import java.util.Objects;
 
 public class TableChooserDialog extends Dialog<String> {
     private final ListView<String> listView;
+
     public TableChooserDialog(ArrayList<String> tables) {
         this.setTitle("Select Competition");
         this.setHeaderText("Do not include spaces in names");
@@ -31,13 +30,13 @@ public class TableChooserDialog extends Dialog<String> {
             if (!Objects.equals(oldValue, event.getNewValue())) {
                 try {
                     listView.getItems().set(event.getIndex(), event.getNewValue());
-                    DatabaseManager.execNoReturn("ALTER TABLE \"" +  oldValue + "\" RENAME TO \"" + event.getNewValue() + "\"");
+                    SQLUtil.execNoReturn("ALTER TABLE \"" + oldValue + "\" RENAME TO \"" + event.getNewValue() + "\"");
 
                     System.out.println("edit succesfully  commited");
                 } catch (SQLException e) {
                     Logging.logError(e);
                 }
-            }else {
+            } else {
                 System.out.println("No changes made");
             }
 
@@ -68,7 +67,7 @@ public class TableChooserDialog extends Dialog<String> {
             try {
                 String name = "New Database";
                 listView.getItems().add(name);
-                DatabaseManager.addTable(name, DatabaseManager.createTableSchem(Constants.RAW_TABLE_SCHEMA));
+                SQLUtil.addTable(name, SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
             } catch (SQLException e) {
                 Logging.logError(e);
             }
@@ -80,13 +79,13 @@ public class TableChooserDialog extends Dialog<String> {
                 while (true) {
                     if (listView.getItems().contains(name)) {
                         name = name.concat("-Copy ");
-                    }else {
+                    } else {
                         break;
                     }
                 }
 
 
-                DatabaseManager.execNoReturn("CREATE TABLE \'" + name + "\' AS  SELECT *  FROM \'" + listView.getSelectionModel().getSelectedItem() + "\'");
+                SQLUtil.execNoReturn("CREATE TABLE '" + name + "' AS  SELECT *  FROM '" + listView.getSelectionModel().getSelectedItem() + "'");
                 listView.getItems().add(name);
             } catch (SQLException e) {
                 Logging.logError(e);
@@ -102,7 +101,7 @@ public class TableChooserDialog extends Dialog<String> {
                         alert.showAndWait();
                         return;
                     }
-                    DatabaseManager.execNoReturn("DROP TABLE IF EXISTS \'" + listView.getSelectionModel().getSelectedItem() + "\'");
+                    SQLUtil.execNoReturn("DROP TABLE IF EXISTS '" + listView.getSelectionModel().getSelectedItem() + "'");
                     listView.getItems().remove(listView.getSelectionModel().getSelectedItem());
                 } catch (SQLException e) {
                     Logging.logError(e);

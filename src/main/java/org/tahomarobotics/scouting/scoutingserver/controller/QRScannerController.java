@@ -12,18 +12,21 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.DataHandler;
+import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class QRScannerController  {
+public class QRScannerController {
     private static String activeTable = Constants.DEFAULT_SQL_TABLE_NAME;
 
     //fxml variables
@@ -59,7 +62,7 @@ public class QRScannerController  {
 
     public void selectTargetTable(ActionEvent event) {
         try {
-            TableChooserDialog dialog = new TableChooserDialog(DatabaseManager.getTableNames());
+            TableChooserDialog dialog = new TableChooserDialog(SQLUtil.getTableNames());
             Optional<String> result = dialog.showAndWait();
             AtomicReference<String> selectedTable = new AtomicReference<>("");
             result.ifPresent(selectedDatabaseLabel::setText);
@@ -75,6 +78,7 @@ public class QRScannerController  {
         WebcamUtil.setSelectedWebcam(selectCameraComboBox.getValue());
         takePictureButton.setDisable(false);
     }
+
     @FXML
     public void importJSON(ActionEvent event) {
         try {
@@ -87,19 +91,17 @@ public class QRScannerController  {
                 for (File file : selectedFile) {
                     if (file.exists()) {
                         FileInputStream inputStream = new FileInputStream(file);
-                        DataHandler.storeRawQRData(System.currentTimeMillis(), new JSONArray(new String(inputStream.readAllBytes())), Constants.DEFAULT_SQL_TABLE_NAME);
+                        DatabaseManager.storeRawQRData(System.currentTimeMillis(), new JSONArray(new String(inputStream.readAllBytes())), Constants.DEFAULT_SQL_TABLE_NAME);
                         inputStream.close();
                     }
 
                 }
             }
 
-
         } catch (IOException e) {
             Logging.logError(e);
         }
     }
-
 
 
     //consider this https://www.tutorialspoint.com/java_mysql/java_mysql_quick_guide.html
@@ -109,11 +111,11 @@ public class QRScannerController  {
         int delay = 0;
         try {
             delay = Integer.parseInt(delayField.getText().replaceAll("[^0-9]", ""));
-        }catch (Exception e) {
+        } catch (Exception e) {
             delay = 1000;//just in case the user screws things up, set a default delay
         }
 
-        String filePath = Constants.IMAGE_DATA_FILEPATH + System.currentTimeMillis()  +".bmp";
+        String filePath = Constants.IMAGE_DATA_FILEPATH + System.currentTimeMillis() + ".bmp";
         try {
 
             WebcamUtil.snapshotWebcam(selectCameraComboBox.getValue(), previewCheckbox.isSelected(), delay, filePath);
@@ -121,7 +123,7 @@ public class QRScannerController  {
             Image image = new Image(input);
             imageView.setImage(image);
             input.close();
-           readStoredImage(filePath, activeTable);
+            readStoredImage(filePath, activeTable);
 
         } catch (InterruptedException | IOException e) {
             Logging.logError(e);
@@ -140,14 +142,13 @@ public class QRScannerController  {
 
         String qrData = QRCodeUtil.readQRCode(fp);
         System.out.println("Scanner QR Code: " + qrData);
-        DataHandler.storeRawQRData(System.currentTimeMillis() , qrData, tableName);
+        DatabaseManager.storeRawQRData(System.currentTimeMillis(), qrData, tableName);
     }
 
 
-    public void setActiveTable(String s)  {
+    public void setActiveTable(String s) {
         activeTable = s;
     }
-
 
 
 }

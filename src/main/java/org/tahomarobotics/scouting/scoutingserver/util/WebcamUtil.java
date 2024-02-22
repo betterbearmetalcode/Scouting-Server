@@ -3,7 +3,9 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +24,7 @@ public class WebcamUtil {
 
     private static String selectedWebcam = "";
     private static final String exeFilepath = Constants.BASE_READ_ONLY_FILEPATH + "/resources/CommandCam.exe";
+
     public static void snapshotWebcam(String device) throws InterruptedException, IOException {
         System.out.println("Snapshotting");
         String command = exeFilepath +
@@ -37,7 +40,7 @@ public class WebcamUtil {
         System.out.print("Snapshotting: ");
         String command = exeFilepath +
                 " /devname \"" + device + "\" " +
-                (preview?("/preview "):("")) +
+                (preview ? ("/preview ") : ("")) +
                 "/delay " + delayInMillis +
                 " /filename \"" + filePath + "\"";
 
@@ -58,14 +61,12 @@ public class WebcamUtil {
 
         String command = exeFilepath +
                 " /devnum \"" + devnum + "\" " +
-                (preview?("/preview "):("")) +
+                (preview ? ("/preview ") : ("")) +
                 "/delay " + delayInMillis +
                 " /filename \"" + filePath + "\"";
         System.out.println(command);
         execCommand(command);
     }
-
-
 
 
     private static String execCommand(String command) throws InterruptedException, IOException {

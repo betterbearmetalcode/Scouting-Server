@@ -1,12 +1,11 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.tahomarobotics.scouting.scoutingserver.DataHandler;
+import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 
 public class JSONUtil {
 
-    public static JSONObject generateJSONObjectFromMatchRecord(DataHandler.MatchRecord data) {
+    public static JSONObject generateJSONObjectFromMatchRecord(DatabaseManager.MatchRecord data) {
 
         return null;
     }

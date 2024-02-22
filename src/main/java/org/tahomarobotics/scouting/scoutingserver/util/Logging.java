@@ -6,7 +6,7 @@ import javafx.scene.control.ButtonType;
 import java.util.Optional;
 import java.util.logging.Level;
 
-public class Logger {
+public class Logging {
     private final static java.util.logging.Logger LOGGER =
             java.util.logging.Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME);
 
