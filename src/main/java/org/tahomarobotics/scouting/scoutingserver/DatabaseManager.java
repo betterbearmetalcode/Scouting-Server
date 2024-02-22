@@ -2,15 +2,16 @@ package org.tahomarobotics.scouting.scoutingserver;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.tahomarobotics.scouting.scoutingserver.util.DataPoint;
+import org.tahomarobotics.scouting.scoutingserver.util.MatchRecordComparator;
+import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
+import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Predicate;
 
 public class DatabaseManager {
 
@@ -289,5 +290,25 @@ public class DatabaseManager {
 
     }
 
+    public static ArrayList<Match> getUnCorrectedDataFromDatabase(String tableName) throws IOException {
+        LinkedList<MatchRecord> rawData = readDatabase(tableName);
+        rawData.sort(new MatchRecordComparator());//this ensures that the data is in order of ascending match and ascending robot position
+        ArrayList<Match> output = new ArrayList<>();
+        int numMatches = rawData.getLast().matchNumber;
+        for (int i  =1; i < numMatches + 1; i++) {
+            //for each match that we have data on
+
+            ArrayList<Robot> robots = new ArrayList<>();
+            final int finalI = i;
+            List<MatchRecord> rawRobots = rawData.stream().filter(matchRecord -> matchRecord.matchNumber == finalI).toList();
+            for (MatchRecord robot : rawRobots) {
+                //for each robot in this match
+                robots.add(new Robot(robot.position, robot.teamNumber, robot.getDataAsList(), robot));
+            }
+            output.add(new Match(i, robots));
+
+        }
+        return output;
+    }
 
 }

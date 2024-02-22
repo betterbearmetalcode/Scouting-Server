@@ -5,10 +5,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
@@ -45,10 +42,7 @@ public class DataController {
             File selectedFile = new File(Constants.DATABASE_FILEPATH + Constants.SQL_DATABASE_NAME);
             //check if this tab is already open
 
-
-            //get the data from that database
-            LinkedList<DatabaseManager.MatchRecord> databaseData = DatabaseManager.readDatabase(selectedTable);
-            TabController controller = new TabController(databaseData, selectedTable);
+            TabController controller = new TabController(DatabaseManager.getUnCorrectedDataFromDatabase(selectedTable), selectedTable);
             tabLoader.setController(controller);
 
 
@@ -73,7 +67,7 @@ public class DataController {
             //pass the tree view to the controller class
             AnchorPane anotherPane = (AnchorPane) pane.getChildren().get(0);
             VBox box = (VBox) anotherPane.getChildren().get(0);
-            controller.initialize((TreeView<String>) box.getChildren().get(0));
+            controller.initialize((TreeView<Label>) box.getChildren().get(0));
 
             //remove controllers from the list when the tab is closed
             tabPane.getTabs().add(tabPane.getTabs().size() - 1, tab);

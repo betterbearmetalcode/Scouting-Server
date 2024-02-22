@@ -2,15 +2,19 @@ package org.tahomarobotics.scouting.scoutingserver;
 
 import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.DataPoint;
+import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
+import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
+import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class DataValidator {
 
-    public static  ArrayList<ArrayList<ArrayList<DataPoint>>> validateData(String eventCode, LinkedList<DatabaseManager.MatchRecord> databaseData) {
+    public static ArrayList<Match> validateData(String eventCode, ArrayList<Match> databaseData) {
         try {
-            ArrayList<ArrayList<ArrayList<DataPoint>>> correctedCompetition = new ArrayList<>();
+            ArrayList<Match> data = new ArrayList<>();
             JSONArray eventMatches = APIUtil.get("/event/" + eventCode + "/matches");//returns array of json objects each representing a match
             ArrayList<Object> rawList =  new ArrayList<>(eventMatches.toList());
 
@@ -24,86 +28,89 @@ public class DataValidator {
             for (HashMap<String, Object> match : processedData) {
                 //for each match
                 HashMap<String, Object> matchScoreBreakdown = (HashMap<String, Object>) match.get("score_breakdown");
-
+                ArrayList<Robot> corectedRobots = new ArrayList<>();
                 int matchNum = (Integer) match.get("match_number");
-                List<DatabaseManager.MatchRecord> robots = databaseData.stream().filter(matchRecord -> matchRecord.matchNumber() == matchNum).toList();
+                System.out.println(databaseData.stream().filter(match1 -> match1.matchNumber() == matchNum).findFirst().isEmpty());
+               Optional<Match> result = databaseData.stream().filter(match1 -> match1.matchNumber() == matchNum).findFirst();
+               List<Robot> robots = new ArrayList<>();
+               result.ifPresent(match12 -> robots.addAll(result.get().robots()));
                 if (!robots.isEmpty()) {
                     //if there is actually scouting data for this match that blue alliance has data for.
                     boolean matchComplete = robots.size() == 6;//is the whole match invalid
-                    List<DatabaseManager.MatchRecord> redRobots = robots.stream().filter(matchRecord -> matchRecord.position().ordinal() < 3).toList();
-                    List<DatabaseManager.MatchRecord> blueRobots = robots.stream().filter(matchRecord -> matchRecord.position().ordinal() > 2).toList();
+                    List<Robot> redRobots = robots.stream().filter(robot -> robot.robotPosition().ordinal() < 3).toList();
+                    List<Robot> blueRobots = robots.stream().filter(robot -> robot.robotPosition().ordinal() > 2).toList();
                     HashMap<String, Object> redAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("red");
                     HashMap<String, Object> blueAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("blue");
-                    ArrayList<ArrayList<DataPoint>> correctedMatch = new ArrayList<>();
-                    correctedMatch.addAll(correctAlliance(matchComplete, redRobots, redAllianceScoreBreakdown));
-                    correctedMatch.addAll(correctAlliance(matchComplete, blueRobots, blueAllianceScoreBreakdown));
-                    correctedCompetition.add(correctedMatch);
+
+                    corectedRobots.addAll(correctAlliance(matchComplete, redRobots, redAllianceScoreBreakdown));
+                    corectedRobots.addAll(correctAlliance(matchComplete, blueRobots, blueAllianceScoreBreakdown));
+                    data.add(new Match(matchNum, new ArrayList<>(corectedRobots)));
                 }
 
             }
-            return correctedCompetition;
+            return data;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
 
-    private static ArrayList<ArrayList<DataPoint>> correctAlliance(boolean matchComplete, List<DatabaseManager.MatchRecord> robots, HashMap<String, Object> breakdown) {
-        ArrayList<ArrayList<DataPoint>> correctedAlliance = new ArrayList<>();
+    private static ArrayList<Robot> correctAlliance(boolean matchComplete, List<Robot> robots, HashMap<String, Object> breakdown) {
+        ArrayList<Robot> correctedAlliance = new ArrayList<>();
         int autoSpeakerTrue = (int) breakdown.get("autoSpeakerNoteCount");
         int autoAmpTrue = (int) breakdown.get("autoAmpNoteCount");
         int teleSpeakerTrue = ((int) breakdown.get("teleopSpeakerNoteAmplifiedCount")) + ((int) breakdown.get("teleopSpeakerNoteCount"));
         int teleAmpTrue = (int) breakdown.get("teleopAmpNoteCount");
-        for (DatabaseManager.MatchRecord robot : robots) {
-            ArrayList<DataPoint> recordTemp = new ArrayList<>();
+        for (Robot robot : robots) {
+            LinkedList<DataPoint> recordTemp = new LinkedList<>();
             //for each robot
-            for (DataPoint dataPoint : robot.getDataAsList()) {
+            for (DataPoint dataPoint : robot.data()) {
                 if (!matchComplete) {
                     //then there is missing data for at least on robot or there is excess data and the whole match will be marked as unknown
-                    recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), DataPoint.ErrorLevel.UNKNOWN));
+                    recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
                 }else {
                     try {
                         switch (Constants.ColumnName.valueOf(dataPoint.getName())) {
 
                             case TIMESTAMP, MATCH_NUM, TEAM_NUM, ALLIANCE_POS, AUTO_LEAVE, AUTO_COMMENTS, TELE_COMMENTS, ENDGAME_POS -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), DataPoint.ErrorLevel.ZERO));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), 0));
                                 break;
                             }
                             case AUTO_SPEAKER -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), DataPoint.translateErrorNum(robot.autoSpeaker() - autoSpeakerTrue)));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (robot.record().autoSpeaker() - autoSpeakerTrue)));
                                 break;
                             }
                             case AUTO_AMP -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), DataPoint.translateErrorNum(robot.autoAmp() - autoAmpTrue)));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), robot.record().autoAmp() - autoAmpTrue));
                             }
                             case AUTO_COLLECTED, AUTO_SPEAKER_MISSED, AUTO_AMP_MISSED -> {
                                 //collected - missed = scored + error
                                 //collected - missed - scored = error
-                                int totalMissed = robot.autoAmpMissed() + robot.autoSpeakerMissed();
+                                int totalMissed = robot.record().autoAmpMissed() + robot.record().autoSpeakerMissed();
                                 int totalScored = autoSpeakerTrue + autoAmpTrue;
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), DataPoint.translateErrorNum(robot.autoCollected() - totalScored - totalMissed)));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), robot.record().autoCollected() - totalScored - totalMissed));
                                 break;
                             }
                             case TELE_SPEAKER -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), DataPoint.translateErrorNum(robot.teleSpeaker() - teleSpeakerTrue)));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), robot.record().teleSpeaker() - teleSpeakerTrue));
                                 break;
                             }
                             case TELE_AMP -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), DataPoint.translateErrorNum(robot.teleAmp() - teleAmpTrue)));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), robot.record().teleAmp() - teleAmpTrue));
                                 break;
                             }
                             case TELE_TRAP -> {
-                                int robotPositonNum = (robot.position().ordinal() % 3)+1;
+                                int robotPositonNum = (robot.record().position().ordinal() % 3)+1;
                                 String climb = (String) breakdown.get("endGameRobot" + robotPositonNum);
                                 boolean trap = false;
                                 if (!Objects.equals(climb, "None") && !Objects.equals(climb, "Parked")) {
                                     trap = (boolean) breakdown.get("trap" + climb);
                                 }
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (trap == (robot.teleTrap() > 0))?(DataPoint.ErrorLevel.ZERO):(DataPoint.ErrorLevel.HIGH)));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (trap == (robot.record().teleTrap() > 0))?(0):(100)));
                                 break;
                             }
                             case TELE_SPEAKER_MISSED, TELE_AMP_MISSED -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), DataPoint.ErrorLevel.UNKNOWN));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
                                 break;
                             }
                         }//end switch
@@ -114,7 +121,7 @@ public class DataValidator {
 
 
             }
-            correctedAlliance.add(recordTemp);
+            correctedAlliance.add(new Robot(robot.robotPosition(), robot.teamNumber(), recordTemp, robot.record()));
 
         }
         return correctedAlliance;
