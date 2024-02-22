@@ -47,11 +47,11 @@ public class DatabaseManager {
             connection.commit();
             toExec.close();
             System.out.println("Executed sql Query: " + statement);
-        } catch (SQLException err){
+        } catch (SQLException e){
             System.err.println("SQLException while executing statement '" + statement + "'.");
             System.err.println("Rolling back transaction.");
             connection.rollback();
-            throw err;
+            Logging.logError(e);
         }
     }
 
@@ -74,12 +74,13 @@ public class DatabaseManager {
             toExec.close();
             System.out.println("Executed sql query: " + statement);
             return toReturn;
-        } catch (SQLException err){
+        } catch (SQLException e){
             System.err.println("SQLException while executing statement '" + statement + "'.");
             System.err.println("Rolling back transaction.");
             connection.rollback();
-            throw err;
+            Logging.logError(e);
         }
+        return new ArrayList<>();
     }
 
     public static ArrayList<HashMap<String, Object>> processResultSet(ResultSet data) throws SQLException{

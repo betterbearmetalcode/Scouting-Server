@@ -72,8 +72,6 @@ dependencies {
 // https://mvnrepository.com/artifact/com.fasterxml/aalto-xml
   implementation group: 'com.fasterxml', name: 'aalto-xml', version: '1.3.2'
 
-
-
 }
 
 test {
