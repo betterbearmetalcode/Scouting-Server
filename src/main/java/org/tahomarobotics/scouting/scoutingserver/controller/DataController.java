@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.TableChooserDialog;
 
 import java.io.File;
@@ -76,7 +77,7 @@ public class DataController {
 
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Logging.logError(e);
         }
 
     }
@@ -91,7 +92,7 @@ public class DataController {
             output = selectedTable.get();
             System.out.println("Dialog Result: " + selectedTable.get());
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            Logging.logError(e);
         }
 
 

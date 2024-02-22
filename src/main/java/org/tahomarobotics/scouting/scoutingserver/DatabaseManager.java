@@ -2,6 +2,7 @@ package org.tahomarobotics.scouting.scoutingserver;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchRecordComparator;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
@@ -41,9 +42,9 @@ public class DatabaseManager {
             SQLUtil.execNoReturn("INSERT INTO " + tablename + " VALUES (" + m.getDataForSQL() + ")");
         } catch (NumberFormatException e) {
             System.err.println("Failed to construct MatchRecord, likly corruppted Data");
-            throw new RuntimeException(e);
+            Logging.logError(e);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            Logging.logError(e);
         }
     }
 
@@ -73,9 +74,9 @@ public class DatabaseManager {
             SQLUtil.execNoReturn("INSERT INTO " + tablename + " VALUES (" + m.getDataForSQL() + ")");
         } catch (NumberFormatException e) {
             System.err.println("Failed to construct MatchRecord, likly corruppted Data");
-            throw new RuntimeException(e);
+            Logging.logError(e);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            Logging.logError(e);
         }
     }
 
@@ -110,8 +111,7 @@ public class DatabaseManager {
                 ));
             }
         } catch (SQLException e) {
-
-            throw new RuntimeException(e);
+            Logging.logError(e);
         }
         return output;
     }

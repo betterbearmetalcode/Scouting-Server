@@ -9,10 +9,13 @@ import javafx.util.Pair;
 import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -41,14 +44,8 @@ public class MainController extends VBox {
                 QRScannerController.readStoredImage(p.getValue(), Constants.TEST_SQL_TABLE_NAME);
             }
 
-        } catch (WriterException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (NotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (WriterException | NotFoundException | IOException | SQLException e) {
+            Logging.logError(e);
         }
 
 
@@ -79,5 +76,6 @@ public class MainController extends VBox {
             throw new RuntimeException(e);
         }*/
         //TabController.validateData(null);
+
     }
 }

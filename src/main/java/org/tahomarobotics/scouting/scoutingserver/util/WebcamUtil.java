@@ -83,7 +83,7 @@ public class WebcamUtil {
                     }
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Logging.logError(e);
                 }
             }
         }).start();

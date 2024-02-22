@@ -14,10 +14,7 @@ import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
-import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.TableChooserDialog;
-import org.tahomarobotics.scouting.scoutingserver.util.WebcamUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,7 +56,7 @@ public class QRScannerController {
             selectCameraComboBox.setItems(arr);
             selectedDatabaseLabel.setText(Constants.DEFAULT_SQL_TABLE_NAME);
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            Logging.logError(e);
         }
     }
 
@@ -72,7 +69,7 @@ public class QRScannerController {
             result.ifPresent(this::setActiveTable);
             result.ifPresent(System.out::println);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            Logging.logError(e);
         }
     }
 
@@ -101,11 +98,8 @@ public class QRScannerController {
                 }
             }
 
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Logging.logError(e);
         }
     }
 
@@ -132,7 +126,7 @@ public class QRScannerController {
             readStoredImage(filePath, activeTable);
 
         } catch (InterruptedException | IOException e) {
-            throw new RuntimeException(e);
+            Logging.logError(e);
         } catch (NotFoundException e) {
 
             System.out.println("Failed to read QR Code");

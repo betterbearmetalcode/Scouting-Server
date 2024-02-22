@@ -34,7 +34,7 @@ public class TableChooserDialog extends Dialog<String> {
 
                     System.out.println("edit succesfully  commited");
                 } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                    Logging.logError(e);
                 }
             } else {
                 System.out.println("No changes made");
@@ -69,7 +69,7 @@ public class TableChooserDialog extends Dialog<String> {
                 listView.getItems().add(name);
                 SQLUtil.addTable(name, SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                Logging.logError(e);
             }
         });
         Button duplicateButton = new Button("Duplicate");
@@ -88,7 +88,7 @@ public class TableChooserDialog extends Dialog<String> {
                 SQLUtil.execNoReturn("CREATE TABLE '" + name + "' AS  SELECT *  FROM '" + listView.getSelectionModel().getSelectedItem() + "'");
                 listView.getItems().add(name);
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                Logging.logError(e);
             }
         });
         Button deleteButton = new Button("Delete");
@@ -104,7 +104,7 @@ public class TableChooserDialog extends Dialog<String> {
                     SQLUtil.execNoReturn("DROP TABLE IF EXISTS '" + listView.getSelectionModel().getSelectedItem() + "'");
                     listView.getItems().remove(listView.getSelectionModel().getSelectedItem());
                 } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                    Logging.logError(e);
                 }
             }
         });

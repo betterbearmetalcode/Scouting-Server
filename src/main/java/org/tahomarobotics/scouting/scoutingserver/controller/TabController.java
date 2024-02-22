@@ -13,6 +13,7 @@ import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchRecordComparator;
+import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
@@ -50,7 +51,7 @@ public class TabController {
         chooser.getExtensionFilters().add(0, new FileChooser.ExtensionFilter("Excel Files", ".xls"));
 
         File file = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
-        //    SpreadsheetUtil.writeToSpreadSheet(databaseData, file, true);//should add button later if buranik insists to export raw wihtout formulas
+        //SpreadsheetUtil.writeToSpreadSheet(databaseData, file, true);//should add button later if buranik insists to export raw wihtout formulas
     }
 
     @FXML
@@ -111,7 +112,7 @@ public class TabController {
         try {
             databaseData = DatabaseManager.getUnCorrectedDataFromDatabase(tableName);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            Logging.logError(ex);
         }
         constructTree(databaseData);
     }
