@@ -66,8 +66,8 @@ public class TabController {
         setExpansionAll(rootItem, false);
     }
 
-    private void setExpansionAll(TreeItem treeItem, boolean val) {
-        if (treeItem.getValue().equals("root-item")) {
+    private void setExpansionAll(TreeItem<Label> treeItem, boolean val) {
+        if (treeItem.getValue().getText().equals("root-item")) {
             //then we are dealing with the root item
             treeItem.setExpanded(true);
         } else {
@@ -75,7 +75,7 @@ public class TabController {
 
         }
         if (!treeItem.getChildren().isEmpty()) {
-            for (TreeItem t : (ObservableList<TreeItem>) treeItem.getChildren()) {
+            for (TreeItem<Label> t : (ObservableList<TreeItem<Label>>) treeItem.getChildren()) {
                 setExpansionAll(t, val);
             }
         }
