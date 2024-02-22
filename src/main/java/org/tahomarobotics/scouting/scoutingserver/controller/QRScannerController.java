@@ -1,8 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
 import com.google.zxing.NotFoundException;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,15 +14,14 @@ import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 
 public class QRScannerController {
     private static String activeTable = Constants.DEFAULT_SQL_TABLE_NAME;
@@ -32,15 +29,12 @@ public class QRScannerController {
     //fxml variables
     @FXML
     public Button takePictureButton;
-    @FXML
-    public ComboBox<String> selectCameraComboBox;
-    @FXML
-    public TextField delayField;
+
+    private static boolean watchForQrCodes = true;
 
     @FXML
     public Label selectedDatabaseLabel;
 
-    public CheckBox previewCheckbox;
 
     public ImageView imageView;
 
@@ -50,14 +44,8 @@ public class QRScannerController {
 
     @FXML
     private void initialize() {
-        try {
-            ArrayList<String> devices = WebcamUtil.getDevices();
-            ObservableList<String> arr = FXCollections.observableArrayList(devices);
-            selectCameraComboBox.setItems(arr);
-            selectedDatabaseLabel.setText(Constants.DEFAULT_SQL_TABLE_NAME);
-        } catch (IOException | InterruptedException e) {
-            Logging.logError(e);
-        }
+        selectedDatabaseLabel.setText(Constants.DEFAULT_SQL_TABLE_NAME);
+        registerWatcher(Constants.QR_IAMGE_QUERY_LOCATION);
     }
 
     public void selectTargetTable(ActionEvent event) {
@@ -73,11 +61,6 @@ public class QRScannerController {
         }
     }
 
-    @FXML
-    public void cameraSelectorClicked(ActionEvent event) {
-        WebcamUtil.setSelectedWebcam(selectCameraComboBox.getValue());
-        takePictureButton.setDisable(false);
-    }
 
     @FXML
     public void importJSON(ActionEvent event) {
@@ -106,33 +89,18 @@ public class QRScannerController {
 
     //consider this https://www.tutorialspoint.com/java_mysql/java_mysql_quick_guide.html
     @FXML
-    public void takePicture(ActionEvent event) {
-        System.out.println("Taking picture on camera: " + WebcamUtil.getSelectedWebcam());
-        int delay = 0;
-        try {
-            delay = Integer.parseInt(delayField.getText().replaceAll("[^0-9]", ""));
-        } catch (Exception e) {
-            delay = 1000;//just in case the user screws things up, set a default delay
-        }
+    public void loadScannedQRCodes(ActionEvent event) {
 
-        String filePath = Constants.IMAGE_DATA_FILEPATH + System.currentTimeMillis() + ".bmp";
+
         try {
 
-            WebcamUtil.snapshotWebcam(selectCameraComboBox.getValue(), previewCheckbox.isSelected(), delay, filePath);
-            FileInputStream input = new FileInputStream(filePath);
+            FileInputStream input = new FileInputStream(Constants.QR_IAMGE_QUERY_LOCATION);
             Image image = new Image(input);
             imageView.setImage(image);
             input.close();
-            readStoredImage(filePath, activeTable);
 
-        } catch (InterruptedException | IOException e) {
+        } catch (IOException e) {
             Logging.logError(e);
-        } catch (NotFoundException e) {
-
-            System.out.println("Failed to read QR Code");
-            Alert aler = new Alert(Alert.AlertType.WARNING, "Failed to read QR Code");
-            aler.showAndWait();
-
         }
 
     }
@@ -148,6 +116,80 @@ public class QRScannerController {
 
     public void setActiveTable(String s) {
         activeTable = s;
+    }
+
+    private static String execCommand(String command) throws InterruptedException, IOException {
+        final Process p = Runtime.getRuntime().exec(command);
+        StringBuilder builder = new StringBuilder();
+        new Thread(new Runnable() {
+            public void run() {
+                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                String line = null;
+
+                try {
+                    while ((line = input.readLine()) != null) {
+                        builder.append(line);
+                    }
+
+                } catch (IOException e) {
+                    Logging.logError(e);
+                }
+            }
+        }).start();
+
+        p.waitFor();
+        return builder.toString();
+
+    }
+
+
+    private static void registerWatcher(String absPath) {
+        try {
+            watchForQrCodes = false;//kill any existing threads
+            WatchService watchService = FileSystems.getDefault().newWatchService();
+            Path path = Paths.get(new File(absPath).toURI());
+            path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
+            AtomicReference<WatchKey> watchKey = new AtomicReference<>();
+            watchForQrCodes = true;
+            Thread thread = new Thread(() -> {
+
+                while (watchForQrCodes) {
+                    try {
+                        watchKey.set(watchService.take());
+                        watchKey.get().pollEvents()
+                                .stream()
+                                .filter(event -> event.kind() == ENTRY_CREATE)
+                                .forEach(QRScannerController::userScannedImage);
+                        if (!watchKey.get().reset()) {
+                            break;
+                        }
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            thread.start();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @SuppressWarnings("unchecked")
+    private static void userScannedImage(WatchEvent<?> event) {
+        WatchEvent<Path> ev = (WatchEvent<Path>) event;
+        Path filename = ev.context();
+        try {
+            System.out.println("File detected: " + Constants.QR_IAMGE_QUERY_LOCATION + filename);
+            readStoredImage(Constants.QR_IAMGE_QUERY_LOCATION + filename, activeTable);
+
+        } catch (IOException ignored) {
+           ignored.printStackTrace();
+        } catch (NotFoundException e) {
+            System.err.println("failed re read qr code");
+        }
+
+
+        System.out.println(Constants.QR_IAMGE_QUERY_LOCATION + filename + " has been created.");
     }
 
 

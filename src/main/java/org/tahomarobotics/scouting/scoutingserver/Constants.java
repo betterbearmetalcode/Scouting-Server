@@ -15,6 +15,8 @@ public class Constants {
     public static final String IMAGE_DATA_FILEPATH = BASE_APP_DATA_FILEPATH + "/resources/images/";
     public static final String DATABASE_FILEPATH = BASE_APP_DATA_FILEPATH + "/resources/database/";
 
+    public static String QR_IAMGE_QUERY_LOCATION = IMAGE_DATA_FILEPATH;//default to iamges directory in app data, but user wants to change, i'm not stopping them!
+
 
     public static final String SQL_DATABASE_NAME = "database.db";
 

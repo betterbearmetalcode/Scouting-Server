@@ -294,20 +294,25 @@ public class DatabaseManager {
         LinkedList<MatchRecord> rawData = readDatabase(tableName);
         rawData.sort(new MatchRecordComparator());//this ensures that the data is in order of ascending match and ascending robot position
         ArrayList<Match> output = new ArrayList<>();
-        int numMatches = rawData.getLast().matchNumber;
-        for (int i  =1; i < numMatches + 1; i++) {
-            //for each match that we have data on
+        if (!rawData.isEmpty()) {
+            int numMatches = rawData.getLast().matchNumber;
+            for (int i  =1; i < numMatches + 1; i++) {
+                //for each match that we have data on
 
-            ArrayList<Robot> robots = new ArrayList<>();
-            final int finalI = i;
-            List<MatchRecord> rawRobots = rawData.stream().filter(matchRecord -> matchRecord.matchNumber == finalI).toList();
-            for (MatchRecord robot : rawRobots) {
-                //for each robot in this match
-                robots.add(new Robot(robot.position, robot.teamNumber, robot.getDataAsList(), robot));
+                ArrayList<Robot> robots = new ArrayList<>();
+                final int finalI = i;
+                List<MatchRecord> rawRobots = rawData.stream().filter(matchRecord -> matchRecord.matchNumber == finalI).toList();
+                for (MatchRecord robot : rawRobots) {
+                    //for each robot in this match
+                    robots.add(new Robot(robot.position, robot.teamNumber, robot.getDataAsList(), robot));
+                }
+                output.add(new Match(i, robots));
+
             }
-            output.add(new Match(i, robots));
-
+        }else {
+            output = new ArrayList<>();
         }
+
         return output;
     }
 

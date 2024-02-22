@@ -19,8 +19,13 @@ public class Logging {
         }
 
 
-//        for (StackTraceElement stackTraceElement : e.getStackTrace()) {
-//            LOGGER.log(Level.SEVERE, stackTraceElement.toString());
-//        }
+    }
+
+    public static void logError(Exception e, String customMessage) {
+        LOGGER.log(Level.SEVERE, customMessage, e);
+        Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+        alert.showAndWait();
+
+
     }
 }
