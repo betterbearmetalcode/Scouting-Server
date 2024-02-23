@@ -41,17 +41,26 @@ public class QRCodeUtil {
         FileInputStream stream = null;
         Result qrCodeResult = null;
         try {
-            stream = new FileInputStream(filePath);
-            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
-                    new BufferedImageLuminanceSource(
-                            ImageIO.read(stream))));
-            qrCodeResult = new MultiFormatReader().decode(binaryBitmap);
+            File file = new File(filePath);
+            if (!file.exists()) {
+                Logging.logError(new FileNotFoundException(filePath), "Could not read image: " + filePath);
+            }else {
+                stream = new FileInputStream(file);
+                BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
+                        new BufferedImageLuminanceSource(
+                                ImageIO.read(stream))));
+                qrCodeResult = new MultiFormatReader().decode(binaryBitmap);
+            }
 
         } finally {
-            stream.close();
+            if (stream != null) {
+                stream.close();
+            }
         }
+        if (qrCodeResult != null) {
+            return qrCodeResult.getText();
+        }else throw new IOException("Could not read QR code");
 
-        return qrCodeResult.getText();
     }
 
 

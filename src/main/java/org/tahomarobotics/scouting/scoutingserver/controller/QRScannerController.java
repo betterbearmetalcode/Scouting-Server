@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
 import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
@@ -24,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 
 public class QRScannerController {
-    private static String activeTable = Constants.DEFAULT_SQL_TABLE_NAME;
+    public static String activeTable = Constants.DEFAULT_SQL_TABLE_NAME;
 
     //fxml variables
     @FXML
@@ -41,11 +42,11 @@ public class QRScannerController {
     @FXML
     public VBox imageViewBox;
 
-
+    public static DirectoryWatcher watcher;
     @FXML
     private void initialize() {
         selectedDatabaseLabel.setText(Constants.DEFAULT_SQL_TABLE_NAME);
-        registerWatcher(Constants.QR_IAMGE_QUERY_LOCATION);
+       watcher = new DirectoryWatcher(Constants.QR_IAMGE_QUERY_LOCATION);
     }
 
     public void selectTargetTable(ActionEvent event) {
@@ -90,17 +91,18 @@ public class QRScannerController {
     //consider this https://www.tutorialspoint.com/java_mysql/java_mysql_quick_guide.html
     @FXML
     public void loadScannedQRCodes(ActionEvent event) {
-
-
-        try {
-
-            FileInputStream input = new FileInputStream(Constants.QR_IAMGE_QUERY_LOCATION);
-            Image image = new Image(input);
-            imageView.setImage(image);
-            input.close();
-
-        } catch (IOException e) {
-            Logging.logError(e);
+        File dir = new File(Constants.QR_IAMGE_QUERY_LOCATION);
+        File[] arr = dir.listFiles(pathname -> (pathname.getName().toLowerCase().endsWith(".png") || pathname.getName().toLowerCase().endsWith(".jpg")));
+        if (arr != null) {
+            for (File file : arr) {
+                try {
+                    readStoredImage(Constants.QR_IAMGE_QUERY_LOCATION + file.getName(), activeTable);
+                } catch (IOException e) {
+                    Logging.logError(e);
+                } catch (NotFoundException e) {
+                    Logging.logError(e, "Could not read qr code");
+                }
+            }
         }
 
     }
@@ -142,55 +144,6 @@ public class QRScannerController {
 
     }
 
-
-    private static void registerWatcher(String absPath) {
-        try {
-            watchForQrCodes = false;//kill any existing threads
-            WatchService watchService = FileSystems.getDefault().newWatchService();
-            Path path = Paths.get(new File(absPath).toURI());
-            path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
-            AtomicReference<WatchKey> watchKey = new AtomicReference<>();
-            watchForQrCodes = true;
-            Thread thread = new Thread(() -> {
-
-                while (watchForQrCodes) {
-                    try {
-                        watchKey.set(watchService.take());
-                        watchKey.get().pollEvents()
-                                .stream()
-                                .filter(event -> event.kind() == ENTRY_CREATE)
-                                .forEach(QRScannerController::userScannedImage);
-                        if (!watchKey.get().reset()) {
-                            break;
-                        }
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-            thread.start();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    @SuppressWarnings("unchecked")
-    private static void userScannedImage(WatchEvent<?> event) {
-        WatchEvent<Path> ev = (WatchEvent<Path>) event;
-        Path filename = ev.context();
-        try {
-            System.out.println("File detected: " + Constants.QR_IAMGE_QUERY_LOCATION + filename);
-            readStoredImage(Constants.QR_IAMGE_QUERY_LOCATION + filename, activeTable);
-
-        } catch (IOException ignored) {
-           ignored.printStackTrace();
-        } catch (NotFoundException e) {
-            System.err.println("failed re read qr code");
-        }
-
-
-        System.out.println(Constants.QR_IAMGE_QUERY_LOCATION + filename + " has been created.");
-    }
 
 
 }
