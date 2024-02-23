@@ -48,36 +48,9 @@ public class DatabaseManager {
         }
     }
 
-    public static void storeRawQRData(long timestamp, JSONArray dataJSON, String tablename) throws IOException {
-        try {
+    public static void storeRawQRData(long timestamp, JSONObject dataJSON, String tablename) throws IOException {
+        storeRawQRData(timestamp, dataJSON.getString( (String) Arrays.stream(dataJSON.keySet().toArray()).toList().get(0)), tablename);
 
-            MatchRecord m = new MatchRecord(timestamp,
-                    dataJSON.getInt(0),//match num
-                    dataJSON.getInt(1),//team num
-                    getRobotPositionFromNum(dataJSON.getInt(2)),
-                    dataJSON.getInt(3) == 1,//auto leave
-                    dataJSON.getInt(4),//auto speaker
-                    dataJSON.getInt(5),//auto amp
-                    dataJSON.getInt(6),//auto collected
-                    dataJSON.getInt(7),//auto speaker missed
-                    dataJSON.getInt(8),//auto amp missed
-                    dataJSON.getInt(9),//tele speaker
-                    dataJSON.getInt(10),//tele amp
-                    dataJSON.getInt(11),//tele trap
-                    dataJSON.getInt(12),//tele speaker missed
-                    dataJSON.getInt(13),//tele amp missed
-                    getEngamePositionFromNum(dataJSON.getInt(14)),//endgame pos
-                    dataJSON.getString(15),//auto notes
-                    dataJSON.getString(16)//tele notes
-            );
-
-            SQLUtil.execNoReturn("INSERT INTO " + tablename + " VALUES (" + m.getDataForSQL() + ")");
-        } catch (NumberFormatException e) {
-            System.err.println("Failed to construct MatchRecord, likly corruppted Data");
-            Logging.logError(e);
-        } catch (SQLException e) {
-            Logging.logError(e);
-        }
     }
 
 

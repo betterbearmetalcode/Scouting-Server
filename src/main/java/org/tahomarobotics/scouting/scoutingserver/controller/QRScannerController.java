@@ -1,53 +1,45 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
 import com.google.zxing.NotFoundException;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import javafx.util.Pair;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.*;
 
 import java.io.*;
-import java.nio.file.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 
 public class QRScannerController {
     public static String activeTable = Constants.DEFAULT_SQL_TABLE_NAME;
 
-    //fxml variables
-    @FXML
-    public Button takePictureButton;
-
-    private static boolean watchForQrCodes = true;
-
     @FXML
     public Label selectedDatabaseLabel;
 
+    public static TextArea textArea;
 
-    public ImageView imageView;
 
-    @FXML
-    public VBox imageViewBox;
 
-    public static DirectoryWatcher watcher;
     @FXML
     private void initialize() {
         selectedDatabaseLabel.setText(Constants.DEFAULT_SQL_TABLE_NAME);
-       watcher = new DirectoryWatcher(Constants.QR_IAMGE_QUERY_LOCATION);
     }
+
+
 
     public void selectTargetTable(ActionEvent event) {
         try {
@@ -75,7 +67,7 @@ public class QRScannerController {
                 for (File file : selectedFile) {
                     if (file.exists()) {
                         FileInputStream inputStream = new FileInputStream(file);
-                        DatabaseManager.storeRawQRData(System.currentTimeMillis(), new JSONArray(new String(inputStream.readAllBytes())), Constants.DEFAULT_SQL_TABLE_NAME);
+                        DatabaseManager.storeRawQRData(System.currentTimeMillis(), new JSONObject(new String(inputStream.readAllBytes())), Constants.DEFAULT_SQL_TABLE_NAME);
                         inputStream.close();
                     }
 
@@ -96,23 +88,25 @@ public class QRScannerController {
         if (arr != null) {
             for (File file : arr) {
                 try {
-                    readStoredImage(Constants.QR_IAMGE_QUERY_LOCATION + file.getName(), activeTable);
+                    String data = readStoredImage(Constants.QR_IAMGE_QUERY_LOCATION + file.getName(), activeTable);
+                    logScan(true, data);
                 } catch (IOException e) {
                     Logging.logError(e);
                 } catch (NotFoundException e) {
-                    Logging.logError(e, "Could not read qr code");
+                    logScan(false, "");
                 }
             }
         }
 
     }
 
-    public static void readStoredImage(String fp, String tableName) throws IOException, NotFoundException {
+    public static String readStoredImage(String fp, String tableName) throws IOException, NotFoundException {
         //if we have got this far in the code, than the iamge has succesfully be written to the disk
 
         String qrData = QRCodeUtil.readQRCode(fp);
         System.out.println("Scanner QR Code: " + qrData);
         DatabaseManager.storeRawQRData(System.currentTimeMillis(), qrData, tableName);
+        return qrData;
     }
 
 
@@ -120,30 +114,14 @@ public class QRScannerController {
         activeTable = s;
     }
 
-    private static String execCommand(String command) throws InterruptedException, IOException {
-        final Process p = Runtime.getRuntime().exec(command);
-        StringBuilder builder = new StringBuilder();
-        new Thread(new Runnable() {
-            public void run() {
-                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                String line = null;
 
-                try {
-                    while ((line = input.readLine()) != null) {
-                        builder.append(line);
-                    }
+    public static void logScan(boolean successful, String qrData) {
+        String str = successful?"Successfully scanned Qr code: " + qrData:"Failed to scan Qr code";
+        System.out.println(str);
 
-                } catch (IOException e) {
-                    Logging.logError(e);
-                }
-            }
-        }).start();
 
-        p.waitFor();
-        return builder.toString();
+
 
     }
-
-
 
 }

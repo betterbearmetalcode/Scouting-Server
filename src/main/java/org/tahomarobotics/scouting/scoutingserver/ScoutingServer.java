@@ -164,8 +164,6 @@ public class ScoutingServer extends Application {
         launch();
     }
 
-    @Override
-    public void stop(){
-        QRScannerController.watcher.endWatcher();
-    }
+
+
 }

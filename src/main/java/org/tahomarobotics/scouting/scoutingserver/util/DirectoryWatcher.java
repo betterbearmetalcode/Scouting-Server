@@ -50,7 +50,7 @@ public class DirectoryWatcher {
 
                             if (filename.toString().toLowerCase().endsWith(".png") || filename.toString().toLowerCase().endsWith(".jpg")) {
                                 Thread.sleep(100);
-                                QRScannerController.readStoredImage(basePath + filename.getFileName(), QRScannerController.activeTable);
+                                QRScannerController.logScan(true, QRScannerController.readStoredImage(basePath + filename.getFileName(), QRScannerController.activeTable));
                             }else {
 
                                 break;
@@ -65,7 +65,7 @@ public class DirectoryWatcher {
                     } catch (InterruptedException e) {
                         Logging.logError(e, "File watcher interrupted possile cause is app closing");
                     } catch (NotFoundException e) {
-                        Logging.logError(e, "Could not read qr code");
+                        QRScannerController.logScan(false, "");
                     } catch (IOException e) {
                         Logging.logError(e);
                     } catch (ClosedWatchServiceException e) {
