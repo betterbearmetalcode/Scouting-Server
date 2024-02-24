@@ -1,5 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
+import javafx.scene.paint.Color;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
@@ -43,8 +44,10 @@ public class DatabaseManager {
                     data[20],//auto notes
                     data[21]);//tele notes
             SQLUtil.execNoReturn("INSERT INTO " + tablename + " VALUES (" + m.getDataForSQL() + ")");
-        } catch (NumberFormatException e) {
+            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database: " + m, Color.GREEN);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             System.err.println("Failed to construct MatchRecord, likly corruppted Data");
+            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed o construct QrRecord, likly corrupted data", Color.RED);
             Logging.logError(e);
         } catch (SQLException e) {
             Logging.logError(e);

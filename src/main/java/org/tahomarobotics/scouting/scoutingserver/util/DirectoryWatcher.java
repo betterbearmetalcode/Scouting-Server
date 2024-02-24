@@ -25,7 +25,7 @@ public class DirectoryWatcher {
         }
     }
     private Path dir;
-    public DirectoryWatcher(String absPath) {
+/*    public DirectoryWatcher(String absPath) {
         dir = new File(absPath).toPath();
         basePath = absPath;
         try {
@@ -77,7 +77,7 @@ public class DirectoryWatcher {
         thread.start();
 
 
-    }
+    }*/
 
     public void endWatcher() {
         keepWatching = false;

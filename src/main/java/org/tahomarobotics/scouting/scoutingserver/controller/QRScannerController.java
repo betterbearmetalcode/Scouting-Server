@@ -5,10 +5,13 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
@@ -24,19 +27,20 @@ import java.util.TimerTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
+
 public class QRScannerController {
     public static String activeTable = Constants.DEFAULT_SQL_TABLE_NAME;
 
     @FXML
     public Label selectedDatabaseLabel;
 
-    public static TextArea textArea;
-
+    public VBox imageViewBox;
 
 
     @FXML
     private void initialize() {
         selectedDatabaseLabel.setText(Constants.DEFAULT_SQL_TABLE_NAME);
+        ScoutingServer.qrScannerController  = this;
     }
 
 
@@ -67,7 +71,11 @@ public class QRScannerController {
                 for (File file : selectedFile) {
                     if (file.exists()) {
                         FileInputStream inputStream = new FileInputStream(file);
-                        DatabaseManager.storeRawQRData(System.currentTimeMillis(), new JSONObject(new String(inputStream.readAllBytes())), Constants.DEFAULT_SQL_TABLE_NAME);
+                        JSONArray arr = new JSONArray(new String(inputStream.readAllBytes()));
+                        for (Object o : arr.toList()) {
+                            DatabaseManager.storeRawQRData(System.currentTimeMillis(), (String) o, "\"" + activeTable + "\"");
+                        }
+
                         inputStream.close();
                     }
 
@@ -83,7 +91,13 @@ public class QRScannerController {
     //consider this https://www.tutorialspoint.com/java_mysql/java_mysql_quick_guide.html
     @FXML
     public void loadScannedQRCodes(ActionEvent event) {
-        File dir = new File(Constants.QR_IAMGE_QUERY_LOCATION);
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Select Import Directory");
+
+        File defaultDirectory = new File(System.getProperty("user.home"));
+        chooser.setInitialDirectory(defaultDirectory);
+
+        File dir = chooser.showDialog(ScoutingServer.mainStage);
         File[] arr = dir.listFiles(pathname -> (pathname.getName().toLowerCase().endsWith(".png") || pathname.getName().toLowerCase().endsWith(".jpg")));
         if (arr != null) {
             for (File file : arr) {
@@ -93,7 +107,10 @@ public class QRScannerController {
                 } catch (IOException e) {
                     Logging.logError(e);
                 } catch (NotFoundException e) {
+                    Logging.logError(e, "Failed to scan QR Code: " + file.getName());
                     logScan(false, "");
+                }catch (JSONException e) {
+                    Logging.logError(e, "Failed to read JSON: ");
                 }
             }
         }
@@ -115,13 +132,23 @@ public class QRScannerController {
     }
 
 
-    public static void logScan(boolean successful, String qrData) {
+    public void logScan(boolean successful, String qrData) {
         String str = successful?"Successfully scanned Qr code: " + qrData:"Failed to scan Qr code";
+
         System.out.println(str);
 
+        writeToDataCollectionConsole(str, successful?Color.GREEN:Color.RED);
 
 
+    }
 
+    public void writeToDataCollectionConsole(String str, Color color) {
+        Label l = new Label(str);
+        l.setTextFill(color);
+        imageViewBox.getChildren().add(l);
+    }
+    public void writeToDataCollectionConsole(String str) {
+        writeToDataCollectionConsole(str, Color.BLACK);
     }
 
 }

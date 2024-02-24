@@ -26,8 +26,9 @@ public class DataPoint {
     private ErrorLevel errorLevel;
 
     public enum ErrorLevel {
-        ZERO,
         UNKNOWN,
+        ZERO,
+
         MEDIUM,
         HIGH,
 

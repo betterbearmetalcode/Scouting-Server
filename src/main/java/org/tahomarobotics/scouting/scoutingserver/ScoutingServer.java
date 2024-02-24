@@ -44,6 +44,7 @@ public class ScoutingServer extends Application {
     public static Stage mainStage;
 
 
+
     public static QRScannerController qrScannerController = new QRScannerController();
 
     @Override
