@@ -28,7 +28,6 @@ public class DataValidator {
                 HashMap<String, Object> matchScoreBreakdown = (HashMap<String, Object>) match.get("score_breakdown");
                 ArrayList<Robot> corectedRobots = new ArrayList<>();
                 int matchNum = (Integer) match.get("match_number");
-                System.out.println(databaseData.stream().filter(match1 -> match1.matchNumber() == matchNum).findFirst().isEmpty());
                Optional<Match> result = databaseData.stream().filter(match1 -> match1.matchNumber() == matchNum).findFirst();
                List<Robot> robots = new ArrayList<>();
                result.ifPresent(match12 -> robots.addAll(result.get().robots()));

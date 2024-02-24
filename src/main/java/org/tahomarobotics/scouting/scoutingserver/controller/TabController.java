@@ -16,6 +16,7 @@ import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DataValidator;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
+import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
@@ -67,8 +68,17 @@ public class TabController {
         chooser.setInitialFileName("export");
         chooser.getExtensionFilters().add(0, new FileChooser.ExtensionFilter("Excel Files", ".xls"));
 
+        if ("".equals(currentEventCode)) {
+            selectCompetition(null);
+        }
         File file = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
-        //SpreadsheetUtil.writeToSpreadSheet(databaseData, file, true);//should add button later if buranik insists to export raw wihtout formulas
+        try {
+            SpreadsheetUtil.writeToSpreadSheet(databaseData, file, currentEventCode);//should add button later if buranik insists to export raw wihtout formulas
+        } catch (IOException ex) {
+            Logging.logError(ex, "IO error while exporting or fetching TBA Data");
+        } catch (InterruptedException ex) {
+            Logging.logError(ex, "Interrupted Exception while Fetching TBA data ");
+        }
     }
 
     @FXML
@@ -222,7 +232,7 @@ public class TabController {
             selectedCompetitionLabel.setText(temp);
         }else {
             validateDataButton.setDisable(true);
-            currentEventCode =  null;
+            currentEventCode =  "";
         }
 
 

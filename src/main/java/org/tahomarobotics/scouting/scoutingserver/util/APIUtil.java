@@ -3,6 +3,7 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 
 import org.json.JSONArray;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -14,7 +15,7 @@ public class APIUtil {
     private static final String apiKey = "gkV8whv2viztnwQybXkOmyQMYYJEGNh7qgbUvG0riVVdDH2YMKk57JNaRwgiTSQB";
 
 
-    public static String getAsString(String apiRequest) throws Exception {
+    public static String getAsString(String apiRequest) throws IOException, InterruptedException {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -27,7 +28,7 @@ public class APIUtil {
         return response.body();
     }
 
-    public static JSONArray get(String apiRequest) throws Exception {
+    public static JSONArray get(String apiRequest) throws IOException, InterruptedException {
         return new JSONArray(getAsString(apiRequest));
 
     }

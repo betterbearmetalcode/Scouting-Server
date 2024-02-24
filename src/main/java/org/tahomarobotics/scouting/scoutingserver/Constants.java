@@ -107,12 +107,9 @@ public class Constants {
     public static int TELE_AMP_NOTE_POINTS = 1;
     public static int TELE_TRAP_POINTS = 5;
 
-    public static Map<DatabaseManager.EndgamePosition, Integer> endgamePoints = Map.ofEntries(entry(DatabaseManager.EndgamePosition.NONE, 0),
-            entry(DatabaseManager.EndgamePosition.PARKED, 1),
-            entry(DatabaseManager.EndgamePosition.CLIMBED, 3),
-            entry(DatabaseManager.EndgamePosition.HARMONIZED, 5));
-
     public static final ArrayList<Pair<String, String>> competitons = new ArrayList<>(List.of(new Pair<>("2024orsal", "Oregon State Fairgrounds"), new Pair<>("2024wabon", "Bonney Lake"), new Pair<>("2024wasam", "Sammamish"), new Pair<>("2024pncmp", "Pacific Northwest")));//list of competions we are going to, first event code, second short name
 
     public static int LOW_ERROR_THRESHOLD = 3;
+
+
 }

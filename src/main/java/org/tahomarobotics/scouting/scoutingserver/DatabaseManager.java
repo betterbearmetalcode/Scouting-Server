@@ -224,24 +224,7 @@ public class DatabaseManager {
             output.add(new DataPoint(Constants.SQLColumnName.AUTO_COMMENTS.toString(), "\"" + autoNotes + "\""));
             output.add(new DataPoint(Constants.SQLColumnName.TELE_COMMENTS.toString(), "\"" + teleNotes + "\""));
 
-//only actually used by export, so this should be done in export so it doesn't gum code up
-/*            int teleAmpPoints = teleAmp * Constants.TELE_AMP_NOTE_POINTS;
-            int teleSpeakerPoints = teleSpeaker * Constants.TELE_SPEAKER_NOTE_POINTS;
-            int trapPoints = teleTrap * Constants.TELE_TRAP_POINTS;
-            //int climbPoints = Constants.endgamePoints.get(endgamePosition);
-            int climbPoints = -100;
-            int telePoints = teleAmpPoints + teleSpeakerPoints + trapPoints + climbPoints;
-            int autoPoints = (autoAmp * Constants.AUTO_AMP_NOTE_POINTS) + (autoSpeaker * Constants.AUTO_SPEAKER_NOTE_POINTS);
-            int toalNotesScored = autoAmp + autoSpeaker + teleAmp + teleSpeaker;
-            int toalNotesMissed = autoAmpMissed + autoSpeakerMissed + teleAmpMissed + teleSpeakerMissed;
-            output.add(new DataPoint("Total Auto Notes", String.valueOf(autoAmp + autoSpeaker)));
-            output.add(new DataPoint("Total Tele Notes", String.valueOf(teleAmp + teleSpeaker)));
-            output.add(new DataPoint("Auto Points Added", String.valueOf(autoPoints)));
-            output.add(new DataPoint("Tele Points Added", String.valueOf(telePoints)));
-            output.add(new DataPoint("Total Points Added", String.valueOf(autoPoints + telePoints)));
-            output.add(new DataPoint("Total Notes Scored", String.valueOf(toalNotesScored)));
-            output.add(new DataPoint("Total Notes Missed", String.valueOf(toalNotesMissed)));
-            output.add(new DataPoint("Total Notes", String.valueOf(toalNotesMissed + toalNotesScored)));*/
+
             return output;
         }
 
