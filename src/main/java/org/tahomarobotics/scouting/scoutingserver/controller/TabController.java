@@ -3,25 +3,30 @@ package org.tahomarobotics.scouting.scoutingserver.controller;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.FileChooser;
-import org.dhatim.fastexcel.Color;
+import javafx.util.Pair;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
+import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DataValidator;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
-import org.tahomarobotics.scouting.scoutingserver.util.MatchRecordComparator;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
-import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Predicate;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class TabController {
 
@@ -30,9 +35,21 @@ public class TabController {
     private ArrayList<Match> databaseData;
     public String tableName;
 
+    public Button validateDataButton;
+
     private TreeView<Label> treeView;
 
+    @FXML
+    public Label selectedCompetitionLabel;
+
     private TreeItem<Label> rootItem;
+
+    private JSONArray eventList;
+    private final ArrayList<Pair<String, String>> otherEvents = new ArrayList<>();
+
+    private AutoCompletionBinding<String> autoCompletionBinding;
+
+    private String currentEventCode = "";
 
 
     public TabController(ArrayList<Match> databaseData, String table) {
@@ -86,6 +103,7 @@ public class TabController {
 
 
     public void initialize(TreeView<Label> view) {
+        //init data stuff
         treeView = view;
         rootItem = new TreeItem<>(new Label("root-item"));
         if (!databaseData.isEmpty()) {
@@ -94,14 +112,31 @@ public class TabController {
         treeView.setShowRoot(false);
         treeView.setRoot(rootItem);
 
+        //init list of events
+        try {
+            FileInputStream stream = new FileInputStream(Constants.BASE_READ_ONLY_FILEPATH + "/resources/TBAData/eventList.json");
+            eventList = new JSONArray(new String(stream.readAllBytes()));
+            stream.close();
+        } catch (FileNotFoundException e) {
+            Logging.logError(e, "Could Not Find list of Competitions");
+        } catch (IOException e) {
+            Logging.logError(e, "Whooop de doo, another IO exception, I guess your just screwed now,-C.H");
+        }
+
 
     }
     @FXML
     public void validateData(ActionEvent event) {
 
-        String eventCode = "2024week0";
-        databaseData = DataValidator.validateData(eventCode, databaseData);
-        constructTree(databaseData);
+        if (currentEventCode != null) {
+
+            databaseData = DataValidator.validateData(currentEventCode, databaseData);
+            constructTree(databaseData);
+        }else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please Select A competition");
+            alert.showAndWait();
+        }
+
     }
 
 
@@ -150,6 +185,47 @@ public class TabController {
             matchLabel.setTextFill(DataPoint.color.get(maxErrorLevelInThisMatch));
             rootItem.getChildren().add(matchItem);
         }//end comp for
+    }
+    public void selectCompetition(ActionEvent event) {
+        System.out.println("Selecting Compeition");
+        Dialog<String> dialog = new Dialog<>();
+        TextField autoCompetionField = new TextField();
+        ArrayList<String> options = new ArrayList<>();
+        otherEvents.clear();
+        for (Object o : eventList.toList()) {
+            HashMap<String, String> comp = (HashMap<String, String>) o;
+            otherEvents.add(new Pair<>(comp.get("key"), comp.get("name")));
+            options.add(comp.get("name"));
+        }
+
+        autoCompletionBinding = TextFields.bindAutoCompletion(autoCompetionField, options);
+
+        FlowPane pane = new FlowPane(new Label("Enter Competition: "), autoCompetionField);
+        dialog.getDialogPane().setContent(pane);
+        dialog.setTitle("Select Competition");
+        dialog.setHeaderText("");
+        dialog.setOnCloseRequest(new EventHandler<DialogEvent>() {
+            @Override
+            public void handle(DialogEvent event) {
+                dialog.setResult(autoCompetionField.getText());
+            }
+        });
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        Optional<String> result = dialog.showAndWait();
+        AtomicReference<String> selectedEvent = new AtomicReference<>("");
+        result.ifPresent(selectedEvent::set);
+        String temp = selectedEvent.get();
+        if (!Objects.equals(temp, "")) {
+
+            currentEventCode =  otherEvents.stream().filter(s -> s.getValue().equals(temp)).findFirst().get().getKey();
+            validateDataButton.setDisable(false);
+            selectedCompetitionLabel.setText(temp);
+        }else {
+            validateDataButton.setDisable(true);
+            currentEventCode =  null;
+        }
+
+
     }
 
 
