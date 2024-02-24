@@ -5,7 +5,7 @@ import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 
 public class JSONUtil {
 
-    public static JSONObject generateJSONObjectFromMatchRecord(DatabaseManager.MatchRecord data) {
+    public static JSONObject generateJSONObjectFromMatchRecord(DatabaseManager.QRRecord data) {
 
         return null;
     }

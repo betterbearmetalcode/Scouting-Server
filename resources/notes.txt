@@ -24,38 +24,39 @@ for a match QR code
     4=B1
     5=B2
     6=B3
-<auto leave>=boolean
 <auto speaker>= whole number
 <auto amp>= whole number
-<auto collected>=whole number
 <auto speaker missed>=whole number
 <auto amp missed>=whole number
+f1
+f2
+f3
+m1
+m2
+m3
+m4
+m5
 <tele speaker>= whole number
 <tele amp> = whole number
 <tele trap>=whole number
 <tele speaker missed>
 <tele amp missed>
-<endgame pos> = a number from 1-x according to this key
-    1=none
-    2=parked
-    3=climbed
-    4=harmonized
 <auto notes>=string
 <tele notes>=string
 
 a "/" will be used as the delimiter
 
 test data strings
-1/2046/0/1/1/2/3/4/5/6/7/8/9/10/0/autoNotesTest1/teleNotes
-1/4414/1/10/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest2/teleNotes
-1/1323/2/10/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest3/teleNotes
+1/2046/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest1/teleNotes
+1/4414/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest2/teleNotes
+1/1323/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest3/teleNotes
 
-2/2046/0/1/1/2/3/4/5/6/7/8/9/10/0/autoNotesTest4/teleNotes
-2/4414/1/10/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest5/teleNotes
-2/1323/2/10/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest6/teleNotes
-2/254/3/1/1/2/3/4/5/6/7/8/9/10/0/autoNotesTest7/teleNotes
-2/1678/4/10/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest8/teleNotes
-2/2056/5/10/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest9/teleNotes
+2/2046/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest4/teleNotes
+2/4414/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest5/teleNotes
+2/1323/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest6/teleNotes
+2/2540/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest7/teleNotes
+2/1678/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest8/teleNotes
+2/2056/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest9/teleNotes
 
 
 data storage:

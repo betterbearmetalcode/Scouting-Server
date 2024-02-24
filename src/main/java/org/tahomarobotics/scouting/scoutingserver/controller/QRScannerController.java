@@ -88,7 +88,7 @@ public class QRScannerController {
         if (arr != null) {
             for (File file : arr) {
                 try {
-                    String data = readStoredImage(Constants.QR_IAMGE_QUERY_LOCATION + file.getName(), activeTable);
+                    String data = readStoredImage(Constants.QR_IAMGE_QUERY_LOCATION + file.getName(), "\"" + activeTable + "\"");
                     logScan(true, data);
                 } catch (IOException e) {
                     Logging.logError(e);

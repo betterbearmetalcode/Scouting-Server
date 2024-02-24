@@ -35,7 +35,7 @@ public class DataPoint {
 
     public static HashMap<ErrorLevel, Color> color = new HashMap<>(Map.ofEntries(
             Map.entry(ErrorLevel.HIGH, Color.RED),
-            Map.entry(ErrorLevel.MEDIUM, Color.YELLOW),
+            Map.entry(ErrorLevel.MEDIUM, Color.ORANGE),
             Map.entry(ErrorLevel.ZERO, Color.GREEN),
             Map.entry(ErrorLevel.UNKNOWN, Color.BLUE)
     ));
@@ -60,7 +60,7 @@ public class DataPoint {
 
     @Override
     public String toString() {
-        String error = !validated?", Unchecked":", Error Level: " + errorLevel.toString() + ((errorLevel.ordinal() != 3)?" (" + howOff + ")":"");
+        String error = !validated?", Unchecked":", Error Level: " + errorLevel.toString() + ((errorLevel.ordinal() != 1)?" (" + howOff + ")":"");
         return name.toLowerCase().replaceAll("_", " ") + ": " + value + error;
     }
 

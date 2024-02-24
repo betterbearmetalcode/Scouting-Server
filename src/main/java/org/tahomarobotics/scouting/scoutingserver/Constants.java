@@ -24,36 +24,42 @@ public class Constants {
 
     public static final String STORED_DATA_DELIMITER = "@";
 
-    public static final String TEST_QR_STRING_1 = "1/2046/0/1/1/2/3/4/5/6/7/8/9/10/0/autoNotesTest1/teleNotes";
-    public static final String TEST_QR_STRING_2 = "1/4414/1/0/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest2/teleNotes";
+    public static final String TEST_QR_STRING_1 = "1/2046/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest1/teleNotes";
+    public static final String TEST_QR_STRING_2 = "1/4414/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest2/teleNotes";
 
-    public static final String TEST_QR_STRING_3 = "1/1323/2/0/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest3/teleNotes";
-    public static final String TEST_QR_STRING_4 = "2/2046/0/1/1/2/3/4/5/6/7/8/9/10/0/autoNotesTest4/teleNotes";
-    public static final String TEST_QR_STRING_5 = "2/4414/1/0/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest5/teleNotes";
-    public static final String TEST_QR_STRING_6 = "2/1323/2/0/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest6/teleNotes";
-    public static final String TEST_QR_STRING_7 = "2/254/3/1/1/2/3/4/5/6/7/8/9/10/0/autoNotesTest7/teleNotes";
-    public static final String TEST_QR_STRING_8 = "2/1678/4/0/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest8/teleNotes";
-    public static final String TEST_QR_STRING_9 = "2/2056/5/0/9/8/7/6/5/4/3/2/1/0/0/autoNotesTest9/teleNotes";
+    public static final String TEST_QR_STRING_3 = "1/1323/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest3/teleNotes";
+    public static final String TEST_QR_STRING_4 = "2/2046/1/3/0/4/5/0/0/0/0/0/0/0/0/9/2/-92/9/0/autoNotesTest4/teleNotes";
+    public static final String TEST_QR_STRING_5 = "2/4414/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest5/teleNotes";
+    public static final String TEST_QR_STRING_6 = "2/1323/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest6/teleNotes";
+    public static final String TEST_QR_STRING_7 = "2/2540/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest7/teleNotes";
+    public static final String TEST_QR_STRING_8 = "2/1678/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest8/teleNotes";
+    public static final String TEST_QR_STRING_9 = "2/2056/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest9/teleNotes";
 
 
-    public enum ColumnName {
+    public enum SQLColumnName {
         TIMESTAMP,
         MATCH_NUM,
         TEAM_NUM,
         ALLIANCE_POS,
-        AUTO_LEAVE,
         AUTO_SPEAKER,
         AUTO_AMP,
-        AUTO_COLLECTED,
         AUTO_SPEAKER_MISSED,
         AUTO_AMP_MISSED,
+        F1,
+        F2,
+        F3,
+        M1,
+        M2,
+        M3,
+        M4,
+        M5,
+
         TELE_SPEAKER,
         TELE_AMP,
         TELE_TRAP,
         TELE_SPEAKER_MISSED,
         TELE_AMP_MISSED,
 
-        ENDGAME_POS,
         AUTO_COMMENTS,
         TELE_COMMENTS
 
@@ -61,33 +67,36 @@ public class Constants {
 
 
     public static final ArrayList<ColumnType> RAW_TABLE_SCHEMA = new ArrayList<>(List.of(
-            new ColumnType(ColumnName.TIMESTAMP, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.MATCH_NUM, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.TEAM_NUM, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.ALLIANCE_POS, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.AUTO_LEAVE, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.AUTO_SPEAKER, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.AUTO_AMP, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.AUTO_COLLECTED, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.AUTO_SPEAKER_MISSED, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.AUTO_AMP_MISSED, SQLDatatype.INTEGER),
-
-
-            new ColumnType(ColumnName.TELE_SPEAKER, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.TELE_AMP, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.TELE_TRAP, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.TELE_SPEAKER_MISSED, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.TELE_AMP_MISSED, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.ENDGAME_POS, SQLDatatype.INTEGER),
-            new ColumnType(ColumnName.AUTO_COMMENTS, SQLDatatype.TEXT),
-            new ColumnType(ColumnName.TELE_COMMENTS, SQLDatatype.TEXT)
+            new ColumnType(SQLColumnName.TIMESTAMP, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.MATCH_NUM, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.TEAM_NUM, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.ALLIANCE_POS, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.AUTO_SPEAKER, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.AUTO_AMP, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.AUTO_SPEAKER_MISSED, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.AUTO_AMP_MISSED, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.F1, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.F2, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.F3, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.M1, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.M2, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.M3, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.M4, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.M5, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.TELE_SPEAKER, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.TELE_AMP, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.TELE_TRAP, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.TELE_SPEAKER_MISSED, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.TELE_AMP_MISSED, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.AUTO_COMMENTS, SQLDatatype.TEXT),
+            new ColumnType(SQLColumnName.TELE_COMMENTS, SQLDatatype.TEXT)
 
     ));
     public static final String DEFAULT_SQL_TABLE_NAME = "Default_Table";
 
     public static final String TEST_SQL_TABLE_NAME = "debug_table";
 
-    public record ColumnType(ColumnName name, SQLDatatype datatype) {
+    public record ColumnType(SQLColumnName name, SQLDatatype datatype) {
     }
 
 
