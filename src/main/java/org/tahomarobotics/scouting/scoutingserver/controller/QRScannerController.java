@@ -1,64 +1,49 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
 import com.google.zxing.NotFoundException;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class QRScannerController {
-    private static String activeTable = Constants.DEFAULT_SQL_TABLE_NAME;
 
-    //fxml variables
-    @FXML
-    public Button takePictureButton;
-    @FXML
-    public ComboBox<String> selectCameraComboBox;
-    @FXML
-    public TextField delayField;
+public class QRScannerController {
+    public static String activeTable = Constants.DEFAULT_SQL_TABLE_NAME;
 
     @FXML
     public Label selectedDatabaseLabel;
 
-    public CheckBox previewCheckbox;
-
-    public ImageView imageView;
-
-    @FXML
     public VBox imageViewBox;
 
 
     @FXML
     private void initialize() {
-        try {
-            ArrayList<String> devices = WebcamUtil.getDevices();
-            ObservableList<String> arr = FXCollections.observableArrayList(devices);
-            selectCameraComboBox.setItems(arr);
-            selectedDatabaseLabel.setText(Constants.DEFAULT_SQL_TABLE_NAME);
-        } catch (IOException | InterruptedException e) {
-            Logging.logError(e);
-        }
+        selectedDatabaseLabel.setText(Constants.DEFAULT_SQL_TABLE_NAME);
+        ScoutingServer.qrScannerController  = this;
     }
+
+
 
     public void selectTargetTable(ActionEvent event) {
         try {
@@ -73,11 +58,6 @@ public class QRScannerController {
         }
     }
 
-    @FXML
-    public void cameraSelectorClicked(ActionEvent event) {
-        WebcamUtil.setSelectedWebcam(selectCameraComboBox.getValue());
-        takePictureButton.setDisable(false);
-    }
 
     @FXML
     public void importJSON(ActionEvent event) {
@@ -91,7 +71,11 @@ public class QRScannerController {
                 for (File file : selectedFile) {
                     if (file.exists()) {
                         FileInputStream inputStream = new FileInputStream(file);
-                        DatabaseManager.storeRawQRData(System.currentTimeMillis(), new JSONArray(new String(inputStream.readAllBytes())), Constants.DEFAULT_SQL_TABLE_NAME);
+                        JSONArray arr = new JSONArray(new String(inputStream.readAllBytes()));
+                        for (Object o : arr.toList()) {
+                            DatabaseManager.storeRawQRData(System.currentTimeMillis(), (String) o, "\"" + activeTable + "\"");
+                        }
+
                         inputStream.close();
                     }
 
@@ -106,43 +90,40 @@ public class QRScannerController {
 
     //consider this https://www.tutorialspoint.com/java_mysql/java_mysql_quick_guide.html
     @FXML
-    public void takePicture(ActionEvent event) {
-        System.out.println("Taking picture on camera: " + WebcamUtil.getSelectedWebcam());
-        int delay = 0;
-        try {
-            delay = Integer.parseInt(delayField.getText().replaceAll("[^0-9]", ""));
-        } catch (Exception e) {
-            delay = 1000;//just in case the user screws things up, set a default delay
-        }
+    public void loadScannedQRCodes(ActionEvent event) {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Select Import Directory");
 
-        String filePath = Constants.IMAGE_DATA_FILEPATH + System.currentTimeMillis() + ".bmp";
-        try {
+        File defaultDirectory = new File(System.getProperty("user.home"));
+        chooser.setInitialDirectory(defaultDirectory);
 
-            WebcamUtil.snapshotWebcam(selectCameraComboBox.getValue(), previewCheckbox.isSelected(), delay, filePath);
-            FileInputStream input = new FileInputStream(filePath);
-            Image image = new Image(input);
-            imageView.setImage(image);
-            input.close();
-            readStoredImage(filePath, activeTable);
-
-        } catch (InterruptedException | IOException e) {
-            Logging.logError(e);
-        } catch (NotFoundException e) {
-
-            System.out.println("Failed to read QR Code");
-            Alert aler = new Alert(Alert.AlertType.WARNING, "Failed to read QR Code");
-            aler.showAndWait();
-
+        File dir = chooser.showDialog(ScoutingServer.mainStage);
+        File[] arr = dir.listFiles(pathname -> (pathname.getName().toLowerCase().endsWith(".png") || pathname.getName().toLowerCase().endsWith(".jpg")));
+        if (arr != null) {
+            for (File file : arr) {
+                try {
+                    String data = readStoredImage(Constants.QR_IAMGE_QUERY_LOCATION + file.getName(), "\"" + activeTable + "\"");
+                    logScan(true, data);
+                } catch (IOException e) {
+                    Logging.logError(e);
+                } catch (NotFoundException e) {
+                    Logging.logError(e, "Failed to scan QR Code: " + file.getName());
+                    logScan(false, "");
+                }catch (JSONException e) {
+                    Logging.logError(e, "Failed to read JSON: ");
+                }
+            }
         }
 
     }
 
-    public static void readStoredImage(String fp, String tableName) throws IOException, NotFoundException {
+    public static String readStoredImage(String fp, String tableName) throws IOException, NotFoundException {
         //if we have got this far in the code, than the iamge has succesfully be written to the disk
 
         String qrData = QRCodeUtil.readQRCode(fp);
         System.out.println("Scanner QR Code: " + qrData);
         DatabaseManager.storeRawQRData(System.currentTimeMillis(), qrData, tableName);
+        return qrData;
     }
 
 
@@ -150,5 +131,24 @@ public class QRScannerController {
         activeTable = s;
     }
 
+
+    public void logScan(boolean successful, String qrData) {
+        String str = successful?"Successfully scanned Qr code: " + qrData:"Failed to scan Qr code";
+
+        System.out.println(str);
+
+        writeToDataCollectionConsole(str, successful?Color.GREEN:Color.RED);
+
+
+    }
+
+    public void writeToDataCollectionConsole(String str, Color color) {
+        Label l = new Label(str);
+        l.setTextFill(color);
+        imageViewBox.getChildren().add(l);
+    }
+    public void writeToDataCollectionConsole(String str) {
+        writeToDataCollectionConsole(str, Color.BLACK);
+    }
 
 }

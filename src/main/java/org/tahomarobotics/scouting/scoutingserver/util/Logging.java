@@ -1,5 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
@@ -11,16 +12,20 @@ public class Logging {
             java.util.logging.Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME);
 
     public static void logError(Exception e) {
-        LOGGER.log(Level.SEVERE, "exception: ", e);
-        Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            alert.hide();
-        }
+        logError(e, "");
 
 
-//        for (StackTraceElement stackTraceElement : e.getStackTrace()) {
-//            LOGGER.log(Level.SEVERE, stackTraceElement.toString());
-//        }
+    }
+
+    public static void logError(Exception e, String customMessage) {
+        LOGGER.log(Level.SEVERE, customMessage, e);
+        Platform.runLater(() -> {
+
+            Alert alert = new Alert(Alert.AlertType.ERROR,customMessage + ((e.getMessage() == null)?"":e.getMessage()));
+            alert.showAndWait();
+        });
+
+
+
     }
 }

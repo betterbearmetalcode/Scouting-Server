@@ -25,6 +25,7 @@ import java.util.LinkedList;
 
 public class MainController extends VBox {
 
+
     public void debugggy(ActionEvent event) {
         System.out.println("Debug button pressed");
         try {
@@ -53,28 +54,27 @@ public class MainController extends VBox {
 
     @FXML
     public void debugButton2(ActionEvent event) {
-       /* try {
+        try {
             System.out.println("Using debug table to generate simulated JSON inputs from the Scouting App");
-            LinkedList<DatabaseManager.MatchRecord> data = DatabaseManager.readDatabase(Constants.TEST_SQL_TABLE_NAME);
-            int j = 0;
-            for (DatabaseManager.MatchRecord datum : data) {
-                JSONArray arr = new JSONArray();
-                LinkedList<Pair<String, String>> matchData = datum.getDataAsList();
-                for (int i = 1; i < matchData.size(); i++) {
-                    arr.put(matchData.get(i).getValue().replace("\"", ""));
+            JSONArray arr = new JSONArray();
+            arr.put(Constants.TEST_QR_STRING_1);
+            arr.put(Constants.TEST_QR_STRING_2);
+            arr.put(Constants.TEST_QR_STRING_3);
+            arr.put(Constants.TEST_QR_STRING_4);
+            arr.put(Constants.TEST_QR_STRING_5);
+            arr.put(Constants.TEST_QR_STRING_6);
+            arr.put(Constants.TEST_QR_STRING_7);
+            arr.put(Constants.TEST_QR_STRING_8);
+            arr.put(Constants.TEST_QR_STRING_9);
 
-
-                }
-                File outFile = new File(Constants.BASE_APP_DATA_FILEPATH + "/testJSON" + j + ".json");
-                FileOutputStream out = new FileOutputStream(outFile);
-                out.write(arr.toString().getBytes());
-                out.flush();
-                out.close();
-                j++;
-            }
+            File outFile = new File(Constants.BASE_APP_DATA_FILEPATH + "/testJSON.json");
+            FileOutputStream out = new FileOutputStream(outFile);
+            out.write(arr.toString().getBytes());
+            out.flush();
+            out.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        }*/
+            Logging.logError(e, "IO exception in debug button 2");
+        }
         //TabController.validateData(null);
 
     }

@@ -8,6 +8,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
+import org.tahomarobotics.scouting.scoutingserver.util.DirectoryWatcher;
+import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 
@@ -40,6 +42,7 @@ public class ScoutingServer extends Application {
     public static Scene dataScene;
 
     public static Stage mainStage;
+
 
 
     public static QRScannerController qrScannerController = new QRScannerController();
@@ -161,4 +164,7 @@ public class ScoutingServer extends Application {
     public static void main(String[] args) {
         launch();
     }
+
+
+
 }

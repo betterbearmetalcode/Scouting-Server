@@ -7,8 +7,6 @@ import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class DataValidator {
 
@@ -70,9 +68,9 @@ public class DataValidator {
                     recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
                 }else {
                     try {
-                        switch (Constants.ColumnName.valueOf(dataPoint.getName())) {
+                        switch (Constants.SQLColumnName.valueOf(dataPoint.getName())) {
 
-                            case TIMESTAMP, MATCH_NUM, TEAM_NUM, ALLIANCE_POS, AUTO_LEAVE, AUTO_COMMENTS, TELE_COMMENTS, ENDGAME_POS -> {
+                            case TIMESTAMP, MATCH_NUM, TEAM_NUM, ALLIANCE_POS,AUTO_COMMENTS, TELE_COMMENTS -> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), 0));
                                 break;
                             }
@@ -82,14 +80,6 @@ public class DataValidator {
                             }
                             case AUTO_AMP -> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), robot.record().autoAmp() - autoAmpTrue));
-                            }
-                            case AUTO_COLLECTED, AUTO_SPEAKER_MISSED, AUTO_AMP_MISSED -> {
-                                //collected - missed = scored + error
-                                //collected - missed - scored = error
-                                int totalMissed = robot.record().autoAmpMissed() + robot.record().autoSpeakerMissed();
-                                int totalScored = autoSpeakerTrue + autoAmpTrue;
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), robot.record().autoCollected() - totalScored - totalMissed));
-                                break;
                             }
                             case TELE_SPEAKER -> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), robot.record().teleSpeaker() - teleSpeakerTrue));
@@ -109,7 +99,7 @@ public class DataValidator {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (trap == (robot.record().teleTrap() > 0))?(0):(100)));
                                 break;
                             }
-                            case TELE_SPEAKER_MISSED, TELE_AMP_MISSED -> {
+                            case TELE_SPEAKER_MISSED, TELE_AMP_MISSED, AUTO_SPEAKER_MISSED, AUTO_AMP_MISSED, F1, F2, F3, M1, M2, M3, M4, M5 -> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
                                 break;
                             }

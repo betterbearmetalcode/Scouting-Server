@@ -4,9 +4,9 @@ import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 
 import java.util.Comparator;
 
-public class MatchRecordComparator implements Comparator<DatabaseManager.MatchRecord> {
+public class MatchRecordComparator implements Comparator<DatabaseManager.QRRecord> {
     @Override
-    public int compare(DatabaseManager.MatchRecord o1, DatabaseManager.MatchRecord o2) {
+    public int compare(DatabaseManager.QRRecord o1, DatabaseManager.QRRecord o2) {
         //first check match number
         if (o1.matchNumber() > o2.matchNumber()) {
             //then the one with the lower match number should go first

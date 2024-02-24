@@ -45,7 +45,7 @@ public class SpreadsheetUtil {
     }
 
 
-    public static void writeToSpreadSheet(LinkedList<DatabaseManager.MatchRecord> data, File currDir, boolean exportFormulas) throws IOException {
+/*    public static void writeToSpreadSheet(LinkedList<DatabaseManager.QRRecord> data, File currDir, boolean exportFormulas) throws IOException {
         String path = currDir.getAbsolutePath();
         try (OutputStream os = Files.newOutputStream(Paths.get(path)); Workbook wb = new Workbook(os, "Scouting Excel Database", "1.0")) {
             Worksheet ws = wb.newWorksheet(SpreadsheetUtil.RAW_DATA_SHEET_NAME);
@@ -75,6 +75,6 @@ public class SpreadsheetUtil {
 
 
         }
-    }
+    }*/
 
 }
