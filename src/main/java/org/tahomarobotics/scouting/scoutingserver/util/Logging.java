@@ -28,4 +28,19 @@ public class Logging {
 
 
     }
+
+    public static void logInfo(String info) {
+        LOGGER.log(Level.INFO, info);
+
+    }
+
+    public void logInfo(String info, boolean showAlert) {
+        logInfo(info);
+        if (showAlert) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, info);
+                alert.showAndWait();
+            });
+        }
+    }
 }

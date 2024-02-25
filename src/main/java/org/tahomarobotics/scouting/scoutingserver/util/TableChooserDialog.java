@@ -17,7 +17,6 @@ public class TableChooserDialog extends Dialog<String> {
 
     public TableChooserDialog(ArrayList<String> tables) {
         this.setTitle("Select Competition");
-        this.setHeaderText("Do not include spaces in names");
         ButtonType openType = new ButtonType("Open", ButtonType.OK.getButtonData());
         ButtonType doneType = new ButtonType("Done", ButtonType.CANCEL.getButtonData());
         this.getDialogPane().getButtonTypes().addAll(openType, doneType, ButtonType.CANCEL);
@@ -25,19 +24,14 @@ public class TableChooserDialog extends Dialog<String> {
         listView = new ListView<>();
         listView.setEditable(true);
         listView.setOnEditCommit(event -> {
-            System.out.println("attempting to edit competions");
             String oldValue = event.getSource().getItems().get(event.getIndex());
             if (!Objects.equals(oldValue, event.getNewValue())) {
                 try {
                     listView.getItems().set(event.getIndex(), event.getNewValue());
                     SQLUtil.execNoReturn("ALTER TABLE \"" + oldValue + "\" RENAME TO \"" + event.getNewValue() + "\"");
-
-                    System.out.println("edit succesfully  commited");
                 } catch (SQLException e) {
                     Logging.logError(e);
                 }
-            } else {
-                System.out.println("No changes made");
             }
 
 
@@ -97,8 +91,9 @@ public class TableChooserDialog extends Dialog<String> {
             public void handle(ActionEvent event) {
                 try {
                     if (listView.getSelectionModel().getSelectedItem().equals(Constants.DEFAULT_SQL_TABLE_NAME)) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Default Table Cannot be Deleted");
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Default Table Cannot be Deleted, will delete contents instead");
                         alert.showAndWait();
+                        SQLUtil.execNoReturn("DELETE FROM " + Constants.DEFAULT_SQL_TABLE_NAME);
                         return;
                     }
                     SQLUtil.execNoReturn("DROP TABLE IF EXISTS '" + listView.getSelectionModel().getSelectedItem() + "'");

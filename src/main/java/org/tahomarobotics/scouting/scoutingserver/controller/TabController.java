@@ -60,8 +60,10 @@ public class TabController {
 
 
     public void export(Event e) {
-        System.out.println("exporting");
-        refresh(null);
+        Logging.logInfo("Exporting");
+        if (!validateData()) {
+            return;//really only need to refresh, but want the data to look "the same" for the user after exporting
+        }
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(new File(Constants.DATABASE_FILEPATH));
         chooser.setTitle("Select Export Location");
@@ -69,28 +71,36 @@ public class TabController {
         chooser.getExtensionFilters().add(0, new FileChooser.ExtensionFilter("Excel Files", ".xls"));
 
         if ("".equals(currentEventCode)) {
-            selectCompetition(null);
+            if (!selectCompetition()) {
+                Logging.logInfo("Export Aborted");
+                return;
+            }
         }
         File file = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
-        try {
-            SpreadsheetUtil.writeToSpreadSheet(databaseData, file, currentEventCode);//should add button later if buranik insists to export raw wihtout formulas
-        } catch (IOException ex) {
-            Logging.logError(ex, "IO error while exporting or fetching TBA Data");
-        } catch (InterruptedException ex) {
-            Logging.logError(ex, "Interrupted Exception while Fetching TBA data ");
+        if (file != null) {
+            try {
+                SpreadsheetUtil.writeToSpreadSheet(databaseData, file, currentEventCode);//should add button later if buranik insists to export raw wihtout formulas
+            } catch (IOException ex) {
+                Logging.logError(ex, "IO error while exporting or fetching TBA Data");
+            } catch (InterruptedException ex) {
+                Logging.logError(ex, "Interrupted Exception while Fetching TBA data ");
+            }
+        }else {
+            Logging.logInfo("Export Aborted");
         }
+
     }
 
     @FXML
     public void expandAll(Event e) {
-        System.out.println("Expand All Button Pressed");
+        Logging.logInfo("Expanding Tree");
         setExpansionAll(rootItem, true);
 
     }
 
     @FXML
     public void collapseAll() {
-        System.out.println("Collapse All Button Pressed");
+        Logging.logInfo("Collapsing Tree");
         setExpansionAll(rootItem, false);
     }
 
@@ -103,7 +113,7 @@ public class TabController {
 
         }
         if (!treeItem.getChildren().isEmpty()) {
-            for (TreeItem<Label> t : (ObservableList<TreeItem<Label>>) treeItem.getChildren()) {
+            for (TreeItem<Label> t : treeItem.getChildren()) {
                 setExpansionAll(t, val);
             }
         }
@@ -113,6 +123,7 @@ public class TabController {
 
 
     public void initialize(TreeView<Label> view) {
+        Logging.logInfo("Initializing Tab Controller: " + tableName);
         //init data stuff
         treeView = view;
         rootItem = new TreeItem<>(new Label("root-item"));
@@ -136,24 +147,30 @@ public class TabController {
 
     }
     @FXML
-    public void validateData(ActionEvent event) {
+    public void validateDataButtonHandler(ActionEvent event) {
+        validateData();
+    }
+    public boolean validateData() {
+        Logging.logInfo("Validating Data");
+        refresh();
 
-        if (currentEventCode != null) {
-
-            databaseData = DataValidator.validateData(currentEventCode, databaseData);
-            constructTree(databaseData);
-        }else {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please Select A competition");
-            alert.showAndWait();
+        if (Objects.equals(currentEventCode, "")) {
+            if (!selectCompetition()) {
+                Logging.logInfo("Data Validation Aborted");
+                return false;
+            }
         }
+        databaseData = DataValidator.validateData(currentEventCode, databaseData);
+        constructTree(databaseData);
+        return true;
 
     }
 
 
 
     @FXML
-    public void refresh(Event e) {
-        System.out.println("Refreshing");
+    public void refresh() {
+        Logging.logInfo("Refreshing");
         try {
             databaseData = DatabaseManager.getUnCorrectedDataFromDatabase(tableName);
         } catch (IOException ex) {
@@ -163,6 +180,7 @@ public class TabController {
     }
 
     private void constructTree(ArrayList<Match> matches) {
+        Logging.logInfo("Constructing tree");
         rootItem.getChildren().clear();
         for (Match match : matches) {
 
@@ -196,8 +214,8 @@ public class TabController {
             rootItem.getChildren().add(matchItem);
         }//end comp for
     }
-    public void selectCompetition(ActionEvent event) {
-        System.out.println("Selecting Compeition");
+    public boolean selectCompetition() {
+        Logging.logInfo("Selecting Competiton COde");
         Dialog<String> dialog = new Dialog<>();
         TextField autoCompetionField = new TextField();
         ArrayList<String> options = new ArrayList<>();
@@ -212,29 +230,33 @@ public class TabController {
 
         FlowPane pane = new FlowPane(new Label("Enter Competition: "), autoCompetionField);
         dialog.getDialogPane().setContent(pane);
-        dialog.setTitle("Select Competition");
+        dialog.setTitle("Select Competition For Data Validation");
         dialog.setHeaderText("");
-        dialog.setOnCloseRequest(new EventHandler<DialogEvent>() {
-            @Override
-            public void handle(DialogEvent event) {
-                dialog.setResult(autoCompetionField.getText());
+        ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == okButton) {
+                return autoCompetionField.getText();
+            }else {
+                return "";
             }
         });
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         Optional<String> result = dialog.showAndWait();
         AtomicReference<String> selectedEvent = new AtomicReference<>("");
         result.ifPresent(selectedEvent::set);
         String temp = selectedEvent.get();
         if (!Objects.equals(temp, "")) {
 
-            currentEventCode =  otherEvents.stream().filter(s -> s.getValue().equals(temp)).findFirst().get().getKey();
-            validateDataButton.setDisable(false);
+            Optional<Pair<String, String>> event = otherEvents.stream().filter(s -> s.getValue().equals(temp)).findFirst();
+            AtomicReference<Pair<String,String>> selectedEventCode = new AtomicReference<>(new Pair<>("",""));
+            event.ifPresent(selectedEventCode::set);
+            currentEventCode = selectedEventCode.get().getKey();
             selectedCompetitionLabel.setText(temp);
+
         }else {
-            validateDataButton.setDisable(true);
             currentEventCode =  "";
         }
-
+        return !Objects.equals(currentEventCode, "");
 
     }
 
