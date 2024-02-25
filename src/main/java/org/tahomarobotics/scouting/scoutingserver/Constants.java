@@ -2,6 +2,7 @@ package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.util.Pair;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil.SQLDatatype;
+import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
 
 import java.util.*;
 
@@ -28,7 +29,7 @@ public class Constants {
     public static final String TEST_QR_STRING_2 = "1/4414/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest2/teleNotes";
 
     public static final String TEST_QR_STRING_3 = "1/1323/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest3/teleNotes";
-    public static final String TEST_QR_STRING_4 = "2/2046/1/3/0/4/5/0/0/0/0/0/0/0/0/9/2/-92/9/0/autoNotesTest4/teleNotes";
+    public static final String TEST_QR_STRING_4 = "2/2046/1/3/0/4/5/0/0/0/0/0/0/0/0/9/2/0/9/0/autoNotesTest4/teleNotes";
     public static final String TEST_QR_STRING_5 = "2/4414/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest5/teleNotes";
     public static final String TEST_QR_STRING_6 = "2/1323/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest6/teleNotes";
     public static final String TEST_QR_STRING_7 = "2/2540/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest7/teleNotes";
@@ -107,12 +108,11 @@ public class Constants {
     public static int TELE_AMP_NOTE_POINTS = 1;
     public static int TELE_TRAP_POINTS = 5;
 
-    public static Map<DatabaseManager.EndgamePosition, Integer> endgamePoints = Map.ofEntries(entry(DatabaseManager.EndgamePosition.NONE, 0),
-            entry(DatabaseManager.EndgamePosition.PARKED, 1),
-            entry(DatabaseManager.EndgamePosition.CLIMBED, 3),
-            entry(DatabaseManager.EndgamePosition.HARMONIZED, 5));
-
     public static final ArrayList<Pair<String, String>> competitons = new ArrayList<>(List.of(new Pair<>("2024orsal", "Oregon State Fairgrounds"), new Pair<>("2024wabon", "Bonney Lake"), new Pair<>("2024wasam", "Sammamish"), new Pair<>("2024pncmp", "Pacific Northwest")));//list of competions we are going to, first event code, second short name
 
     public static int LOW_ERROR_THRESHOLD = 3;
+
+    public static Robot defaultRobot = new Robot(DatabaseManager.RobotPosition.NO_DATA, -1, null, null);
+
+
 }

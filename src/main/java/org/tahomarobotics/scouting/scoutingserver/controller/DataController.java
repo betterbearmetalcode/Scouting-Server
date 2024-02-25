@@ -28,6 +28,7 @@ public class DataController {
     @FXML
     private TabPane tabPane;
 
+
     List<TabController> controllers = new LinkedList<>();
 
     @FXML
@@ -98,6 +99,7 @@ public class DataController {
 
         return output;
     }
+
 
 
 }
