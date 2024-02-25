@@ -4,7 +4,9 @@ import javafx.util.Pair;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil.SQLDatatype;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import static java.util.Map.entry;
 
@@ -101,18 +103,24 @@ public class Constants {
     }
 
 
-    public static int AUTO_AMP_NOTE_POINTS = 2;
-    public static int AUTO_SPEAKER_NOTE_POINTS = 5;
+    public static final int AUTO_AMP_NOTE_POINTS = 2;
+    public static final int AUTO_SPEAKER_NOTE_POINTS = 5;
 
-    public static int TELE_SPEAKER_NOTE_POINTS = 2;
-    public static int TELE_AMP_NOTE_POINTS = 1;
-    public static int TELE_TRAP_POINTS = 5;
+    public static final int TELE_SPEAKER_NOTE_POINTS = 2;
+    public static final int TELE_AMP_NOTE_POINTS = 1;
+    public static final int TELE_TRAP_POINTS = 5;
 
     public static final ArrayList<Pair<String, String>> competitons = new ArrayList<>(List.of(new Pair<>("2024orsal", "Oregon State Fairgrounds"), new Pair<>("2024wabon", "Bonney Lake"), new Pair<>("2024wasam", "Sammamish"), new Pair<>("2024pncmp", "Pacific Northwest")));//list of competions we are going to, first event code, second short name
 
     public static int LOW_ERROR_THRESHOLD = 3;
 
     public static Robot defaultRobot = new Robot(DatabaseManager.RobotPosition.NO_DATA, -1, null, null);
+
+    private static final double WIDTH_MULTIPLIER = .75;
+    public static double APP_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width * WIDTH_MULTIPLIER;
+    private static final double HEIGHT_MULTIPLIER = WIDTH_MULTIPLIER;
+    public static  double APP_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height * HEIGHT_MULTIPLIER;
+    public static final int MIN_HAMBURGER_MENU_SIZE = 155;
 
 
 }

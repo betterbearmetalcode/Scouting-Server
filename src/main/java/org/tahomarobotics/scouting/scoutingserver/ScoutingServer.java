@@ -1,11 +1,17 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
@@ -14,6 +20,7 @@ import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.function.Consumer;
 
 public class ScoutingServer extends Application {
 
@@ -41,7 +48,7 @@ public class ScoutingServer extends Application {
     public static Scene dataScene;
 
     public static Stage mainStage;
-
+    VBox root;
 
 
 
@@ -77,6 +84,9 @@ public class ScoutingServer extends Application {
         } catch (SQLException e) {
             Logging.logError(e);
         }
+
+        mainStage.widthProperty().addListener((observable, oldValue, newValue) -> {Constants.APP_WIDTH = newValue.doubleValue(); resize(Constants.APP_WIDTH, Constants.APP_HEIGHT); });
+        mainStage.heightProperty().addListener((observable, oldValue, newValue) -> {Constants.APP_HEIGHT = newValue.doubleValue();resize(Constants.APP_WIDTH, Constants.APP_HEIGHT); });
 
 
     }
@@ -117,9 +127,10 @@ public class ScoutingServer extends Application {
         setUpDataScene();
 
 
-        setUpMainScene();
+        setUpMainScene(Constants.APP_WIDTH, Constants.APP_HEIGHT);
 
         setUpDataCorrectionScene();
+        resize(Constants.APP_WIDTH, Constants.APP_HEIGHT);
 
 
     }
@@ -132,12 +143,58 @@ public class ScoutingServer extends Application {
         anchorPane.getChildren().add(dataHamburgerMenu);
     }
 
-    private void setUpMainScene() {
+    private void setUpMainScene(double appWidth, double appHeight) {
+
 
         VBox parent = (VBox) mainScene.getRoot();
+        root = parent;
         SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
         AnchorPane anchorPane = (AnchorPane) splitPane.getItems().get(0);
         anchorPane.getChildren().add(mainHamburgerMenu);
+
+        root.setPrefSize(appWidth, appHeight);
+        SplitPane mainSplitPane = (SplitPane) root.getChildren().get(0);
+        mainSplitPane.prefHeightProperty().bind(root.heightProperty());
+        mainSplitPane.prefWidthProperty().bind(root.widthProperty());
+
+
+        AnchorPane menuPane = (AnchorPane) mainSplitPane.getItems().get(0);
+        menuPane.prefHeightProperty().bind(root.heightProperty());
+        mainHamburgerMenu.prefHeightProperty().bind(root.heightProperty());
+        mainHamburgerMenu.setMinWidth(Constants.MIN_HAMBURGER_MENU_SIZE);
+        mainHamburgerMenu.setMaxWidth(mainHamburgerMenu.getMinWidth());
+       menuPane.prefWidthProperty().bind(mainHamburgerMenu.widthProperty());
+       menuPane.setMinWidth(mainHamburgerMenu.getMinWidth());
+        menuPane.setMaxWidth(mainHamburgerMenu.getMaxWidth());
+        GridPane mainGridPane = (GridPane) mainSplitPane.getItems().get(1);
+        mainGridPane.prefHeightProperty().bind(root.heightProperty());
+        mainGridPane.prefWidthProperty().bind(new ObservableValue<>() {
+            @Override
+            public void addListener(ChangeListener<? super Number> listener) {
+            }
+
+            @Override
+            public void removeListener(ChangeListener<? super Number> listener) {
+
+            }
+
+            @Override
+            public Number getValue() {
+                return root.widthProperty().doubleValue() - mainHamburgerMenu.prefWidthProperty().doubleValue();
+            }
+
+            @Override
+            public void addListener(InvalidationListener listener) {
+
+            }
+
+            @Override
+            public void removeListener(InvalidationListener listener) {
+
+            }
+        });
+        ScrollPane scollPane = (ScrollPane) mainGridPane.getChildren().get(0);
+        scollPane.setPrefSize(scollPane.getPrefWidth(), appHeight - 100);
 
 
     }
@@ -168,5 +225,11 @@ public class ScoutingServer extends Application {
     }
 
 
+    private void resize(double appWidth, double appHeight) {
+            //main scene
+        root.setPrefSize(appWidth, appHeight);
+        SplitPane mainSplitPane = (SplitPane) root.getChildren().get(0);
+        mainSplitPane.setDividerPosition(0, mainHamburgerMenu.getMinWidth()/root.getWidth());
+    }
 
 }
