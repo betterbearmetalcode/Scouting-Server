@@ -109,7 +109,8 @@ public class DatabaseManager {
         R3,
         B1,
         B2,
-        B3
+        B3,
+        NO_DATA
     }
 
 
@@ -133,6 +134,10 @@ public class DatabaseManager {
             }
             case 5 -> {
                 return RobotPosition.B3;
+            }
+            case 6 ->
+            {
+                return RobotPosition.NO_DATA;
             }
             default -> throw new IllegalStateException("Unexpected value: " + num);
         }

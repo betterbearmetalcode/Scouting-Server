@@ -67,7 +67,7 @@ public class TabController {
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(new File(Constants.DATABASE_FILEPATH));
         chooser.setTitle("Select Export Location");
-        chooser.setInitialFileName("export");
+        chooser.setInitialFileName("export " + new Date(System.currentTimeMillis()).toString().replaceAll(":", "-"));
         chooser.getExtensionFilters().add(0, new FileChooser.ExtensionFilter("Excel Files", ".xls"));
 
         if ("".equals(currentEventCode)) {

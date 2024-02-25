@@ -15,13 +15,9 @@ public class DataValidator {
             ArrayList<Match> data = new ArrayList<>();
             JSONArray eventMatches = APIUtil.get("/event/" + eventCode + "/matches");//returns array of json objects each representing a match
             ArrayList<Object> rawList =  new ArrayList<>(eventMatches.toList());
+            ArrayList<HashMap<String, Object>> processedData = removeDuplicatesFromRawTBAData(rawList, eventCode);//remove non qualifiaction matches
+            processedData.sort(Comparator.comparingInt(o -> (Integer) o.get("match_number")));//sort by match number
 
-            rawList.sort((o1, o2) -> {
-                HashMap<String, Object> thing1 = (HashMap<String, Object>) o1;
-                HashMap<String, Object> thing2 = (HashMap<String, Object>) o2;
-                return Integer.compare((Integer) thing1.get("match_number"), (Integer) thing2.get("match_number"));
-            });//sort by match number
-            ArrayList<HashMap<String, Object>> processedData = removeDuplicatesFromRawTBAData(rawList);//remove duplicates. now this array contains a bunch of json objects each representing a match
 
             for (HashMap<String, Object> match : processedData) {
                 //for each match
@@ -95,7 +91,7 @@ public class DataValidator {
                                 if (!Objects.equals(climb, "None") && !Objects.equals(climb, "Parked")) {
                                     trap = (boolean) breakdown.get("trap" + climb);
                                 }
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (trap == (robot.record().teleTrap() > 0))?(0):(100)));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (trap == (robot.record().teleTrap() > 0))?(0):(3)));
                                 break;
                             }
                             case TELE_SPEAKER_MISSED, TELE_AMP_MISSED, AUTO_SPEAKER_MISSED, AUTO_AMP_MISSED, F1, F2, F3, M1, M2, M3, M4, M5 -> {
@@ -117,7 +113,7 @@ public class DataValidator {
 
     }
 
-    private static ArrayList<HashMap<String, Object>> removeDuplicatesFromRawTBAData(ArrayList<Object> oldList) {
+    private static ArrayList<HashMap<String, Object>> removeDuplicatesFromRawTBAData(ArrayList<Object> oldList, String eventKey) {
         // Create a new ArrayList
         ArrayList<HashMap<String, Object>> newList = new ArrayList<>();
         // Traverse through the first list
@@ -125,9 +121,10 @@ public class DataValidator {
             HashMap<String, Object> match = (HashMap<String, Object>) element;
             // If this element is not present in newList
             // then add it
-            int matchNum = (int) match.get("match_number");
-            if (newList.stream().noneMatch(stringObjectHashMap -> matchNum == (int) stringObjectHashMap.get("match_number"))) {
 
+            int matchNum = (int) match.get("match_number");
+            String exptectedMatchKey = eventKey + "_qm"  + matchNum;
+            if (match.get("key").equals(exptectedMatchKey)) {
                 newList.add(match);
             }
         }

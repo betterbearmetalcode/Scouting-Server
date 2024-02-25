@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 
+import javafx.util.Pair;
 import org.dhatim.fastexcel.ConditionalFormattingRule;
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
@@ -67,9 +68,15 @@ public class SpreadsheetUtil {
             int rowNum = 1;
             for (Match match : data) {
                 HashMap<String, HashMap<String, HashMap<String, Object>>> matchObject = (HashMap<String, HashMap<String, HashMap<String, Object>>>) rawArr.toList().stream().filter(o -> ((HashMap<String,Integer>) o).get("match_number") == match.matchNumber()).findFirst().get();
-                System.out.println(matchObject);
+                int numRobotsWritten = 0;
+                Logging.logInfo("WroteRow: " + matchObject);
                 HashMap<String, HashMap<String, Object>> breakdown = matchObject.get("score_breakdown");
+
                 for (Robot robot : match.robots()) {
+                    if (numRobotsWritten >= 6) {
+                        //we can't have more than six robots in a match, this would be an edge case though
+                        continue;
+                    }
                     int robotNum = (robot.robotPosition().ordinal()%3) + 1;
                     HashMap<String, Object> allianceBreakdown = breakdown.get((robot.record().position().ordinal() < 3)?"red":"blue");
                     boolean autoLeave = Objects.equals(allianceBreakdown.get("autoLineRobot" + robotNum), "Yes");
@@ -97,6 +104,8 @@ public class SpreadsheetUtil {
                     int toalNotesMissed = robot.record().autoAmpMissed() + robot.record().autoAmpMissed() + robot.record().teleAmpMissed() + robot.record().teleSpeakerMissed();
                     LinkedList<DataPoint> output = robot.data();
                     output.add(new DataPoint("Left In Auto", autoLeave?"2":"0"));
+                    output.add(new DataPoint("EndameResult", String.valueOf(endgame)));
+                    output.add(new DataPoint("End Raw Data", ""));
                     output.add(new DataPoint("Total Auto Notes", String.valueOf(robot.record().autoAmp() + robot.record().autoSpeaker())));
                     output.add(new DataPoint("Total Tele Notes", String.valueOf(robot.record().teleAmp() + robot.record().teleSpeaker())));
                     output.add(new DataPoint("Auto Points Added", String.valueOf(autoPoints)));
@@ -105,7 +114,7 @@ public class SpreadsheetUtil {
                     output.add(new DataPoint("Total Notes Scored", String.valueOf(toalNotesScored)));
                     output.add(new DataPoint("Total Notes Missed", String.valueOf(toalNotesMissed)));
                     output.add(new DataPoint("Total Notes", String.valueOf(toalNotesMissed + toalNotesScored)));
-                    output.add(new DataPoint("EndameResult", String.valueOf(endgame)));
+
                     for (int i = 0; i < output.size(); i++) {
                         if (rowNum == 1) {
                             //only need to do this once
@@ -114,6 +123,25 @@ public class SpreadsheetUtil {
                             ws.range(0, 0, 0, output.size()).style().fontSize(12).fillColor("FFFF33").set();
                         }
                         ws.value(rowNum, i, output.get(i).getValue());
+                        if (output.get(i).getName() == "End Raw Data") {
+                            ws.range(0, i, 1000, i).style().fillColor("0c0c0c").set();
+                        }
+
+                    }
+                    rowNum++;
+                    numRobotsWritten++;
+                }
+                //if there were less than six robots for this match, put in some default data for noshows
+                int numMissing = Math.max(0, 6-numRobotsWritten);
+                for (int i = 0; i < numMissing; i++) {
+                    for (int j = 0; j < 100; j++) {//surly there will never be more than 100 columns, right?
+                        if (j == 1) {
+                            ws.value(rowNum, j, match.matchNumber());
+                        }else if (j == 2){
+                            ws.value(rowNum, j, "NoData");
+                        }else {
+                            ws.value(rowNum, j, "");
+                        }
 
                     }
                     rowNum++;
