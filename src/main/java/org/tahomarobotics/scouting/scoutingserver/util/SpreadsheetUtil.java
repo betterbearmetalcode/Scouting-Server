@@ -1,6 +1,9 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.util.Pair;
 import org.dhatim.fastexcel.ConditionalFormattingRule;
 import org.dhatim.fastexcel.Workbook;
@@ -22,6 +25,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 public class SpreadsheetUtil {
@@ -58,8 +62,23 @@ public class SpreadsheetUtil {
         //query TBA for data not gathered by scouts
         //auto leave
         //tele climb
+        boolean haveInternet = true;
         JSONArray rawArr = APIUtil.get("/event/" + eventKey + "/matches");
+        if (rawArr.get(0).equals("NoInternet")) {
+            Logging.logInfo("Cannot export TBA Data");
+            haveInternet = false;
 
+            //only confinue after alerting the user to the risks of exporing without internet
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "You are trying to export without internet, doing so will result in incorrect data because you cannot access TBA Continue?");
+            Optional<ButtonType> result = alert.showAndWait();
+            AtomicReference<ButtonType> reference = new AtomicReference<>(ButtonType.CANCEL);
+            result.ifPresent(reference::set);
+            if (reference.get() == ButtonType.CANCEL) {
+                Logging.logInfo("Export aborted by user");
+                return;
+            }
+
+        }
 
         String path = currDir.getAbsolutePath();
         try (OutputStream os = Files.newOutputStream(Paths.get(path)); Workbook wb = new Workbook(os, "Scouting Excel Database", "1.0")) {
@@ -67,43 +86,57 @@ public class SpreadsheetUtil {
 
             int rowNum = 1;
             for (Match match : data) {
-                HashMap<String, HashMap<String, HashMap<String, Object>>> matchObject = (HashMap<String, HashMap<String, HashMap<String, Object>>>) rawArr.toList().stream().filter(o -> ((HashMap<String,Integer>) o).get("match_number") == match.matchNumber()).findFirst().get();
+                HashMap<String, HashMap<String, Object>> breakdown = null;
+                if (haveInternet) {
+                    HashMap<String, HashMap<String, HashMap<String, Object>>> matchObject = (HashMap<String, HashMap<String, HashMap<String, Object>>>) rawArr.toList().stream().filter(o -> ((HashMap<String,Integer>) o).get("match_number") == match.matchNumber()).findFirst().get();
+                    Logging.logInfo("WroteRow: " + matchObject);
+                    breakdown = matchObject.get("score_breakdown");
+                }
+
                 int numRobotsWritten = 0;
-                Logging.logInfo("WroteRow: " + matchObject);
-                HashMap<String, HashMap<String, Object>> breakdown = matchObject.get("score_breakdown");
+
 
                 for (Robot robot : match.robots()) {
                     if (numRobotsWritten >= 6) {
                         //we can't have more than six robots in a match, this would be an edge case though
                         continue;
                     }
-                    int robotNum = (robot.robotPosition().ordinal()%3) + 1;
-                    HashMap<String, Object> allianceBreakdown = breakdown.get((robot.record().position().ordinal() < 3)?"red":"blue");
-                    boolean autoLeave = Objects.equals(allianceBreakdown.get("autoLineRobot" + robotNum), "Yes");
+                    int robotNum = (robot.robotPosition().ordinal() % 3) + 1;
                     int climbPoints = 0;
+                    boolean autoLeave = false;
                     int endgame = 0;
-                    switch (allianceBreakdown.get("endGameRobot" + robotNum).toString()) {
-                        case "Parked": {
-                            climbPoints = 1;
-                            endgame = 1;
-                            break;
-                        }
-                        case "CenterStage", "StageLeft", "StageRight": {
-                            climbPoints = 3;
-                            endgame = 2;
-                            break;
-                        }
+                    if (breakdown != null) {
+                        //if we have internet, set stuff, otherwise the default is used
+                        HashMap<String, Object> allianceBreakdown = breakdown.get((robot.record().position().ordinal() < 3) ? "red" : "blue");
+                        autoLeave = Objects.equals(allianceBreakdown.get("autoLineRobot" + robotNum), "Yes");
+                        climbPoints = 0;
+                        endgame = 0;
+                        switch (allianceBreakdown.get("endGameRobot" + robotNum).toString()) {
+                            case "Parked": {
+                                climbPoints = 1;
+                                endgame = 1;
+                                break;
+                            }
+                            case "CenterStage", "StageLeft", "StageRight": {
+                                climbPoints = 3;
+                                endgame = 2;
+                                break;
+                            }
 
+                        }
                     }
+
+                    ;
+
                     int teleAmpPoints = robot.record().teleAmp() * Constants.TELE_AMP_NOTE_POINTS;
                     int teleSpeakerPoints = robot.record().teleSpeaker() * Constants.TELE_SPEAKER_NOTE_POINTS;
                     int trapPoints = robot.record().teleTrap() * Constants.TELE_TRAP_POINTS;
                     int telePoints = teleAmpPoints + teleSpeakerPoints + trapPoints + climbPoints;
-                    int autoPoints = (robot.record().autoAmp() * Constants.AUTO_AMP_NOTE_POINTS) + (robot.record().autoSpeaker()* Constants.AUTO_SPEAKER_NOTE_POINTS) + (autoLeave?2:0);
+                    int autoPoints = (robot.record().autoAmp() * Constants.AUTO_AMP_NOTE_POINTS) + (robot.record().autoSpeaker() * Constants.AUTO_SPEAKER_NOTE_POINTS) + (autoLeave ? 2 : 0);
                     int toalNotesScored = robot.record().autoAmp() + robot.record().autoSpeaker() + robot.record().teleAmp() + robot.record().teleSpeaker();
                     int toalNotesMissed = robot.record().autoAmpMissed() + robot.record().autoAmpMissed() + robot.record().teleAmpMissed() + robot.record().teleSpeakerMissed();
                     LinkedList<DataPoint> output = robot.data();
-                    output.add(new DataPoint("Left In Auto", autoLeave?"2":"0"));
+                    output.add(new DataPoint("Left In Auto", autoLeave ? "2" : "0"));
                     output.add(new DataPoint("EndameResult", String.valueOf(endgame)));
                     output.add(new DataPoint("End Raw Data", ""));
                     output.add(new DataPoint("Total Auto Notes", String.valueOf(robot.record().autoAmp() + robot.record().autoSpeaker())));

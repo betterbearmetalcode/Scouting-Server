@@ -1,9 +1,12 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 
+import javafx.scene.control.Alert;
+import javafx.util.Pair;
 import org.json.JSONArray;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -21,11 +24,19 @@ public class APIUtil {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(baseURL + apiRequest + "?X-TBA-Auth-Key=" + apiKey))
                 .build();
-
-        HttpResponse<String> response =
-                client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return response.body();
+        HttpResponse<String> response = null;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        }catch (ConnectException e) {
+            Logging.logInfo("No Internet Detected, telling user");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please Connect to the internet in order to validate data");
+            alert.showAndWait();
+        }
+        if (response != null) {
+            return response.body();
+        }else {
+            return "[\"NoInternet\"]";
+        }
     }
 
     public static JSONArray get(String apiRequest) throws IOException, InterruptedException {

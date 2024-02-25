@@ -4,14 +4,13 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
-import org.tahomarobotics.scouting.scoutingserver.util.DirectoryWatcher;
-import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
+import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -42,6 +41,8 @@ public class ScoutingServer extends Application {
     public static Scene dataScene;
 
     public static Stage mainStage;
+
+
 
 
 
@@ -137,6 +138,7 @@ public class ScoutingServer extends Application {
         SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
         AnchorPane anchorPane = (AnchorPane) splitPane.getItems().get(0);
         anchorPane.getChildren().add(mainHamburgerMenu);
+
 
     }
 
