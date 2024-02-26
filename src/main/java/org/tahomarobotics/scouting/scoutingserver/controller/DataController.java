@@ -6,6 +6,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
@@ -14,6 +16,7 @@ import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.TableChooserDialog;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -23,13 +26,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.tahomarobotics.scouting.scoutingserver.Constants.UIValues.*;
+
 public class DataController {
     public Button newTabButton;
     @FXML
-    private TabPane tabPane;
+    private  TabPane tabPane;
 
 
-    List<TabController> controllers = new LinkedList<>();
+    public static List<TabController> controllers = new LinkedList<>();
 
     @FXML
     public void makeNewTab(ActionEvent event) {
@@ -44,12 +49,12 @@ public class DataController {
             File selectedFile = new File(Constants.DATABASE_FILEPATH + Constants.SQL_DATABASE_NAME);
             //check if this tab is already open
 
-            TabController controller = new TabController(DatabaseManager.getUnCorrectedDataFromDatabase(selectedTable), selectedTable);
+            TabController controller = new TabController(DatabaseManager.getUnCorrectedDataFromDatabase(selectedTable), selectedTable, tabPane);
             tabLoader.setController(controller);
 
 
             //construct a new tab
-            AnchorPane pane = new AnchorPane((AnchorPane) tabLoader.load());
+            VBox pane = new VBox((VBox) tabLoader.load());
             Tab tab = new Tab();
             tab.setText(selectedTable);
             tab.setId(selectedTable);
@@ -66,10 +71,25 @@ public class DataController {
                     }
                 }
             });
+
+            double appWidth = getAppWidth();
+            double appHeight = getAppHeight();
+            tabPane.setTabMaxHeight(Toolkit.getDefaultToolkit().getScreenSize().height);
+            pane.prefHeightProperty().bind(appHeightProperty());
+            pane.prefWidthProperty().bind(tabPane.tabMaxWidthProperty());
+            pane.setMaxHeight(appHeight);
+            VBox box = (VBox) pane.getChildren().get(0);
+            box.prefWidthProperty().bind(tabPane.tabMaxWidthProperty());
+
+
+            box.prefHeightProperty().bind(appHeightProperty());
+            TreeView<Label> treeView = (TreeView<Label>) box.getChildren().get(0);
+            treeView.prefHeightProperty().bind(Constants.UIValues.databaseHeightProperty());
+            treeView.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
+
             //pass the tree view to the controller class
-            AnchorPane anotherPane = (AnchorPane) pane.getChildren().get(0);
-            VBox box = (VBox) anotherPane.getChildren().get(0);
-            controller.initialize((TreeView<Label>) box.getChildren().get(0));
+
+            controller.initialize(treeView);
 
             //remove controllers from the list when the tab is closed
             tabPane.getTabs().add(tabPane.getTabs().size() - 1, tab);

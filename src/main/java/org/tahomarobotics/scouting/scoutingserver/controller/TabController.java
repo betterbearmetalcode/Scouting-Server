@@ -52,10 +52,13 @@ public class TabController {
 
     private String currentEventCode = "";
 
+    public TabPane pane;
 
-    public TabController(ArrayList<Match> databaseData, String table) {
+
+    public TabController(ArrayList<Match> databaseData, String table, TabPane thePane) {
         this.databaseData = databaseData;
         tableName = table;
+        pane = thePane;
     }
 
 
