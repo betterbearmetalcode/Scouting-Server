@@ -133,6 +133,39 @@ public class ScoutingServer extends Application {
 
     }
 
+
+    private void setUpDataCorrectionScene() {
+        //add hamburger menu to qr scanner scene
+        VBox parent = (VBox) dataCorrectionScene.getRoot();
+        SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
+        AnchorPane anchorPane = (AnchorPane) splitPane.getItems().get(0);
+        anchorPane.getChildren().add(dataCorrectionHamburgerMenu);
+    }
+
+    public static void main(String[] args) {
+        launch();
+    }
+
+
+    private static void resize() {
+        double appHeight = getAppHeight();
+        double appWidth = getAppWidth();
+            //main scene
+        mainRoot.setPrefSize(appWidth, appHeight);
+        dataCollectionRoot.setPrefSize(appWidth, appHeight);
+        dataRoot.setPrefSize(appWidth, appHeight);
+        Constants.UIValues.setSplitWidthProperty(appWidth - MIN_HAMBURGER_MENU_SIZE);
+        Constants.UIValues.setMainScrollPaneHeightProperty(appHeight - MIN_MAIN_BUTTON_BAR_HEIGHT);
+        Constants.UIValues.setCollectionScrollPaneHeightProperty(appHeight - MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT);
+        Constants.UIValues.setDatabaseHeightProperty(appHeight- MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT);
+        SplitPane mainSplitPane = (SplitPane) mainRoot.getChildren().get(0);
+        mainSplitPane.setDividerPosition(0, MIN_HAMBURGER_MENU_SIZE/appWidth);
+        mainRoot.resize(appWidth, appHeight);
+        dataCollectionRoot.resize(appWidth, appHeight);
+        dataRoot.resize(appWidth, appHeight);
+
+    }
+
     private void setUpDataScene() {
 
 
@@ -188,8 +221,8 @@ public class ScoutingServer extends Application {
         mainHamburgerMenu.prefHeightProperty().bind(mainRoot.heightProperty());
         mainHamburgerMenu.setMinWidth(MIN_HAMBURGER_MENU_SIZE);
         mainHamburgerMenu.setMaxWidth(mainHamburgerMenu.getMinWidth());
-       menuPane.prefWidthProperty().bind(mainHamburgerMenu.widthProperty());
-       menuPane.setMinWidth(mainHamburgerMenu.getMinWidth());
+        menuPane.prefWidthProperty().bind(mainHamburgerMenu.widthProperty());
+        menuPane.setMinWidth(mainHamburgerMenu.getMinWidth());
         menuPane.setMaxWidth(mainHamburgerMenu.getMaxWidth());
         GridPane mainGridPane = (GridPane) mainSplitPane.getItems().get(1);
         mainGridPane.prefHeightProperty().bind(mainRoot.heightProperty());
@@ -248,40 +281,6 @@ public class ScoutingServer extends Application {
         lowerHBox.setMaxHeight(MIN_MAIN_BUTTON_BAR_HEIGHT);
 
     }
-
-    private void setUpDataCorrectionScene() {
-        //add hamburger menu to qr scanner scene
-        VBox parent = (VBox) dataCorrectionScene.getRoot();
-        SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
-        AnchorPane anchorPane = (AnchorPane) splitPane.getItems().get(0);
-        anchorPane.getChildren().add(dataCorrectionHamburgerMenu);
-    }
-
-    public static void main(String[] args) {
-        launch();
-    }
-
-
-    private static void resize() {
-        System.out.println("Resizing");
-        double appHeight = getAppHeight();
-        double appWidth = getAppWidth();
-            //main scene
-        mainRoot.setPrefSize(appWidth, appHeight);
-        dataCollectionRoot.setPrefSize(appWidth, appHeight);
-        dataRoot.setPrefSize(appWidth, appHeight);
-        Constants.UIValues.setSplitWidthProperty(appWidth - MIN_HAMBURGER_MENU_SIZE);
-        Constants.UIValues.setMainScrollPaneHeightProperty(appHeight - MIN_MAIN_BUTTON_BAR_HEIGHT);
-        Constants.UIValues.setCollectionScrollPaneHeightProperty(appHeight - MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT);
-        Constants.UIValues.setDatabaseHeightProperty(appHeight- MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT);
-        SplitPane mainSplitPane = (SplitPane) mainRoot.getChildren().get(0);
-        mainSplitPane.setDividerPosition(0, MIN_HAMBURGER_MENU_SIZE/appWidth);
-        mainRoot.resize(appWidth, appHeight);
-        dataCollectionRoot.resize(appWidth, appHeight);
-        dataRoot.resize(appWidth, appHeight);
-
-    }
-
 
 
 }
