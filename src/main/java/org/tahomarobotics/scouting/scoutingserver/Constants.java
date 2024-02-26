@@ -1,10 +1,16 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.util.Pair;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil.SQLDatatype;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import static java.util.Map.entry;
 
@@ -101,18 +107,123 @@ public class Constants {
     }
 
 
-    public static int AUTO_AMP_NOTE_POINTS = 2;
-    public static int AUTO_SPEAKER_NOTE_POINTS = 5;
+    public static final int AUTO_AMP_NOTE_POINTS = 2;
+    public static final int AUTO_SPEAKER_NOTE_POINTS = 5;
 
-    public static int TELE_SPEAKER_NOTE_POINTS = 2;
-    public static int TELE_AMP_NOTE_POINTS = 1;
-    public static int TELE_TRAP_POINTS = 5;
+    public static final int TELE_SPEAKER_NOTE_POINTS = 2;
+    public static final int TELE_AMP_NOTE_POINTS = 1;
+    public static final int TELE_TRAP_POINTS = 5;
 
     public static final ArrayList<Pair<String, String>> competitons = new ArrayList<>(List.of(new Pair<>("2024orsal", "Oregon State Fairgrounds"), new Pair<>("2024wabon", "Bonney Lake"), new Pair<>("2024wasam", "Sammamish"), new Pair<>("2024pncmp", "Pacific Northwest")));//list of competions we are going to, first event code, second short name
 
     public static int LOW_ERROR_THRESHOLD = 3;
 
     public static Robot defaultRobot = new Robot(DatabaseManager.RobotPosition.NO_DATA, -1, null, null);
+
+
+
+    public static class UIValues {
+        public static final double WIDTH_MULTIPLIER = .75;
+        public static final double HEIGHT_MULTIPLIER = WIDTH_MULTIPLIER;
+       // public static  double APP_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height * HEIGHT_MULTIPLIER;
+        public static final int MIN_HAMBURGER_MENU_SIZE = 155;
+
+        public static final int MIN_MAIN_BUTTON_BAR_HEIGHT = 50;
+
+        public static final int DATA_COLLECTION_HBOX_HEIGHT = 20;
+
+        //property for width of main content panes
+
+        private static final DoubleProperty splitWidthProperty = new SimpleDoubleProperty();
+
+        public static final DoubleProperty splitWidthPropertyProperty() {
+            return splitWidthProperty;
+        }
+
+        public  static final double getSplitWidthProperty() {
+            return splitWidthProperty.get();
+        }
+
+        public static void setSplitWidthProperty(double splitWidthProperty) {
+            Constants.UIValues.splitWidthProperty.set(splitWidthProperty);
+        }
+
+        //property for height in main scnene
+
+        private static final DoubleProperty mainScrollPaneHeightProperty = new SimpleDoubleProperty();
+        public static DoubleProperty mainScrollPaneHeightProperty() {
+            return mainScrollPaneHeightProperty;
+        }
+
+        public  static double getMainScrollPaneHeightProperty() {
+            return mainScrollPaneHeightProperty.get();
+        }
+
+        public static void setMainScrollPaneHeightProperty(double value) {
+            Constants.UIValues.mainScrollPaneHeightProperty.set(value);
+        }
+
+        //property for height in datacollection scnene
+
+        private static final DoubleProperty dataCollectionScrollPaneHeightProperty = new SimpleDoubleProperty();
+        public static DoubleProperty dataCollectionScrollPaneHeightProperty() {
+            return dataCollectionScrollPaneHeightProperty;
+        }
+
+        public  static double getDataCollectionScrollPaneHeightProperty() {
+            return mainScrollPaneHeightProperty.get();
+        }
+
+        public static void setCollectionScrollPaneHeightProperty(double value) {
+            Constants.UIValues.dataCollectionScrollPaneHeightProperty.set(value);
+        }
+
+        //property for app Width in main scnene
+
+        private static final DoubleProperty appWidthProperty = new SimpleDoubleProperty();
+        public static DoubleProperty appWidtProperty() {
+            return appWidthProperty;
+        }
+
+        public  static double getAppWidth() {
+            return appWidthProperty.get();
+        }
+
+        public static void setAppWidthProperty(double value) {
+            Constants.UIValues.appWidthProperty.set(value);
+        }
+
+        //property for app height in main scnene
+
+        private static final DoubleProperty appHeightProperty = new SimpleDoubleProperty();
+        public static DoubleProperty appHeightProperty() {
+            return appHeightProperty;
+        }
+
+        public  static double getAppHeight() {
+            return appHeightProperty.get();
+        }
+
+        public static void setAppHeight(double value) {
+            Constants.UIValues.appHeightProperty.set(value);
+        }
+
+
+        //property for height in databaseManagement
+
+        private static final DoubleProperty databaseHeightProperty = new SimpleDoubleProperty();
+        public static DoubleProperty databaseHeightProperty() {
+            return databaseHeightProperty;
+        }
+
+        public  static double getDatabaseHeightProperty() {
+            return databaseHeightProperty.get();
+        }
+
+        public static void setDatabaseHeightProperty(double value) {
+            Constants.UIValues.databaseHeightProperty.set(value);
+        }
+    }
 
 
 }

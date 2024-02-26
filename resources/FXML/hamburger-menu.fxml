@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="155.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="155.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.MenuController">
+<AnchorPane maxHeight="-Infinity" maxWidth="155.0" minHeight="-Infinity" minWidth="155.0" prefHeight="400.0" prefWidth="155.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.MenuController">
    <children>
-      <Button fx:id="dataButton" layoutY="78.0" mnemonicParsing="false" onAction="#openDataScene" text="Database Managment" />
-      <Button fx:id="dataCollectionButton" layoutX="23.0" layoutY="144.0" mnemonicParsing="false" onAction="#enterDataCollectionScene" text="Data Collection" />
-      <Button layoutX="13.0" layoutY="187.0" mnemonicParsing="false" onAction="#enterDataCorrectionScene" text="Data Correction" />
-      <Button fx:id="mainMenuButton" layoutX="24.0" layoutY="14.0" mnemonicParsing="false" onAction="#backToMainMenu" text="Main Menu" />
+      <Button fx:id="dataButton" layoutX="11.0" layoutY="119.0" mnemonicParsing="false" onAction="#openDataScene" text="Database Managment" />
+      <Button fx:id="dataCollectionButton" layoutX="29.0" layoutY="61.0" mnemonicParsing="false" onAction="#enterDataCollectionScene" text="Data Collection" />
+      <Button fx:id="mainMenuButton" layoutX="57.0" layoutY="14.0" mnemonicParsing="false" onAction="#backToMainMenu" text="Help" />
    </children>
 </AnchorPane>

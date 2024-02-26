@@ -2,6 +2,7 @@ package org.tahomarobotics.scouting.scoutingserver;
 
 import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
@@ -12,8 +13,13 @@ public class DataValidator {
 
     public static ArrayList<Match> validateData(String eventCode, ArrayList<Match> databaseData) {
         try {
-            ArrayList<Match> data = new ArrayList<>();
+
             JSONArray eventMatches = APIUtil.get("/event/" + eventCode + "/matches");//returns array of json objects each representing a match
+            if (eventMatches.get(0).equals("NoInternet")) {
+                Logging.logInfo("Cannot validate data, returning unmodified data");
+                return databaseData;
+            }
+            ArrayList<Match> data = new ArrayList<>();
             ArrayList<Object> rawList =  new ArrayList<>(eventMatches.toList());
             ArrayList<HashMap<String, Object>> processedData = removeDuplicatesFromRawTBAData(rawList, eventCode);//remove non qualifiaction matches
             processedData.sort(Comparator.comparingInt(o -> (Integer) o.get("match_number")));//sort by match number

@@ -44,12 +44,10 @@ public class SQLUtil {
             toExec.executeUpdate();
             connection.commit();
             toExec.close();
-            System.out.println("Executed sql Query: " + statement);
+            Logging.logInfo("Executed sql Query: " + statement);
         } catch (SQLException e){
-            System.err.println("SQLException while executing statement '" + statement + "'.");
-            System.err.println("Rolling back transaction.");
+            Logging.logError(e, "Executed sql Query: " + statement + "\nRolling Back Transaction");
             connection.rollback();
-            Logging.logError(e);
         }
     }
 
@@ -70,13 +68,11 @@ public class SQLUtil {
             ArrayList<HashMap<String, Object>> toReturn = processResultSet(results);
             results.close();
             toExec.close();
-            System.out.println("Executed sql query: " + statement);
+            Logging.logInfo("Executed sql Query: " + statement);
             return toReturn;
         } catch (SQLException e){
-            System.err.println("SQLException while executing statement '" + statement + "'.");
-            System.err.println("Rolling back transaction.");
+            Logging.logError(e, "Executed sql Query: " + statement + "\nRolling Back Transaction");
             connection.rollback();
-            Logging.logError(e);
         }
         return new ArrayList<>();
     }
@@ -97,7 +93,7 @@ public class SQLUtil {
 
     public static void initialize(String db) throws SQLException {
         databaseName = db;
-        System.out.println("Opening connection to database: " + databaseName);
+        Logging.logInfo("Opening connection to database: " + databaseName);
         connection = DriverManager.getConnection("jdbc:sqlite:" + databaseName);
         connection.setAutoCommit(false);
     }

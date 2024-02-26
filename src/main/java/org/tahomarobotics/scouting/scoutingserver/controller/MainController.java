@@ -4,6 +4,10 @@ import com.google.zxing.NotFoundException;
 import com.google.zxing.WriterException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 import org.json.JSONArray;
@@ -14,17 +18,24 @@ import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.ResourceBundle;
 
 
-public class MainController extends VBox {
+public class MainController implements Initializable {
 
+
+    public ScrollPane scrollPane;
 
     public void debugggy(ActionEvent event) {
         System.out.println("Debug button pressed");
@@ -75,7 +86,19 @@ public class MainController extends VBox {
         } catch (IOException e) {
             Logging.logError(e, "IO exception in debug button 2");
         }
-        //TabController.validateData(null);
+        //open tutorial
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            try {
+                Desktop.getDesktop().browse(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Tutorial/TutorialPage.html").toURI());
+            } catch (IOException e) {
+                Logging.logError(e);
+            }
+        }
+
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
 
     }
 }
