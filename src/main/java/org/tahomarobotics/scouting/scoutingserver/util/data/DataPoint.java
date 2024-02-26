@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.util.data;
 
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 
@@ -61,8 +62,17 @@ public class DataPoint {
 
     @Override
     public String toString() {
-        String error = !validated?", Unchecked":", Error Level: " + errorLevel.toString() + ((errorLevel.ordinal() != 1)?" (" + howOff + ")":"");
-        return name.toLowerCase().replaceAll("_", " ") + ": " + value + error;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getName().replaceAll("_", " ").toLowerCase()).append(": ");//name without underscores and a colon
+        stringBuilder.append(getValue()).append(".");//the value and a period
+        stringBuilder.append(validated?" ":"Unchecked, ");//if its unchecked say so, otherwise nothing
+        stringBuilder.append("Error=");
+        if (errorLevel == ErrorLevel.UNKNOWN) {
+            stringBuilder.append(ErrorLevel.UNKNOWN);
+        }else {
+            stringBuilder.append(howOff);
+        }
+        return stringBuilder.toString();
     }
 
     public String getName() {

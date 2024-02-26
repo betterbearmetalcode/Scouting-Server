@@ -1,14 +1,23 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
+import javafx.util.Callback;
 import javafx.util.Pair;
+import javafx.util.StringConverter;
+import javafx.util.converter.DefaultStringConverter;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONArray;
@@ -22,6 +31,7 @@ import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,12 +41,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class TabController {
 
-
-    Tab myTab;
     private ArrayList<Match> databaseData;
     public String tableName;
 
-    public Button validateDataButton;
 
     private TreeView<Label> treeView;
 
@@ -61,6 +68,68 @@ public class TabController {
         pane = thePane;
     }
 
+    public void initialize(TreeView<Label> view) {
+        Logging.logInfo("Initializing Tab Controller: " + tableName);
+        //init data stuff
+        treeView = view;
+        treeView.setEditable(true);
+        treeView.setCellFactory(param -> new RenameMenuTreeCell());
+        rootItem = new TreeItem<>(new Label("root-item"));
+        if (!databaseData.isEmpty()) {
+            constructTree(databaseData);
+        }
+        treeView.setShowRoot(false);
+        treeView.setRoot(rootItem);
+
+        //init list of events
+        try {
+            FileInputStream stream = new FileInputStream(Constants.BASE_READ_ONLY_FILEPATH + "/resources/TBAData/eventList.json");
+            eventList = new JSONArray(new String(stream.readAllBytes()));
+            stream.close();
+        } catch (FileNotFoundException e) {
+            Logging.logError(e, "Could Not Find list of Competitions");
+        } catch (IOException e) {
+            Logging.logError(e, "Whooop de doo, another IO exception, I guess your just screwed now,-C.H");
+        }
+
+
+    }
+
+    private static class RenameMenuTreeCell extends TextFieldTreeCell<Label> {
+        private ContextMenu menu = new ContextMenu();
+        private CustomStringConverter converter;
+
+        public RenameMenuTreeCell() {
+            super(new CustomStringConverter());
+            converter = (CustomStringConverter) getConverter();
+
+            MenuItem renameItem = new MenuItem("Rename");
+            menu.getItems().add(renameItem);
+            renameItem.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent arg0) {
+                    startEdit();
+                }
+            });
+        }
+
+        @Override
+        public void updateItem(Label item, boolean empty) {
+            super.updateItem(item, empty);
+            if (!empty) {
+                System.out.println("setting color to: " + converter.paint);
+                item.setTextFill(converter.paint);
+            }
+
+
+
+            if (!isEditing()) {
+                setContextMenu(menu);
+            }
+        }
+
+    }
+
 
     public void export(Event e) {
         Logging.logInfo("Exporting");
@@ -74,7 +143,7 @@ public class TabController {
         chooser.getExtensionFilters().add(0, new FileChooser.ExtensionFilter("Excel Files", ".xls"));
 
         if ("".equals(currentEventCode)) {
-            if (!selectCompetition()) {
+            if (selectCompetition()) {
                 Logging.logInfo("Export Aborted");
                 return;
             }
@@ -101,54 +170,10 @@ public class TabController {
 
     }
 
-    @FXML
-    public void collapseAll() {
-        Logging.logInfo("Collapsing Tree");
-        setExpansionAll(rootItem, false);
-    }
-
-    private void setExpansionAll(TreeItem<Label> treeItem, boolean val) {
-        if (treeItem.getValue().getText().equals("root-item")) {
-            //then we are dealing with the root item
-            treeItem.setExpanded(true);
-        } else {
-            treeItem.setExpanded(val);
-
-        }
-        if (!treeItem.getChildren().isEmpty()) {
-            for (TreeItem<Label> t : treeItem.getChildren()) {
-                setExpansionAll(t, val);
-            }
-        }
 
 
-    }
 
 
-    public void initialize(TreeView<Label> view) {
-        Logging.logInfo("Initializing Tab Controller: " + tableName);
-        //init data stuff
-        treeView = view;
-        rootItem = new TreeItem<>(new Label("root-item"));
-        if (!databaseData.isEmpty()) {
-            constructTree(databaseData);
-        }
-        treeView.setShowRoot(false);
-        treeView.setRoot(rootItem);
-
-        //init list of events
-        try {
-            FileInputStream stream = new FileInputStream(Constants.BASE_READ_ONLY_FILEPATH + "/resources/TBAData/eventList.json");
-            eventList = new JSONArray(new String(stream.readAllBytes()));
-            stream.close();
-        } catch (FileNotFoundException e) {
-            Logging.logError(e, "Could Not Find list of Competitions");
-        } catch (IOException e) {
-            Logging.logError(e, "Whooop de doo, another IO exception, I guess your just screwed now,-C.H");
-        }
-
-
-    }
     @FXML
     public void validateDataButtonHandler(ActionEvent event) {
         validateData();
@@ -158,7 +183,7 @@ public class TabController {
         refresh();
 
         if (Objects.equals(currentEventCode, "")) {
-            if (!selectCompetition()) {
+            if (selectCompetition()) {
                 Logging.logInfo("Data Validation Aborted");
                 return false;
             }
@@ -259,8 +284,59 @@ public class TabController {
         }else {
             currentEventCode =  "";
         }
-        return !Objects.equals(currentEventCode, "");
+        return Objects.equals(currentEventCode, "");
 
+    }
+
+    @FXML
+    public void collapseAll() {
+        Logging.logInfo("Collapsing Tree");
+        setExpansionAll(rootItem, false);
+    }
+
+    private void setExpansionAll(TreeItem<Label> treeItem, boolean val) {
+        if (treeItem.getValue().getText().equals("root-item")) {
+            //then we are dealing with the root item
+            treeItem.setExpanded(true);
+        } else {
+            treeItem.setExpanded(val);
+
+        }
+        if (!treeItem.getChildren().isEmpty()) {
+            for (TreeItem<Label> t : treeItem.getChildren()) {
+                setExpansionAll(t, val);
+            }
+        }
+
+
+    }
+
+
+    private static class CustomStringConverter extends StringConverter<Label> {
+        Paint paint = Color.PINK;//default, if I see this, something is wrong
+        @Override
+        public String toString(javafx.scene.control.Label object) {
+            if (object.getText().contains("=")) {
+                String error = object.getText().split("=")[1];
+                if (Objects.equals(error, DataPoint.ErrorLevel.UNKNOWN.toString())) {
+                    paint = DataPoint.color.get(DataPoint.ErrorLevel.UNKNOWN);
+                }else {
+                    paint = DataPoint.color.get(DataPoint.translateErrorNum(Integer.parseInt(error)));
+                }
+            }else {
+                paint = Color.BLACK;
+            }
+
+            return object.getText();
+        }
+
+        @Override
+        public javafx.scene.control.Label fromString(String string) {
+            Label l = new Label(string);
+            l.setTextFill(paint);
+            System.out.println("Returning lable with color");
+            return l;
+        }
     }
 
 
