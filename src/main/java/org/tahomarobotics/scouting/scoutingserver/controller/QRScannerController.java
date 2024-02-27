@@ -73,7 +73,7 @@ public class QRScannerController {
                         FileInputStream inputStream = new FileInputStream(file);
                         JSONArray arr = new JSONArray(new String(inputStream.readAllBytes()));
                         for (Object o : arr.toList()) {
-                            DatabaseManager.storeRawQRData(System.currentTimeMillis(), (String) o, "\"" + activeTable + "\"");
+                            DatabaseManager.storeRawQRData((int) System.currentTimeMillis(), (String) o, "\"" + activeTable + "\"");
                         }
 
                         inputStream.close();
@@ -122,7 +122,7 @@ public class QRScannerController {
 
         String qrData = QRCodeUtil.readQRCode(fp);
         System.out.println("Scanner QR Code: " + qrData);
-        DatabaseManager.storeRawQRData(System.currentTimeMillis(), qrData, tableName);
+        DatabaseManager.storeRawQRData((int) System.currentTimeMillis(), qrData, tableName);
         return qrData;
     }
 
