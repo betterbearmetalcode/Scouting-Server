@@ -56,7 +56,7 @@ public class Logging {
 
     }
 
-    public void logInfo(String info, boolean showAlert) {
+    public static void logInfo(String info, boolean showAlert) {
         logInfo(info);
         if (showAlert) {
             Platform.runLater(() -> {

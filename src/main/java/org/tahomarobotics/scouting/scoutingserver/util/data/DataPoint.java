@@ -8,6 +8,7 @@ import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class DataPoint {
     private String name;
@@ -60,12 +61,25 @@ public class DataPoint {
 
     }
 
+    public DataPoint(String displayString) {
+        String[] tokens = displayString.split(":");
+        this.name = tokens[0];
+        this.value = tokens[1];
+        String errorVal = tokens[2].split("=")[1];
+        if (!Objects.equals(errorVal, ErrorLevel.UNKNOWN.toString())) {
+            this.howOff = Integer.parseInt(errorVal);
+        }else {
+            howOff = Double.NaN;
+        }
+        this.validated = false;
+        this.errorLevel = translateErrorNum(howOff);
+    }
+
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(getName().replaceAll("_", " ").toLowerCase()).append(": ");//name without underscores and a colon
-        stringBuilder.append(getValue()).append(".");//the value and a period
-        stringBuilder.append(validated?" ":"Unchecked, ");//if its unchecked say so, otherwise nothing
+        stringBuilder.append(getName().replaceAll("_", " ").toLowerCase()).append(":");//name without underscores and a colon
+        stringBuilder.append(getValue()).append(":");//the value and a period
         stringBuilder.append("Error=");
         if (errorLevel == ErrorLevel.UNKNOWN) {
             stringBuilder.append(ErrorLevel.UNKNOWN);

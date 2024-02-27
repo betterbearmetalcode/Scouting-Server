@@ -17,7 +17,7 @@ import java.util.*;
 public class DatabaseManager {
 
 
-    public static void storeRawQRData(long timestamp, String dataRaw, String tablename) throws IOException {
+    public static void storeRawQRData(int timestamp, String dataRaw, String tablename) throws IOException {
         try {
             String[] data = dataRaw.split(Constants.QR_DATA_DELIMITER);
             QRRecord m = new QRRecord(timestamp,
@@ -54,7 +54,7 @@ public class DatabaseManager {
         }
     }
 
-    public static void storeRawQRData(long timestamp, JSONObject dataJSON, String tablename) throws IOException {
+    public static void storeRawQRData(int timestamp, JSONObject dataJSON, String tablename) throws IOException {
         storeRawQRData(timestamp, dataJSON.getString( (String) Arrays.stream(dataJSON.keySet().toArray()).toList().get(0)), tablename);
 
     }
@@ -67,7 +67,7 @@ public class DatabaseManager {
             for (HashMap<String, Object> row : data) {
                 //for each row in the sql database
                 output.add(new QRRecord(
-                        (long) row.get(Constants.SQLColumnName.TIMESTAMP.toString().toUpperCase()),
+                        System.currentTimeMillis(),
                         (int) row.get(Constants.SQLColumnName.MATCH_NUM.toString()),
                         (int) row.get(Constants.SQLColumnName.TEAM_NUM.toString()),
                         getRobotPositionFromNum((int) row.get(Constants.SQLColumnName.ALLIANCE_POS.toString())),
