@@ -29,17 +29,24 @@ import java.util.concurrent.atomic.AtomicReference;
 
 
 public class QRScannerController {
-    public static String activeTable = Constants.DEFAULT_SQL_TABLE_NAME;
+    public static String activeTable = "";
 
     @FXML
     public Label selectedDatabaseLabel;
 
     public VBox imageViewBox;
 
+    public Button jsonImprt;
+
+    public Button takePictureButton;
+
 
     @FXML
     private void initialize() {
-        selectedDatabaseLabel.setText(Constants.DEFAULT_SQL_TABLE_NAME);
+        selectedDatabaseLabel.setText("No Database Selected");
+        jsonImprt.setDisable(true);
+        takePictureButton.setDisable(true);
+
         ScoutingServer.qrScannerController  = this;
     }
 
@@ -52,7 +59,6 @@ public class QRScannerController {
             AtomicReference<String> selectedTable = new AtomicReference<>("");
             result.ifPresent(selectedDatabaseLabel::setText);
             result.ifPresent(this::setActiveTable);
-            result.ifPresent(System.out::println);
         } catch (SQLException e) {
             Logging.logError(e);
         }
@@ -129,6 +135,8 @@ public class QRScannerController {
 
     public void setActiveTable(String s) {
         activeTable = s;
+        jsonImprt.setDisable(false);
+        takePictureButton.setDisable(false);
     }
 
 

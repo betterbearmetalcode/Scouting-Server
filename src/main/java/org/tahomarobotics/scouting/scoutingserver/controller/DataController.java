@@ -46,7 +46,6 @@ public class DataController {
             if (Objects.equals(selectedTable, "")) {
                 return;
             }
-            File selectedFile = new File(Constants.DATABASE_FILEPATH + Constants.SQL_DATABASE_NAME);
             //check if this tab is already open
 
             TabController controller = new TabController(DatabaseManager.getUnCorrectedDataFromDatabase(selectedTable), selectedTable, tabPane);
@@ -104,20 +103,20 @@ public class DataController {
     }
 
     private String getSelectedTableFromUser() {
-        String output = Constants.DEFAULT_SQL_TABLE_NAME;
         try {
             TableChooserDialog dialog = new TableChooserDialog(SQLUtil.getTableNames());
             Optional<String> result = dialog.showAndWait();
             AtomicReference<String> selectedTable = new AtomicReference<>("");
             result.ifPresent(selectedTable::set);
-            output = selectedTable.get();
-            System.out.println("Dialog Result: " + selectedTable.get());
+            if (result.isPresent()) {
+                return selectedTable.get();
+            }else {
+                    return "";
+            }
         } catch (SQLException e) {
             Logging.logError(e);
+            return "";
         }
-
-
-        return output;
     }
 
 

@@ -44,12 +44,12 @@ public class Constants {
     public static ArrayList<String> oneMatchOfDebufStrings = new ArrayList<>();
      static {
 
-        oneMatchOfDebufStrings.add("1/2046/0/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest1/teleNotes");
-        oneMatchOfDebufStrings.add("1/4414/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest2/teleNotes");
-        oneMatchOfDebufStrings.add("1/1323/2/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest3/teleNotes");
-        oneMatchOfDebufStrings.add("1/254/3/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest4/teleNotes");
-        oneMatchOfDebufStrings.add("1/2056/4/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest5/teleNotes");
-        oneMatchOfDebufStrings.add("1/2910/5/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest6/teleNotes");
+        oneMatchOfDebufStrings.add("1/4338/0/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest1/teleNotes");
+        oneMatchOfDebufStrings.add("1/4320/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest2/teleNotes");
+        oneMatchOfDebufStrings.add("1/5990/2/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest3/teleNotes");
+        oneMatchOfDebufStrings.add("1/4319/3/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest4/teleNotes");
+        oneMatchOfDebufStrings.add("1/1690/4/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest5/teleNotes");
+        oneMatchOfDebufStrings.add("1/9303/5/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest6/teleNotes");
     }
     public enum SQLColumnName {
         TIMESTAMP,
@@ -107,7 +107,6 @@ public class Constants {
             new ColumnType(SQLColumnName.TELE_COMMENTS, SQLDatatype.TEXT)
 
     ));
-    public static final String DEFAULT_SQL_TABLE_NAME = "Default_Table";
 
     public static final String TEST_SQL_TABLE_NAME = "debug_table";
 

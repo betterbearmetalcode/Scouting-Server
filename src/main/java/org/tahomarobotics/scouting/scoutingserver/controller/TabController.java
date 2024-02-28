@@ -30,6 +30,7 @@ import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
 
+import java.beans.IndexedPropertyDescriptor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -37,8 +38,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 public class TabController {
 
@@ -63,6 +62,7 @@ public class TabController {
     private JSONArray eventList;
     private final ArrayList<Pair<String, String>> otherEvents = new ArrayList<>();
     private String currentEventCode = "";
+    private  boolean editmode = false;
 
 
     public TabController(ArrayList<Match> databaseData, String table, TabPane thePane) {
@@ -80,6 +80,16 @@ public class TabController {
         setEditMode(false);
         treeView.setShowRoot(false);
         treeView.setRoot(rootItem);
+        treeView.setOnEditStart(new EventHandler<TreeView.EditEvent<Label>>() {
+            @Override
+            public void handle(TreeView.EditEvent<Label> event) {
+                if (!editmode) {
+                    setEditMode(true);
+                    event.consume();
+                }
+
+            }
+        });
 
         //init list of events
         try {
@@ -141,7 +151,7 @@ public class TabController {
         } catch (IOException ex) {
             Logging.logError(ex);
         }
-        constructTree(databaseData);
+        constructTree(databaseData, false);
     }
 
     @FXML
@@ -160,7 +170,10 @@ public class TabController {
     @FXML
     public void toggleEditMode(ActionEvent event) {
         Logging.logInfo("Toggleing Edit Mode");
-        setEditMode(editToggle.isSelected());
+        if (editmode != editToggle.isSelected()) {
+            setEditMode(editToggle.isSelected());
+        }
+
 
     }
 
@@ -174,16 +187,25 @@ public class TabController {
                 return false;
             }
         }
-        databaseData = DataValidator.validateDataAgain(currentEventCode, databaseData);
-        constructTree(databaseData);
+        databaseData = DataValidator.validateData(currentEventCode, databaseData);
+        constructTree(databaseData, false);
         return true;
 
     }
 
-    private void constructTree(ArrayList<Match> matches) {
+    private void constructTree(ArrayList<Match> matches, boolean switchingToEditMode) {
         Logging.logInfo("Constructing tree");
         if (matches.isEmpty()) {
             return;
+        }
+        //construct a array containing the expansion structure of the database, if there are changes (exceptions), then we can defualt the expansionto false
+        ArrayList<Pair<Boolean, ArrayList<Boolean>>> expainsionStructure = new ArrayList<>();
+        for (TreeItem<Label> matchItem : rootItem.getChildren()) {
+            ArrayList<Boolean> matchExpansion = new ArrayList<>();
+            for (TreeItem<Label> robotItem : matchItem.getChildren()) {
+                matchExpansion.add(robotItem.isExpanded());
+            }
+            expainsionStructure.add(new Pair<>(matchItem.isExpanded(), matchExpansion));
         }
         rootItem.getChildren().clear();
         for (Match match : matches) {
@@ -191,6 +213,12 @@ public class TabController {
             DataPoint.ErrorLevel maxErrorLevelInThisMatch = DataPoint.ErrorLevel.ZERO;
             Label matchLabel = new Label("Match: " + match.matchNumber());
             TreeItem<Label> matchItem = new TreeItem<>(matchLabel);
+            try {
+            matchItem.setExpanded(expainsionStructure.get(match.matchNumber() - 1).getKey());
+            }catch (IndexOutOfBoundsException e) {
+                matchItem.setExpanded(false);
+
+               }
 
 
             for (Robot robot : match.robots()) {
@@ -198,7 +226,11 @@ public class TabController {
                 Label robotLabel = new Label(robot.robotPosition().toString() + ": " + robot.teamNumber());
                 TreeItem<Label> robotItem = new TreeItem<>(robotLabel);
                 matchItem.getChildren().add(robotItem);
-
+                try {
+                    robotItem.setExpanded(expainsionStructure.get(match.matchNumber() - 1).getValue().get(robot.robotPosition().ordinal()));
+                }catch (IndexOutOfBoundsException e) {
+                    robotItem.setExpanded(false);
+                }
 
                 for (DataPoint dataPoint : robot.data()) {
                     Label l = new Label(dataPoint.toString());
@@ -217,6 +249,8 @@ public class TabController {
             matchLabel.setTextFill(DataPoint.color.get(maxErrorLevelInThisMatch));
             rootItem.getChildren().add(matchItem);
         }//end comp for
+
+
     }
     public boolean selectCompetition() {
         Logging.logInfo("Selecting Competiton COde");
@@ -283,19 +317,30 @@ public class TabController {
 
 
     private void setEditMode(boolean mode) {
+        setEditMode(mode, -1,-1,-1);
+    }
+
+    private void setEditMode(boolean mode, int matchNum, int teamNum, int dataumIndex) {
         treeView.setEditable(mode);
         if (mode) {
             //set to edit mode
             treeView.setCellFactory(param -> new EditableTreeCell(this));
             validateDataButton.setDisable(true);
             exportButton.setDisable(true);
+            editToggle.setSelected(true);
+            editmode = true;
+            treeView.getSelectionModel().select(treeView.getRoot().getChildren().get(matchNum).getChildren().get(teamNum).getChildren().get(dataumIndex));//for some reason letting this line throw exceptions makes the app work
+            //if you catch ten exceptions, then it will not work, if you iplement a check to stop them, it also won't work. Don't bother to try and fix this, it doesn't matter.
         }else {
             //get out of edit mode
             validateDataButton.setDisable(false);
             exportButton.setDisable(false);
             treeView.setCellFactory(null);
+            treeView.setEditable(true);
+            editToggle.setSelected(false);
+            editmode = false;
         }
-        constructTree(databaseData);
+        constructTree(databaseData, true);
     }
 
     private class EditableTreeCell extends TextFieldTreeCell<Label> {
@@ -340,6 +385,13 @@ public class TabController {
             }
 
         }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setEditMode(false);
+        }
+
         @Override
         public void commitEdit(Label newLabel) {
             if (this.getTreeItem().isLeaf()) {
@@ -380,6 +432,13 @@ public class TabController {
                         statementBuilder.append(" AND ").append(Constants.SQLColumnName.MATCH_NUM).append("=?");
                         try {
                             SQLUtil.execNoReturn(statementBuilder.toString(), new String[] {newLabel.getText(), String.valueOf(teamNum), String.valueOf(matchNum)});
+                            Timer timer = new Timer();
+                            timer.schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    setEditMode(false);
+                                }
+                            }, 10);
                         } catch (SQLException e) {
                             Logging.logError(e, "Error updatingSQLDatabase");
                             cancelEdit();

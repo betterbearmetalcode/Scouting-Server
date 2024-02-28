@@ -82,7 +82,6 @@ public class ScoutingServer extends Application {
         //set up database
         try {
             SQLUtil.initialize(Constants.DATABASE_FILEPATH + Constants.SQL_DATABASE_NAME);
-            SQLUtil.addTable(Constants.DEFAULT_SQL_TABLE_NAME, SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
         } catch (SQLException e) {
             Logging.logError(e);
         }

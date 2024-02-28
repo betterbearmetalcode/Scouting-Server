@@ -37,6 +37,7 @@ public class TableChooserDialog extends Dialog<String> {
 
         });
 
+
         VBox vBox = getvBox(listView);
 
         listView.setCellFactory(TextFieldListCell.forListView());
@@ -46,8 +47,12 @@ public class TableChooserDialog extends Dialog<String> {
         this.setResultConverter(param -> {
             if (param == openType) {
                 listView.refresh();
+                if (listView.getSelectionModel().getSelectedItem() == null) {
+                    return "";
+                }else {
+                    return listView.getSelectionModel().getSelectedItem();
+                }
 
-                return listView.getSelectionModel().getSelectedItem();
             }
             return null;
         });
@@ -90,12 +95,6 @@ public class TableChooserDialog extends Dialog<String> {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    if (listView.getSelectionModel().getSelectedItem().equals(Constants.DEFAULT_SQL_TABLE_NAME)) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Default Table Cannot be Deleted, will delete contents instead");
-                        alert.showAndWait();
-                        SQLUtil.execNoReturn("DELETE FROM " + Constants.DEFAULT_SQL_TABLE_NAME);
-                        return;
-                    }
                     SQLUtil.execNoReturn("DROP TABLE IF EXISTS '" + listView.getSelectionModel().getSelectedItem() + "'");
                     listView.getItems().remove(listView.getSelectionModel().getSelectedItem());
                 } catch (SQLException e) {
