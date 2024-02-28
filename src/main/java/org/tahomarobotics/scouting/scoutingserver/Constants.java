@@ -41,8 +41,16 @@ public class Constants {
     public static final String TEST_QR_STRING_7 = "2/2540/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest7/teleNotes";
     public static final String TEST_QR_STRING_8 = "2/1678/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest8/teleNotes";
     public static final String TEST_QR_STRING_9 = "2/2056/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest9/teleNotes";
+    public static ArrayList<String> oneMatchOfDebufStrings = new ArrayList<>();
+     static {
 
-
+        oneMatchOfDebufStrings.add("1/2046/0/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest1/teleNotes");
+        oneMatchOfDebufStrings.add("1/4414/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest2/teleNotes");
+        oneMatchOfDebufStrings.add("1/1323/2/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest3/teleNotes");
+        oneMatchOfDebufStrings.add("1/254/3/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest4/teleNotes");
+        oneMatchOfDebufStrings.add("1/2056/4/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest5/teleNotes");
+        oneMatchOfDebufStrings.add("1/2910/5/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest6/teleNotes");
+    }
     public enum SQLColumnName {
         TIMESTAMP,
         MATCH_NUM,

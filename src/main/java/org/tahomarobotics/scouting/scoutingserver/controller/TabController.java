@@ -174,7 +174,7 @@ public class TabController {
                 return false;
             }
         }
-        databaseData = DataValidator.validateData(currentEventCode, databaseData);
+        databaseData = DataValidator.validateDataAgain(currentEventCode, databaseData);
         constructTree(databaseData);
         return true;
 

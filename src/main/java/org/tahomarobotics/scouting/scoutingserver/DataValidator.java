@@ -7,7 +7,9 @@ import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class DataValidator {
 
@@ -22,8 +24,7 @@ public class DataValidator {
             ArrayList<Match> data = new ArrayList<>();
             ArrayList<Object> rawList =  new ArrayList<>(eventMatches.toList());
             ArrayList<HashMap<String, Object>> processedData = removeDuplicatesFromRawTBAData(rawList, eventCode);//remove non qualifiaction matches
-            processedData.sort(Comparator.comparingInt(o -> (Integer) o.get("match_number")));//sort by match number
-
+            processedData.sort(Comparator.comparingInt(o -> (Integer) o.get("match_number")));//sort TBA DATA by match number
 
             for (HashMap<String, Object> match : processedData) {
                 //for each match
@@ -35,23 +36,70 @@ public class DataValidator {
                result.ifPresent(match12 -> robots.addAll(result.get().robots()));
                 if (!robots.isEmpty()) {
                     //if there is actually scouting data for this match that blue alliance has data for.
-                    boolean matchComplete = robots.size() == 6;//is the whole match invalid
                     List<Robot> redRobots = robots.stream().filter(robot -> robot.robotPosition().ordinal() < 3).toList();
                     List<Robot> blueRobots = robots.stream().filter(robot -> robot.robotPosition().ordinal() > 2).toList();
                     HashMap<String, Object> redAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("red");
                     HashMap<String, Object> blueAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("blue");
 
-                    corectedRobots.addAll(correctAlliance(matchComplete, redRobots, redAllianceScoreBreakdown));
-                    corectedRobots.addAll(correctAlliance(matchComplete, blueRobots, blueAllianceScoreBreakdown));
+                    corectedRobots.addAll(correctAlliance(redRobots.size() == 3, redRobots, redAllianceScoreBreakdown));
+                    corectedRobots.addAll(correctAlliance(blueRobots.size() == 3, blueRobots, blueAllianceScoreBreakdown));
                     data.add(new Match(matchNum, new ArrayList<>(corectedRobots)));
                 }
 
+
+
             }
+
             return data;
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    public static  ArrayList<Match> validateDataAgain(String eventCode, ArrayList<Match> databaseData) {
+        try {
+            JSONArray eventMatches = APIUtil.get("/event/" + eventCode + "/matches");//returns array of json objects each representing a match
+            if (eventMatches.get(0).equals("NoInternet")) {
+                Logging.logInfo("Cannot validate data, returning unmodified data");
+                return databaseData;
+            }
+            ArrayList<Match> output = new ArrayList<>();
+            ArrayList<Object> rawList =  new ArrayList<>(eventMatches.toList());
+            ArrayList<HashMap<String, Object>> processedData = removeDuplicatesFromRawTBAData(rawList, eventCode);//remove non qualifiaction matches
+            processedData.sort(Comparator.comparingInt(o -> (Integer) o.get("match_number")));//sort TBA DATA by match number
+
+            for (Match matchData : databaseData) {
+                ArrayList<Robot> corectedRobots = new ArrayList<>();
+                Optional<HashMap<String, Object>> matchTBAData = processedData.stream().filter(tbaMatch -> Integer.parseInt(tbaMatch.get("match_number").toString()) == matchData.matchNumber()).findFirst();
+                if (!matchTBAData.isPresent()) {
+                    //then we don't hava data for this matach and can't validate it so just add the original data and try the next match
+                    output.add(matchData);
+                    continue;
+                }
+                if (!matchData.robots().isEmpty()) {
+                    List<Robot> redRobots = matchData.robots().stream().filter(robot -> robot.robotPosition().ordinal() < 3).toList();
+                    List<Robot> blueRobots = matchData.robots().stream().filter(robot -> robot.robotPosition().ordinal() > 2).toList();
+                    HashMap<String, Object> matchScoreBreakdown = (HashMap<String, Object>) matchTBAData.get().get("score_breakdown");
+                    HashMap<String, Object> redAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("red");
+                    HashMap<String, Object> blueAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("blue");
+
+                    corectedRobots.addAll(correctAlliance(redRobots.size() == 3, redRobots, redAllianceScoreBreakdown));
+                    corectedRobots.addAll(correctAlliance(blueRobots.size() == 3, blueRobots, blueAllianceScoreBreakdown));
+                    output.add(new Match(matchData.matchNumber(), new ArrayList<>(corectedRobots)));
+                }
+
+            }
+
+            return output;
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private static ArrayList<Robot> correctAlliance(boolean matchComplete, List<Robot> robots, HashMap<String, Object> breakdown) {

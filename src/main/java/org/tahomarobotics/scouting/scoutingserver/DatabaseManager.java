@@ -43,6 +43,7 @@ public class DatabaseManager {
                     Integer.parseInt(data[19]),//tele amp missed
                     data[20],//auto notes
                     data[21]);//tele notes
+
             SQLUtil.execNoReturn("INSERT INTO " + tablename + " VALUES (" + m.getDataForSQL() + ")");
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database: " + m, Color.GREEN);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
@@ -50,6 +51,7 @@ public class DatabaseManager {
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed o construct QrRecord, likly corrupted data", Color.RED);
             Logging.logError(e);
         } catch (SQLException e) {
+
             Logging.logError(e);
         }
     }
