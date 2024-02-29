@@ -1,5 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -9,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
@@ -85,7 +88,6 @@ public class DataController {
             TreeView<Label> treeView = (TreeView<Label>) box.getChildren().get(0);
             treeView.prefHeightProperty().bind(Constants.UIValues.databaseHeightProperty());
             treeView.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
-
             //pass the tree view to the controller class
 
             controller.initialize(treeView);

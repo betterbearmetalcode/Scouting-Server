@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.tahomarobotics.scouting.scoutingserver.controller.DataController;
@@ -61,8 +62,9 @@ public class ScoutingServer extends Application {
     public void start(Stage stage) {
         mainStage = stage;
         mainStage.setTitle("Scouting Server");
-        mainStage.setScene(mainScene);
-        currentScene = SCENES.MAIN_MENU;
+        mainStage.setScene(dataCollectionScene);
+        currentScene = SCENES.QR_SCANNER;
+        mainStage.getIcons().add(new Image(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Logo.jpg"));
         mainStage.show();
 
         //set up resources folder if not already created
@@ -133,23 +135,18 @@ public class ScoutingServer extends Application {
     }
 
 
-    private void setUpDataCorrectionScene() {
-        //add hamburger menu to qr scanner scene
-        VBox parent = (VBox) dataCorrectionScene.getRoot();
-        SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
-        AnchorPane anchorPane = (AnchorPane) splitPane.getItems().get(0);
-        anchorPane.getChildren().add(dataCorrectionHamburgerMenu);
-    }
-
     public static void main(String[] args) {
         launch();
     }
 
 
     private static void resize() {
-        double appHeight = getAppHeight();
-        double appWidth = getAppWidth();
-            //main scene
+        resize(getAppWidth(), getAppHeight());
+
+    }
+
+    private static void resize(double appWidth, double appHeight) {
+        System.out.println("resiaing: " + appWidth + ", " + appHeight);
         mainRoot.setPrefSize(appWidth, appHeight);
         dataCollectionRoot.setPrefSize(appWidth, appHeight);
         dataRoot.setPrefSize(appWidth, appHeight);
@@ -162,7 +159,6 @@ public class ScoutingServer extends Application {
         mainRoot.resize(appWidth, appHeight);
         dataCollectionRoot.resize(appWidth, appHeight);
         dataRoot.resize(appWidth, appHeight);
-
     }
 
     private void setUpDataScene() {

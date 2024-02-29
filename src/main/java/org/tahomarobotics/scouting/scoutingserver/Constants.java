@@ -130,6 +130,7 @@ public class Constants {
 
 
     public static class UIValues {
+
         public static final double WIDTH_MULTIPLIER = .75;
         public static final double HEIGHT_MULTIPLIER = WIDTH_MULTIPLIER;
        // public static  double APP_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height * HEIGHT_MULTIPLIER;
@@ -229,6 +230,11 @@ public class Constants {
 
         public static void setDatabaseHeightProperty(double value) {
             Constants.UIValues.databaseHeightProperty.set(value);
+        }
+
+        public static final DoubleProperty buttonBarHeightProperty = new SimpleDoubleProperty();
+        static {
+            buttonBarHeightProperty.set(UIValues.MIN_MAIN_BUTTON_BAR_HEIGHT);
         }
     }
 
