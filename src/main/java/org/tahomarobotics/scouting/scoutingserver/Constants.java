@@ -41,8 +41,16 @@ public class Constants {
     public static final String TEST_QR_STRING_7 = "2/2540/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest7/teleNotes";
     public static final String TEST_QR_STRING_8 = "2/1678/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest8/teleNotes";
     public static final String TEST_QR_STRING_9 = "2/2056/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest9/teleNotes";
+    public static ArrayList<String> oneMatchOfDebufStrings = new ArrayList<>();
+     static {
 
-
+        oneMatchOfDebufStrings.add("1/4338/0/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest1/teleNotes");
+        oneMatchOfDebufStrings.add("1/4320/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest2/teleNotes");
+        oneMatchOfDebufStrings.add("1/5990/2/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest3/teleNotes");
+        oneMatchOfDebufStrings.add("1/4319/3/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest4/teleNotes");
+        oneMatchOfDebufStrings.add("1/1690/4/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest5/teleNotes");
+        oneMatchOfDebufStrings.add("1/9303/5/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest6/teleNotes");
+    }
     public enum SQLColumnName {
         TIMESTAMP,
         MATCH_NUM,
@@ -99,7 +107,6 @@ public class Constants {
             new ColumnType(SQLColumnName.TELE_COMMENTS, SQLDatatype.TEXT)
 
     ));
-    public static final String DEFAULT_SQL_TABLE_NAME = "Default_Table";
 
     public static final String TEST_SQL_TABLE_NAME = "debug_table";
 
@@ -123,6 +130,7 @@ public class Constants {
 
 
     public static class UIValues {
+
         public static final double WIDTH_MULTIPLIER = .75;
         public static final double HEIGHT_MULTIPLIER = WIDTH_MULTIPLIER;
        // public static  double APP_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height * HEIGHT_MULTIPLIER;
@@ -222,6 +230,11 @@ public class Constants {
 
         public static void setDatabaseHeightProperty(double value) {
             Constants.UIValues.databaseHeightProperty.set(value);
+        }
+
+        public static final DoubleProperty buttonBarHeightProperty = new SimpleDoubleProperty();
+        static {
+            buttonBarHeightProperty.set(UIValues.MIN_MAIN_BUTTON_BAR_HEIGHT);
         }
     }
 

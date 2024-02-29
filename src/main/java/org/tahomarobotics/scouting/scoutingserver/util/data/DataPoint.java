@@ -27,6 +27,8 @@ public class DataPoint {
 
     private ErrorLevel errorLevel;
 
+    public boolean expanded = false;//for use in constructing trees
+
     public enum ErrorLevel {
         UNKNOWN,
         ZERO,
@@ -63,11 +65,11 @@ public class DataPoint {
 
     public DataPoint(String displayString) {
         String[] tokens = displayString.split(":");
-        this.name = tokens[0];
+        this.name = tokens[0].replaceAll(" ", "_").toUpperCase();
         this.value = tokens[1];
         String errorVal = tokens[2].split("=")[1];
         if (!Objects.equals(errorVal, ErrorLevel.UNKNOWN.toString())) {
-            this.howOff = Integer.parseInt(errorVal);
+            this.howOff = Double.parseDouble(errorVal);
         }else {
             howOff = Double.NaN;
         }

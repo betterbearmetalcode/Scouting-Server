@@ -1,5 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -9,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
@@ -46,7 +49,6 @@ public class DataController {
             if (Objects.equals(selectedTable, "")) {
                 return;
             }
-            File selectedFile = new File(Constants.DATABASE_FILEPATH + Constants.SQL_DATABASE_NAME);
             //check if this tab is already open
 
             TabController controller = new TabController(DatabaseManager.getUnCorrectedDataFromDatabase(selectedTable), selectedTable, tabPane);
@@ -86,7 +88,6 @@ public class DataController {
             TreeView<Label> treeView = (TreeView<Label>) box.getChildren().get(0);
             treeView.prefHeightProperty().bind(Constants.UIValues.databaseHeightProperty());
             treeView.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
-
             //pass the tree view to the controller class
 
             controller.initialize(treeView);
@@ -104,20 +105,20 @@ public class DataController {
     }
 
     private String getSelectedTableFromUser() {
-        String output = Constants.DEFAULT_SQL_TABLE_NAME;
         try {
             TableChooserDialog dialog = new TableChooserDialog(SQLUtil.getTableNames());
             Optional<String> result = dialog.showAndWait();
             AtomicReference<String> selectedTable = new AtomicReference<>("");
             result.ifPresent(selectedTable::set);
-            output = selectedTable.get();
-            System.out.println("Dialog Result: " + selectedTable.get());
+            if (result.isPresent()) {
+                return selectedTable.get();
+            }else {
+                    return "";
+            }
         } catch (SQLException e) {
             Logging.logError(e);
+            return "";
         }
-
-
-        return output;
     }
 
 

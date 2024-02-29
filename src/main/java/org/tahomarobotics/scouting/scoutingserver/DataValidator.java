@@ -7,51 +7,54 @@ import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class DataValidator {
 
-    public static ArrayList<Match> validateData(String eventCode, ArrayList<Match> databaseData) {
-        try {
 
+    public static  ArrayList<Match> validateData(String eventCode, ArrayList<Match> databaseData) {
+        try {
             JSONArray eventMatches = APIUtil.get("/event/" + eventCode + "/matches");//returns array of json objects each representing a match
             if (eventMatches.get(0).equals("NoInternet")) {
                 Logging.logInfo("Cannot validate data, returning unmodified data");
                 return databaseData;
             }
-            ArrayList<Match> data = new ArrayList<>();
+            ArrayList<Match> output = new ArrayList<>();
             ArrayList<Object> rawList =  new ArrayList<>(eventMatches.toList());
-            ArrayList<HashMap<String, Object>> processedData = removeDuplicatesFromRawTBAData(rawList, eventCode);//remove non qualifiaction matches
-            processedData.sort(Comparator.comparingInt(o -> (Integer) o.get("match_number")));//sort by match number
 
-
-            for (HashMap<String, Object> match : processedData) {
-                //for each match
-                HashMap<String, Object> matchScoreBreakdown = (HashMap<String, Object>) match.get("score_breakdown");
+            for (Match matchData : databaseData) {
                 ArrayList<Robot> corectedRobots = new ArrayList<>();
-                int matchNum = (Integer) match.get("match_number");
-               Optional<Match> result = databaseData.stream().filter(match1 -> match1.matchNumber() == matchNum).findFirst();
-               List<Robot> robots = new ArrayList<>();
-               result.ifPresent(match12 -> robots.addAll(result.get().robots()));
-                if (!robots.isEmpty()) {
-                    //if there is actually scouting data for this match that blue alliance has data for.
-                    boolean matchComplete = robots.size() == 6;//is the whole match invalid
-                    List<Robot> redRobots = robots.stream().filter(robot -> robot.robotPosition().ordinal() < 3).toList();
-                    List<Robot> blueRobots = robots.stream().filter(robot -> robot.robotPosition().ordinal() > 2).toList();
+                Optional<Object> matchTBAData =  getTBAMatchObject(rawList, eventCode, matchData.matchNumber());
+                if (matchTBAData.isEmpty()) {
+                    //then we don't hava data for this matach and can't validate it so just add the original data and try the next match
+                    output.add(matchData);
+                    continue;
+                }
+                if (!matchData.robots().isEmpty()) {
+                    List<Robot> redRobots = matchData.robots().stream().filter(robot -> robot.robotPosition().ordinal() < 3).toList();
+                    List<Robot> blueRobots = matchData.robots().stream().filter(robot -> robot.robotPosition().ordinal() > 2).toList();
+                    HashMap<String, Object> matchDatum = (HashMap<String, Object>) matchTBAData.get();
+                    HashMap<String, Object> matchScoreBreakdown = (HashMap<String, Object>) matchDatum.get("score_breakdown");
                     HashMap<String, Object> redAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("red");
                     HashMap<String, Object> blueAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("blue");
 
-                    corectedRobots.addAll(correctAlliance(matchComplete, redRobots, redAllianceScoreBreakdown));
-                    corectedRobots.addAll(correctAlliance(matchComplete, blueRobots, blueAllianceScoreBreakdown));
-                    data.add(new Match(matchNum, new ArrayList<>(corectedRobots)));
+                    corectedRobots.addAll(correctAlliance(redRobots.size() == 3, redRobots, redAllianceScoreBreakdown));
+                    corectedRobots.addAll(correctAlliance(blueRobots.size() == 3, blueRobots, blueAllianceScoreBreakdown));
+                    output.add(new Match(matchData.matchNumber(), new ArrayList<>(corectedRobots)));
                 }
 
             }
-            return data;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+
+            return output;
+
+
+        } catch (IOException | InterruptedException e) {
+            Logging.logError(e, "failed to validate data");
+            return databaseData;
         }
+
     }
 
     private static ArrayList<Robot> correctAlliance(boolean matchComplete, List<Robot> robots, HashMap<String, Object> breakdown) {
@@ -119,23 +122,16 @@ public class DataValidator {
 
     }
 
-    private static ArrayList<HashMap<String, Object>> removeDuplicatesFromRawTBAData(ArrayList<Object> oldList, String eventKey) {
-        // Create a new ArrayList
-        ArrayList<HashMap<String, Object>> newList = new ArrayList<>();
-        // Traverse through the first list
-        for (Object element : oldList) {
-            HashMap<String, Object> match = (HashMap<String, Object>) element;
-            // If this element is not present in newList
-            // then add it
-
-            int matchNum = (int) match.get("match_number");
+    private static Optional<Object> getTBAMatchObject(ArrayList<Object> list, String eventKey, int matchNum) {
+        //get the json representing this match if there is one
+        return  list.stream().filter(o -> {
+            HashMap<String, Object> dataum = (HashMap<String, Object>) o;
             String exptectedMatchKey = eventKey + "_qm"  + matchNum;
-            if (match.get("key").equals(exptectedMatchKey)) {
-                newList.add(match);
-            }
-        }
-        // return the new list
-        return newList;
+            return dataum.get("key").equals(exptectedMatchKey);
+        }).findFirst();
+
+
+
     }
 
 }

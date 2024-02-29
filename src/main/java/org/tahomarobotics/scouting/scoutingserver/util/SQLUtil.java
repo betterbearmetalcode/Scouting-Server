@@ -15,7 +15,7 @@ public class SQLUtil {
 
 
     public static void addTable(String tableName, String schema) throws SQLException, IllegalArgumentException {
-        String statement = "CREATE TABLE IF NOT EXISTS \"" + tableName + "\"(" + schema + ")";
+        String statement = "CREATE TABLE IF NOT EXISTS \"" + tableName + "\"(" + schema + ", PRIMARY KEY (" + Constants.SQLColumnName.MATCH_NUM + ", " + Constants.SQLColumnName.TEAM_NUM  + "))";
         execNoReturn(statement);
     }
 
@@ -46,8 +46,15 @@ public class SQLUtil {
             toExec.close();
             Logging.logInfo("Executed sql Query: " + statement);
         } catch (SQLException e){
-            Logging.logError(e, "Executed sql Query: " + statement + "\nRolling Back Transaction");
-            connection.rollback();
+            if (e.getMessage().startsWith("[SQLITE_CONSTRAINT_PRIMARYKEY]")) {
+                Logging.logInfo("Duplicate Data Detected, Skipping");
+            }else {
+                Logging.logError(e, "Executed sql Query: " + statement + "\nRolling Back Transaction");
+                connection.rollback();
+
+            }
+
+
         }
     }
 

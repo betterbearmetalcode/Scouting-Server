@@ -68,15 +68,11 @@ public class MainController implements Initializable {
         try {
             System.out.println("Using debug table to generate simulated JSON inputs from the Scouting App");
             JSONArray arr = new JSONArray();
-            arr.put(Constants.TEST_QR_STRING_1);
-            arr.put(Constants.TEST_QR_STRING_2);
-            arr.put(Constants.TEST_QR_STRING_3);
-            arr.put(Constants.TEST_QR_STRING_4);
-            arr.put(Constants.TEST_QR_STRING_5);
-            arr.put(Constants.TEST_QR_STRING_6);
-            arr.put(Constants.TEST_QR_STRING_7);
-            arr.put(Constants.TEST_QR_STRING_8);
-            arr.put(Constants.TEST_QR_STRING_9);
+            for (int i = 1; i <= 121; i++) {
+                for (String oneMatchOfDebufString : Constants.oneMatchOfDebufStrings) {
+                    arr.put( i + oneMatchOfDebufString.substring(1));
+                }
+            }
 
             File outFile = new File(Constants.BASE_APP_DATA_FILEPATH + "/testJSON.json");
             FileOutputStream out = new FileOutputStream(outFile);
