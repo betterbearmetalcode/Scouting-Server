@@ -1,14 +1,14 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.scene.paint.Color;
-import org.json.JSONArray;
 import org.json.JSONObject;
+import org.tahomarobotics.scouting.scoutingserver.util.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchRecordComparator;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
-import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
+import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -17,11 +17,10 @@ import java.util.*;
 public class DatabaseManager {
 
 
-    public static void storeRawQRData(int timestamp, String dataRaw, String tablename) throws IOException {
+    public static void storeRawQRData(String dataRaw, String tablename) throws IOException {
         try {
             String[] data = dataRaw.split(Constants.QR_DATA_DELIMITER);
-            QRRecord m = new QRRecord(timestamp,
-                    Integer.parseInt(data[0]),//match num
+            QRRecord m = new QRRecord(Integer.parseInt(data[0]),//match num
                     Integer.parseInt(data[1]),//team num
                     getRobotPositionFromNum(Integer.parseInt(data[2])),//allinace pos
                     Integer.parseInt(data[3]),//auto speaker
@@ -44,20 +43,22 @@ public class DatabaseManager {
                     data[20],//auto notes
                     data[21]);//tele notes
 
-            SQLUtil.execNoReturn("INSERT INTO " + tablename + " VALUES (" + m.getDataForSQL() + ")");
-            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database: " + m, Color.GREEN);
+            SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + m.getDataForSQL() + ")");
+            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ m, Color.GREEN);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            System.err.println("Failed to construct MatchRecord, likly corruppted Data");
-            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed o construct QrRecord, likly corrupted data", Color.RED);
-            Logging.logError(e);
+            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed to construct QrRecord, likly corrupted data", Color.RED);
+            Logging.logError(e, "Failed to construct match record, most likly corrupted data");
         } catch (SQLException e) {
 
             Logging.logError(e);
+        } catch (DuplicateDataException e) {
+            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Duplicate Data Detected, skipping", Color.ORANGE);
+            Logging.logInfo("Duplicate Data detected, skipping");
         }
     }
 
-    public static void storeRawQRData(int timestamp, JSONObject dataJSON, String tablename) throws IOException {
-        storeRawQRData(timestamp, dataJSON.getString( (String) Arrays.stream(dataJSON.keySet().toArray()).toList().get(0)), tablename);
+    public static void storeRawQRData(JSONObject dataJSON, String tablename) throws IOException {
+        storeRawQRData(dataJSON.getString( (String) Arrays.stream(dataJSON.keySet().toArray()).toList().get(0)), tablename);
 
     }
 
@@ -69,7 +70,6 @@ public class DatabaseManager {
             for (HashMap<String, Object> row : data) {
                 //for each row in the sql database
                 output.add(new QRRecord(
-                        System.currentTimeMillis(),
                         (int) row.get(Constants.SQLColumnName.MATCH_NUM.toString()),
                         (int) row.get(Constants.SQLColumnName.TEAM_NUM.toString()),
                         getRobotPositionFromNum((int) row.get(Constants.SQLColumnName.ALLIANCE_POS.toString())),
@@ -172,8 +172,7 @@ public class DatabaseManager {
         }
     }
 
-    public record QRRecord(long timestamp,
-                           int matchNumber,
+    public record QRRecord(int matchNumber,
                            int teamNumber,
                            RobotPosition position,
                            int autoSpeaker,
@@ -204,8 +203,6 @@ public class DatabaseManager {
         public LinkedList<DataPoint> getDataAsList() {
             LinkedList<DataPoint> output = new LinkedList<>();
 
-
-            output.add(new DataPoint(Constants.SQLColumnName.TIMESTAMP.toString(), String.valueOf(timestamp)));
             output.add(new DataPoint(Constants.SQLColumnName.MATCH_NUM.toString(), String.valueOf(matchNumber)));
             output.add(new DataPoint(Constants.SQLColumnName.TEAM_NUM.toString(), String.valueOf(teamNumber)));
             output.add(new DataPoint(Constants.SQLColumnName.ALLIANCE_POS.toString(), String.valueOf(position.ordinal())));
@@ -236,8 +233,7 @@ public class DatabaseManager {
         }
 
         public String getDataForSQL() {
-            return timestamp + ", " +
-                    matchNumber + ", " +
+            return matchNumber + ", " +
                     teamNumber + ", " +
                     position.ordinal() + ", " +
                     autoSpeaker + ", " +
@@ -284,14 +280,14 @@ public class DatabaseManager {
             for (int i  =1; i < numMatches + 1; i++) {
                 //for each match that we have data on
 
-                ArrayList<Robot> robots = new ArrayList<>();
+                ArrayList<RobotPositon> robotPositons = new ArrayList<>();
                 final int finalI = i;
                 List<QRRecord> rawRobots = rawData.stream().filter(matchRecord -> matchRecord.matchNumber == finalI).toList();
                 for (QRRecord robot : rawRobots) {
                     //for each robot in this match
-                    robots.add(new Robot(robot.position, robot.teamNumber, robot.getDataAsList(), robot));
+                    robotPositons.add(new RobotPositon(robot.position, robot.teamNumber, robot.getDataAsList(), robot));
                 }
-                output.add(new Match(i, robots));
+                output.add(new Match(i, robotPositons));
 
             }
         }else {

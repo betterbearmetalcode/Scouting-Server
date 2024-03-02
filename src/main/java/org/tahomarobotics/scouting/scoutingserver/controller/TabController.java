@@ -23,18 +23,15 @@ import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DataValidator;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
+import org.tahomarobotics.scouting.scoutingserver.util.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
-import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
+import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
 
-import java.beans.IndexedPropertyDescriptor;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -126,7 +123,8 @@ public class TabController {
         File file = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
         if (file != null) {
             try {
-                SpreadsheetUtil.writeToSpreadSheet(databaseData, file, currentEventCode);//should add button later if buranik insists to export raw wihtout formulas
+
+                SpreadsheetUtil.writeToSpreadSheet(databaseData, file, currentEventCode, tableName);//should add button later if buranik insists to export raw wihtout formulas
             } catch (IOException ex) {
                 Logging.logError(ex, "IO error while exporting or fetching TBA Data");
             } catch (InterruptedException ex) {
@@ -221,18 +219,18 @@ public class TabController {
                }
 
 
-            for (Robot robot : match.robots()) {
+            for (RobotPositon robotPositon : match.robotPositons()) {
                 DataPoint.ErrorLevel maxErrorForThisRobot = DataPoint.ErrorLevel.ZERO;
-                Label robotLabel = new Label(robot.robotPosition().toString() + ": " + robot.teamNumber());
+                Label robotLabel = new Label(robotPositon.robotPosition().toString() + ": " + robotPositon.teamNumber());
                 TreeItem<Label> robotItem = new TreeItem<>(robotLabel);
                 matchItem.getChildren().add(robotItem);
                 try {
-                    robotItem.setExpanded(expainsionStructure.get(match.matchNumber() - 1).getValue().get(robot.robotPosition().ordinal()));
+                    robotItem.setExpanded(expainsionStructure.get(match.matchNumber() - 1).getValue().get(robotPositon.robotPosition().ordinal()));
                 }catch (IndexOutOfBoundsException e) {
                     robotItem.setExpanded(false);
                 }
 
-                for (DataPoint dataPoint : robot.data()) {
+                for (DataPoint dataPoint : robotPositon.data()) {
                     Label l = new Label(dataPoint.toString());
                     l.setTextFill(DataPoint.color.get(dataPoint.getErrorLevel()));
                     TreeItem<Label> dataItem = new TreeItem<>(l);
@@ -314,6 +312,38 @@ public class TabController {
 
 
     }
+    @FXML
+    public void saveJSONBackup(ActionEvent event) {
+        Logging.logInfo("Making JSON Backup of " + tableName);
+        refresh();
+        JSONArray output = new JSONArray();
+        for (Match databaseDatum : databaseData) {
+            for (RobotPositon robotPositon : databaseDatum.robotPositons()) {
+                StringBuilder builder = new StringBuilder();
+                for (DataPoint datum : robotPositon.data()) {
+                    builder.append(datum.getValue().replaceAll("\"", "")).append(Constants.QR_DATA_DELIMITER);
+                }
+                output.put(builder.toString());
+            }
+        }
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save Backup");
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " "));
+        File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+        try {
+            if (!selectedFile.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                selectedFile.createNewFile();
+            }
+            FileOutputStream os = new FileOutputStream(selectedFile);
+            os.write(output.toString().getBytes());
+            os.flush();
+            os.close();
+        } catch (IOException e) {
+            Logging.logError(e, "Failed to save backup");
+        }
+    }
 
 
     private void setEditMode(boolean mode) {
@@ -370,7 +400,7 @@ public class TabController {
         public void startEdit() {
             if (this.getTreeItem().isLeaf()) {
                 String name = this.getTreeItem().getValue().getText().split(":")[0];
-                if ((Objects.equals(name, Constants.SQLColumnName.ALLIANCE_POS.toString().replaceAll("_", " ").toLowerCase())) || (Objects.equals(name, Constants.SQLColumnName.TEAM_NUM.toString().replaceAll("_", " ").toLowerCase())) ||(Objects.equals(name, Constants.SQLColumnName.MATCH_NUM.toString().replaceAll("_", " ").toLowerCase())) || (Objects.equals(name, Constants.SQLColumnName.TIMESTAMP.toString().replaceAll("_", " ").toLowerCase())) ||(Objects.equals(name, Constants.SQLColumnName.AUTO_COMMENTS.toString().replaceAll("_", " ").toLowerCase())) || (Objects.equals(name, Constants.SQLColumnName.TELE_COMMENTS.toString().replaceAll("_", " ").toLowerCase())) ) {
+                if ((Objects.equals(name, Constants.SQLColumnName.ALLIANCE_POS.toString().replaceAll("_", " ").toLowerCase())) || (Objects.equals(name, Constants.SQLColumnName.TEAM_NUM.toString().replaceAll("_", " ").toLowerCase())) ||(Objects.equals(name, Constants.SQLColumnName.MATCH_NUM.toString().replaceAll("_", " ").toLowerCase())) ||(Objects.equals(name, Constants.SQLColumnName.AUTO_COMMENTS.toString().replaceAll("_", " ").toLowerCase())) || (Objects.equals(name, Constants.SQLColumnName.TELE_COMMENTS.toString().replaceAll("_", " ").toLowerCase())) ) {
                     //then this is a comment
                     cancelEdit();
                     Logging.logInfo("This data cannot be edited", true);
@@ -420,8 +450,8 @@ public class TabController {
                 int matchNum = Integer.parseInt(matchItem.getValue().getText().split(" ")[1]);
                 int teamNum = Integer.parseInt(robotItem.getValue().getText().split(" ")[1]);
                 Match match = databaseData.stream().filter(match1 -> match1.matchNumber() == matchNum).findFirst().get();
-                Robot robot = match.robots().stream().filter(robot1 -> robot1.teamNumber() == teamNum).findFirst().get();
-                robot.data().replaceAll(dataPoint -> {
+                RobotPositon robotPositon = match.robotPositons().stream().filter(robot1 -> robot1.teamNumber() == teamNum).findFirst().get();
+                robotPositon.data().replaceAll(dataPoint -> {
                     if (Objects.equals(dataPoint.getName().replaceAll("_", " ").toLowerCase(), tokens[0])) {
                         //then this is the datapoint we are looking for
                         DataPoint newData = new DataPoint(newString);
@@ -439,7 +469,7 @@ public class TabController {
                                     setEditMode(false);
                                 }
                             }, 10);
-                        } catch (SQLException e) {
+                        } catch (SQLException | DuplicateDataException e) {
                             Logging.logError(e, "Error updatingSQLDatabase");
                             cancelEdit();
                             return dataPoint;

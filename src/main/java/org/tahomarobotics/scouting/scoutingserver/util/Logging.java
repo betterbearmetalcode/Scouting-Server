@@ -2,13 +2,11 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Optional;
 import java.util.logging.*;
 
 public class Logging {
@@ -18,9 +16,10 @@ public class Logging {
     static {
         File dir = new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/logs");
         if (!dir.exists()) {
+            //noinspection ResultOfMethodCallIgnored
             dir.mkdirs();
         }
-        Handler fh = null;
+        Handler fh;
         try {
             fh = new FileHandler(dir.getAbsolutePath() + "\\" + new Date(System.currentTimeMillis()).toString().replaceAll(":", "") + ".log");
         } catch (IOException e) {

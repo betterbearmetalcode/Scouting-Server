@@ -5,30 +5,15 @@ import com.google.zxing.WriterException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.VBox;
 import javafx.util.Pair;
-import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
-import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.Logging;
-import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.*;
 
-import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.ResourceBundle;
 
 
@@ -36,6 +21,8 @@ public class MainController implements Initializable {
 
 
     public ScrollPane scrollPane;
+
+    public static NetworkingDebug debug;
 
     public void debugggy(ActionEvent event) {
         System.out.println("Debug button pressed");
@@ -50,13 +37,13 @@ public class MainController implements Initializable {
             testData.add(new Pair<>(Constants.TEST_QR_STRING_7, Constants.BASE_APP_DATA_FILEPATH + "/resources/testImages/test7.png"));
             testData.add(new Pair<>(Constants.TEST_QR_STRING_8, Constants.BASE_APP_DATA_FILEPATH + "/resources/testImages/test8.png"));
             testData.add(new Pair<>(Constants.TEST_QR_STRING_9, Constants.BASE_APP_DATA_FILEPATH + "/resources/testImages/test9.png"));
-            SQLUtil.addTable(Constants.TEST_SQL_TABLE_NAME, SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
+            SQLUtil.addTableIfNotExists(Constants.TEST_SQL_TABLE_NAME, SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
             for (Pair<String, String> p : testData) {
-                QRCodeUtil.createQRCode(p.getKey(), p.getValue(), null, 500, 500);
+                QRCodeUtil.createQRCode(p.getKey(), p.getValue(), 500, 500);
                 QRScannerController.readStoredImage(p.getValue(), Constants.TEST_SQL_TABLE_NAME);
             }
 
-        } catch (WriterException | NotFoundException | IOException | SQLException e) {
+        } catch (WriterException | NotFoundException | IOException | SQLException | DuplicateDataException e) {
             Logging.logError(e);
         }
 
@@ -65,7 +52,7 @@ public class MainController implements Initializable {
 
     @FXML
     public void debugButton2(ActionEvent event) {
-        try {
+        /*try {
             System.out.println("Using debug table to generate simulated JSON inputs from the Scouting App");
             JSONArray arr = new JSONArray();
             for (int i = 1; i <= 121; i++) {
@@ -89,8 +76,9 @@ public class MainController implements Initializable {
             } catch (IOException e) {
                 Logging.logError(e);
             }
-        }
-
+        }*/
+        debug = new NetworkingDebug();
+        debug.go();
     }
 
     @Override

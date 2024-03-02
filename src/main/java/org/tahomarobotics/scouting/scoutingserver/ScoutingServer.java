@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -9,16 +10,18 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import org.tahomarobotics.scouting.scoutingserver.controller.DataController;
+import javafx.stage.WindowEvent;
+import org.tahomarobotics.scouting.scoutingserver.controller.MainController;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
-import org.tahomarobotics.scouting.scoutingserver.controller.TabController;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.DataTransferClient;
+import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.function.Consumer;
 
 import static org.tahomarobotics.scouting.scoutingserver.Constants.UIValues.*;
 
@@ -55,7 +58,6 @@ public class ScoutingServer extends Application {
 
 
 
-
     public static QRScannerController qrScannerController = new QRScannerController();
 
     @Override
@@ -65,7 +67,12 @@ public class ScoutingServer extends Application {
         mainStage.setScene(dataCollectionScene);
         currentScene = SCENES.QR_SCANNER;
         mainStage.getIcons().add(new Image(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Logo.jpg"));
+        mainStage.setOnCloseRequest(event -> {
+            ServerUtil.setServerStatus(false);
+            MainController.debug.frame.dispose();
+        });
         mainStage.show();
+
 
         //set up resources folder if not already created
         File databseFilepath = new File(Constants.DATABASE_FILEPATH);
@@ -146,7 +153,6 @@ public class ScoutingServer extends Application {
     }
 
     private static void resize(double appWidth, double appHeight) {
-        System.out.println("resiaing: " + appWidth + ", " + appHeight);
         mainRoot.setPrefSize(appWidth, appHeight);
         dataCollectionRoot.setPrefSize(appWidth, appHeight);
         dataRoot.setPrefSize(appWidth, appHeight);
