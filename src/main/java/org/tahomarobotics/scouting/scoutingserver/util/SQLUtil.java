@@ -5,12 +5,9 @@ import org.tahomarobotics.scouting.scoutingserver.Constants;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
-
 public class SQLUtil {
 
     private static Connection connection;
-    private static String databaseName;
     private static final Object[] EMPTY_PARAMS = {};
 
 
@@ -87,9 +84,9 @@ public class SQLUtil {
     public static ArrayList<HashMap<String, Object>> processResultSet(ResultSet data) throws SQLException {
         ResultSetMetaData md = data.getMetaData();
         int columns = md.getColumnCount();
-        ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+        ArrayList<HashMap<String, Object>> list = new ArrayList<>();
         while (data.next()) {
-            HashMap<String, Object> row = new HashMap<String, Object>(columns);
+            HashMap<String, Object> row = new HashMap<>(columns);
             for (int i = 1; i <= columns; ++i) {
                 row.put(md.getColumnName(i), data.getObject(i));
             }
@@ -99,9 +96,8 @@ public class SQLUtil {
     }
 
     public static void initialize(String db) throws SQLException {
-        databaseName = db;
-        Logging.logInfo("Opening connection to database: " + databaseName);
-        connection = DriverManager.getConnection("jdbc:sqlite:" + databaseName);
+        Logging.logInfo("Opening connection to database: " + db);
+        connection = DriverManager.getConnection("jdbc:sqlite:" + db);
         connection.setAutoCommit(false);
     }
 
@@ -116,7 +112,7 @@ public class SQLUtil {
         StringBuilder builder = new StringBuilder();
         for (Constants.ColumnType type : columns) {
             builder.append(type.name().toString());
-            builder.append(" " + type.datatype().toString() + ", ");
+            builder.append(" ").append(type.datatype().toString()).append(", ");
         }
         String str = builder.toString();
         return str.substring(0, str.length() - 2);

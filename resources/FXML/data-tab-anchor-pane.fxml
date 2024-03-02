@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="572.0" prefWidth="693.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="614.0" prefWidth="753.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <TreeView fx:id="treeView" prefHeight="518.0" prefWidth="694.0" />
       <FlowPane alignment="CENTER" prefHeight="99.0" prefWidth="694.0">
@@ -35,6 +35,7 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </FlowPane.margin>
             </ToggleButton>
+            <Button mnemonicParsing="false" onAction="#saveJSONBackup" text="Save JSON backup" />
          </children>
       </FlowPane>
    </children>

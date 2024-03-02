@@ -90,7 +90,7 @@ public class DataValidator {
                     try {
                         switch (Constants.SQLColumnName.valueOf(dataPoint.getName())) {
 
-                            case TIMESTAMP, MATCH_NUM, TEAM_NUM, ALLIANCE_POS,AUTO_COMMENTS, TELE_COMMENTS -> {
+                            case MATCH_NUM, TEAM_NUM, ALLIANCE_POS,AUTO_COMMENTS, TELE_COMMENTS -> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), 0));
                                 break;
                             }

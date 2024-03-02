@@ -24,8 +24,6 @@ public class Constants {
 
     public static final String QR_DATA_DELIMITER = "/";
 
-    public static final String STORED_DATA_DELIMITER = "@";
-
     public static final String TEST_QR_STRING_1 = "1/2046/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest1/teleNotes";
     public static final String TEST_QR_STRING_2 = "1/4414/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest2/teleNotes";
 
@@ -47,7 +45,6 @@ public class Constants {
         oneMatchOfDebufStrings.add("1/9303/5/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest6/teleNotes");
     }
     public enum SQLColumnName {
-        TIMESTAMP,
         MATCH_NUM,
         TEAM_NUM,
         ALLIANCE_POS,
@@ -77,7 +74,6 @@ public class Constants {
 
 
     public static final ArrayList<ColumnType> RAW_TABLE_SCHEMA = new ArrayList<>(List.of(
-            new ColumnType(SQLColumnName.TIMESTAMP, SQLDatatype.INTEGER),
             new ColumnType(SQLColumnName.MATCH_NUM, SQLDatatype.INTEGER),
             new ColumnType(SQLColumnName.TEAM_NUM, SQLDatatype.INTEGER),
             new ColumnType(SQLColumnName.ALLIANCE_POS, SQLDatatype.INTEGER),
@@ -116,34 +112,29 @@ public class Constants {
     public static final int TELE_AMP_NOTE_POINTS = 1;
     public static final int TELE_TRAP_POINTS = 5;
 
-    public static final ArrayList<Pair<String, String>> competitons = new ArrayList<>(List.of(new Pair<>("2024orsal", "Oregon State Fairgrounds"), new Pair<>("2024wabon", "Bonney Lake"), new Pair<>("2024wasam", "Sammamish"), new Pair<>("2024pncmp", "Pacific Northwest")));//list of competions we are going to, first event code, second short name
 
     public static int LOW_ERROR_THRESHOLD = 3;
-
-    public static RobotPositon defaultRobotPositon = new RobotPositon(DatabaseManager.RobotPosition.NO_DATA, -1, null, null);
-
-
 
     public static class UIValues {
 
         public static final double WIDTH_MULTIPLIER = .75;
+        @SuppressWarnings("SuspiciousNameCombination")
         public static final double HEIGHT_MULTIPLIER = WIDTH_MULTIPLIER;
        // public static  double APP_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height * HEIGHT_MULTIPLIER;
         public static final int MIN_HAMBURGER_MENU_SIZE = 155;
 
         public static final int MIN_MAIN_BUTTON_BAR_HEIGHT = 50;
 
-        public static final int DATA_COLLECTION_HBOX_HEIGHT = 20;
 
         //property for width of main content panes
 
         private static final DoubleProperty splitWidthProperty = new SimpleDoubleProperty();
 
-        public static final DoubleProperty splitWidthPropertyProperty() {
+        public static DoubleProperty splitWidthPropertyProperty() {
             return splitWidthProperty;
         }
 
-        public  static final double getSplitWidthProperty() {
+        public  static double getSplitWidthProperty() {
             return splitWidthProperty.get();
         }
 

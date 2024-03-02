@@ -2,7 +2,6 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 
 
 import javafx.scene.control.Alert;
-import javafx.util.Pair;
 import org.json.JSONArray;
 
 import java.io.IOException;

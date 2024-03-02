@@ -3,16 +3,13 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.paint.Paint;
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
 import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.controller.DataController;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
-import org.tahomarobotics.scouting.scoutingserver.util.data.Team;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -21,6 +18,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+@SuppressWarnings("ALL")
 public class SpreadsheetUtil {
 
     private static final String RAW_DATA_SHEET_NAME = "Raw Data";
@@ -145,49 +143,52 @@ public class SpreadsheetUtil {
                     rowNum++;
                 }
             }//end for each match
-            //alright, we have exported all the normal data, now below it notes by team and match
-
-            //make an array of team objects
-            try {
-                ArrayList<Team> teams = new ArrayList<>();
-                rowNum++;
-                int titleRow = rowNum;
-                rowNum++;
-                int maxMatches =  0;
-                //get a list of all the teams we have scouted
-                ArrayList<HashMap<String, Object>> teamsScouted = SQLUtil.exec("SELECT DISTINCT " + Constants.SQLColumnName.TEAM_NUM + " FROM " + activeTableName);
-                teamsScouted.sort(Comparator.comparingInt(o -> Integer.parseInt(o.get(Constants.SQLColumnName.TEAM_NUM.toString()).toString())));
-                //for each team, loop through their qualification matches in order and put the auto and tele notes down in each column
-                for (HashMap<String, Object> map : teamsScouted) {
-                    int teamNum = (int) map.get(Constants.SQLColumnName.TEAM_NUM.toString());
-                    ArrayList<HashMap<String, Object>> teamsMatches = SQLUtil.exec("SELECT " + Constants.SQLColumnName.AUTO_COMMENTS + ", " + Constants.SQLColumnName.TELE_COMMENTS + " FROM " + activeTableName + " WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{String.valueOf(teamNum)});
-                    maxMatches = Math.max(maxMatches, teamsMatches.size());
-                    for (int i = 0; i < teamsMatches.size() + 1; i++) {
-                        if (i == 0) {
-                            //then this is the fist column, write the team number
-                            ws.value(rowNum, i, teamNum);
-                        }else {
-                            ws.value(rowNum, i , teamsMatches.get(i-1).get(Constants.SQLColumnName.AUTO_COMMENTS.toString()).toString() + ":" + teamsMatches.get(i-1).get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString());
-                            ws.rowHeight(rowNum, 100);
-                        }
-
-                    }
-                    rowNum++;
-                }
-                for (int i = 0; i < maxMatches + 1; i++) {
-                    if (i == 0) {
-                        //then this is the first column of the title row
-                        ws.value(titleRow, i, "Team Number: ");
-                    }else {
-                        ws.value(titleRow, i, "Match Number " + i);
-                    }
-                }
-
-                ws.range(titleRow, 0, rowNum, maxMatches).style().wrapText(true);
-            } catch (SQLException e) {
-                Logging.logError(e, "Failed to export comments, whatever");
-            }
+            exportNotes(activeTableName, rowNum, ws);
         }//end try
     }//end method
+
+    private static void exportNotes(String activeTableName, int rowNum, Worksheet ws) {
+        //alright, we have exported all the normal data, now below it notes by team and match
+
+        //make an array of team objects
+        try {
+            rowNum++;
+            int titleRow = rowNum;
+            rowNum++;
+            int maxMatches =  0;
+            //get a list of all the teams we have scouted
+            ArrayList<HashMap<String, Object>> teamsScouted = SQLUtil.exec("SELECT DISTINCT " + Constants.SQLColumnName.TEAM_NUM + " FROM " + activeTableName);
+            teamsScouted.sort(Comparator.comparingInt(o -> Integer.parseInt(o.get(Constants.SQLColumnName.TEAM_NUM.toString()).toString())));
+            //for each team, loop through their qualification matches in order and put the auto and tele notes down in each column
+            for (HashMap<String, Object> map : teamsScouted) {
+                int teamNum = (int) map.get(Constants.SQLColumnName.TEAM_NUM.toString());
+                ArrayList<HashMap<String, Object>> teamsMatches = SQLUtil.exec("SELECT " + Constants.SQLColumnName.AUTO_COMMENTS + ", " + Constants.SQLColumnName.TELE_COMMENTS + " FROM " + activeTableName + " WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{String.valueOf(teamNum)});
+                maxMatches = Math.max(maxMatches, teamsMatches.size());
+                for (int i = 0; i < teamsMatches.size() + 1; i++) {
+                    if (i == 0) {
+                        //then this is the fist column, write the team number
+                        ws.value(rowNum, i, teamNum);
+                    }else {
+                        ws.value(rowNum, i , teamsMatches.get(i-1).get(Constants.SQLColumnName.AUTO_COMMENTS.toString()).toString() + ":" + teamsMatches.get(i-1).get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString());
+                        ws.rowHeight(rowNum, 100);
+                    }
+
+                }
+                rowNum++;
+            }
+            for (int i = 0; i < maxMatches + 1; i++) {
+                if (i == 0) {
+                    //then this is the first column of the title row
+                    ws.value(titleRow, i, "Team Number: ");
+                }else {
+                    ws.value(titleRow, i, "Match Number " + i);
+                }
+            }
+
+            ws.range(titleRow, 0, rowNum, maxMatches).style().wrapText(true);
+        } catch (SQLException e) {
+            Logging.logError(e, "Failed to export comments, whatever");
+        }
+    }
 
 }

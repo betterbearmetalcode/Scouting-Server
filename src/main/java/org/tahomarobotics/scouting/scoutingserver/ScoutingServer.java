@@ -156,7 +156,6 @@ public class ScoutingServer extends Application {
     }
 
     private static void resize(double appWidth, double appHeight) {
-        System.out.println("resiaing: " + appWidth + ", " + appHeight);
         mainRoot.setPrefSize(appWidth, appHeight);
         dataCollectionRoot.setPrefSize(appWidth, appHeight);
         dataRoot.setPrefSize(appWidth, appHeight);

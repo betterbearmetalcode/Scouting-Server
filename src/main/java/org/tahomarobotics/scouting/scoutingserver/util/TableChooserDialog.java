@@ -1,7 +1,5 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.FlowPane;
@@ -71,6 +69,21 @@ public class TableChooserDialog extends Dialog<String> {
                 Logging.logError(e);
             }
         });
+        Button duplicateButton = getButton(listView);
+        Button deleteButton = new Button("Delete");
+        deleteButton.setOnAction(event -> {
+            try {
+                SQLUtil.execNoReturn("DROP TABLE IF EXISTS '" + listView.getSelectionModel().getSelectedItem() + "'");
+                listView.getItems().remove(listView.getSelectionModel().getSelectedItem());
+            } catch (SQLException e) {
+                Logging.logError(e);
+            }
+        });
+        FlowPane pane = new FlowPane(newCompetitionButton, duplicateButton, deleteButton);
+        return new VBox(listView, pane);
+    }
+
+    private static Button getButton(ListView<String> listView) {
         Button duplicateButton = new Button("Duplicate");
         duplicateButton.setOnAction(event -> {
             try {
@@ -90,20 +103,7 @@ public class TableChooserDialog extends Dialog<String> {
                 Logging.logError(e);
             }
         });
-        Button deleteButton = new Button("Delete");
-        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    SQLUtil.execNoReturn("DROP TABLE IF EXISTS '" + listView.getSelectionModel().getSelectedItem() + "'");
-                    listView.getItems().remove(listView.getSelectionModel().getSelectedItem());
-                } catch (SQLException e) {
-                    Logging.logError(e);
-                }
-            }
-        });
-        FlowPane pane = new FlowPane(newCompetitionButton, duplicateButton, deleteButton);
-        return new VBox(listView, pane);
+        return duplicateButton;
     }
 
 
