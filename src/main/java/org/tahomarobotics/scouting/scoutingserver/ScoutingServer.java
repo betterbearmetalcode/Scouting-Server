@@ -69,7 +69,6 @@ public class ScoutingServer extends Application {
         mainStage.getIcons().add(new Image(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Logo.jpg"));
         mainStage.setOnCloseRequest(event -> {
             ServerUtil.setServerStatus(false);
-            MainController.debug.frame.dispose();
         });
         mainStage.show();
 
