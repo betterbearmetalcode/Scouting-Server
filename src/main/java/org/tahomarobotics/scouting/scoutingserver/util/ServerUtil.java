@@ -1,13 +1,19 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerUtil extends Thread {
     private final ServerSocket serverSocket;
+    private String message;
     public ServerUtil(int port) throws IOException {
         serverSocket = new ServerSocket(port);
+    }
+
+    public InetAddress getInetAddress() {
+        return serverSocket.getInetAddress();
     }
 
     @Override
@@ -23,6 +29,10 @@ public class ServerUtil extends Thread {
         }
     }
 
+    public String getMessage() {
+        return message;
+    }
+
     private void handleClient(Socket socket) throws IOException {
         try {
             OutputStream outputStream = socket.getOutputStream();
@@ -36,11 +46,13 @@ public class ServerUtil extends Thread {
             String line = reader.readLine();
             while (line != null) {
                 line = reader.readLine();
+                message = line;
             }
 
             // Close the socket
             socket.close();
         } catch (IOException ignored) {
+
         }
     }
 }

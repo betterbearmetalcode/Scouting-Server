@@ -127,7 +127,7 @@ public class SQLUtil {
         DatabaseMetaData md = connection.getMetaData();
         ResultSet rs = md.getTables(null, null, "%", null);
         while (rs.next()) {
-            if (!Objects.equals(rs.getString(3), "sqlite_schema")) {
+            if (!rs.getString(3).startsWith("sqlite_")) {
                 output.add(rs.getString(3));
             }
 

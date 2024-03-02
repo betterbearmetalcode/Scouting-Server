@@ -9,16 +9,15 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import org.tahomarobotics.scouting.scoutingserver.controller.DataController;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
-import org.tahomarobotics.scouting.scoutingserver.controller.TabController;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.function.Consumer;
 
 import static org.tahomarobotics.scouting.scoutingserver.Constants.UIValues.*;
 
@@ -52,8 +51,19 @@ public class ScoutingServer extends Application {
     static VBox dataCollectionRoot;
     static VBox dataRoot;
 
+    private static final ServerUtil transferServer;
 
+    static {
+        try {
+            transferServer = new ServerUtil(8880);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    public static ServerUtil getTransferServer() {
+        return transferServer;
+    }
 
 
     public static QRScannerController qrScannerController = new QRScannerController();

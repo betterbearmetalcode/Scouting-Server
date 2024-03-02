@@ -28,20 +28,20 @@ public class MenuController extends VBox {
     @FXML
     public void backToMainMenu(ActionEvent event) {
         //no main menu, just a help button
-        /*if (ScoutingServer.currentScene != ScoutingServer.SCENES.MAIN_MENU) {
+        if (ScoutingServer.currentScene != ScoutingServer.SCENES.MAIN_MENU) {
 
 
             ScoutingServer.setCurrentScene(ScoutingServer.mainScene);
             ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
-        }*/
+        }
         //open tutorial
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+/*        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
                 Desktop.getDesktop().browse(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Tutorial/TutorialPage.html").toURI());
             } catch (IOException e) {
                 Logging.logError(e);
             }
-        }
+        }*/
     }
 
     @FXML

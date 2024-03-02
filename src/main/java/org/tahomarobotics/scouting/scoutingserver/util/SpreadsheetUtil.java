@@ -88,7 +88,7 @@ public class SpreadsheetUtil {
             for (Match match : data) {
                 HashMap<String, HashMap<String, Object>> breakdown = null;
                 if (haveInternet) {
-                    HashMap<String, HashMap<String, HashMap<String, Object>>> matchObject = (HashMap<String, HashMap<String, HashMap<String, Object>>>) rawArr.toList().stream().filter(o -> ((HashMap<String,Integer>) o).get("match_number") == match.matchNumber()).findFirst().get();
+                    HashMap<String, HashMap<String, HashMap<String, Object>>> matchObject = (HashMap<String, HashMap<String, HashMap<String, Object>>>) rawArr.toList().stream().filter(o -> Objects.equals(((HashMap<String, String>) o).get("key"), eventKey + "_qm" + match.matchNumber())).findFirst().get();
                     Logging.logInfo("WroteRow: " + matchObject);
                     breakdown = matchObject.get("score_breakdown");
                 }
@@ -136,7 +136,7 @@ public class SpreadsheetUtil {
                     int toalNotesScored = robot.record().autoAmp() + robot.record().autoSpeaker() + robot.record().teleAmp() + robot.record().teleSpeaker();
                     int toalNotesMissed = robot.record().autoAmpMissed() + robot.record().autoAmpMissed() + robot.record().teleAmpMissed() + robot.record().teleSpeakerMissed();
                     LinkedList<DataPoint> output = robot.data();
-                    output.add(new DataPoint("Left In Auto", autoLeave ? "2" : "0"));
+                    output.add(new DataPoint("Left In Auto", autoLeave ? "1" : "0"));
                     output.add(new DataPoint("EndameResult", String.valueOf(endgame)));
                     output.add(new DataPoint("End Raw Data", ""));
                     output.add(new DataPoint("Total Auto Notes", String.valueOf(robot.record().autoAmp() + robot.record().autoSpeaker())));

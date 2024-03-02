@@ -57,17 +57,34 @@ public class DataValidator {
 
     }
 
-    private static ArrayList<Robot> correctAlliance(boolean matchComplete, List<Robot> robots, HashMap<String, Object> breakdown) {
+    private static ArrayList<Robot> correctAlliance(boolean allianceComplete, List<Robot> robots, HashMap<String, Object> breakdown) {
         ArrayList<Robot> correctedAlliance = new ArrayList<>();
         int autoSpeakerTrue = (int) breakdown.get("autoSpeakerNoteCount");
+
         int autoAmpTrue = (int) breakdown.get("autoAmpNoteCount");
         int teleSpeakerTrue = ((int) breakdown.get("teleopSpeakerNoteAmplifiedCount")) + ((int) breakdown.get("teleopSpeakerNoteCount"));
         int teleAmpTrue = (int) breakdown.get("teleopAmpNoteCount");
+        int autoSpeakerMeasured = 0;
+        int autoAmpMeasured = 0;
+        int teleSpeakerMeasured = 0;
+        int teleAmpMeasured = 0;
+        if (allianceComplete) {
+            //calculate measured values to compare against true
+            if (robots.size() != 3) {
+                Logging.logError(null, "Internal Datavalidation Error for match");
+                allianceComplete = false;
+            }
+            autoSpeakerMeasured = robots.get(0).record().autoSpeaker() + robots.get(1).record().autoSpeaker() + robots.get(2).record().autoSpeaker();
+            autoAmpMeasured = robots.get(0).record().autoAmp() + robots.get(1).record().autoAmp() +robots.get(2).record().autoAmp();
+            teleSpeakerMeasured = robots.get(0).record().teleSpeaker() + robots.get(1).record().teleSpeaker() +robots.get(2).record().teleSpeaker();
+            teleAmpMeasured = robots.get(0).record().teleAmp() + robots.get(1).record().teleAmp() +robots.get(2).record().teleAmp();
+
+        }
         for (Robot robot : robots) {
             LinkedList<DataPoint> recordTemp = new LinkedList<>();
             //for each robot
             for (DataPoint dataPoint : robot.data()) {
-                if (!matchComplete) {
+                if (!allianceComplete) {
                     //then there is missing data for at least on robot or there is excess data and the whole match will be marked as unknown
                     recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
                 }else {
@@ -79,18 +96,18 @@ public class DataValidator {
                                 break;
                             }
                             case AUTO_SPEAKER -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (robot.record().autoSpeaker() - autoSpeakerTrue)));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (autoSpeakerMeasured - autoSpeakerTrue)));
                                 break;
                             }
                             case AUTO_AMP -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), robot.record().autoAmp() - autoAmpTrue));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), autoAmpMeasured - autoAmpTrue));
                             }
                             case TELE_SPEAKER -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), robot.record().teleSpeaker() - teleSpeakerTrue));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), teleSpeakerMeasured- teleSpeakerTrue));
                                 break;
                             }
                             case TELE_AMP -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), robot.record().teleAmp() - teleAmpTrue));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), teleAmpMeasured - teleAmpTrue));
                                 break;
                             }
                             case TELE_TRAP -> {

@@ -10,9 +10,11 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
+import org.apache.commons.compress.archivers.zip.ScatterZipOutputStream;
 import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
@@ -65,7 +67,7 @@ public class MainController implements Initializable {
 
     @FXML
     public void debugButton2(ActionEvent event) {
-        try {
+        /*try {
             System.out.println("Using debug table to generate simulated JSON inputs from the Scouting App");
             JSONArray arr = new JSONArray();
             for (int i = 1; i <= 121; i++) {
@@ -89,8 +91,9 @@ public class MainController implements Initializable {
             } catch (IOException e) {
                 Logging.logError(e);
             }
-        }
-
+        }*/
+        System.out.println(ScoutingServer.getTransferServer().getMessage());
+        System.out.println(ScoutingServer.getTransferServer().getInetAddress().getHostAddress());
     }
 
     @Override
