@@ -4,10 +4,7 @@ import org.tahomarobotics.scouting.scoutingserver.Constants;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,10 +22,11 @@ public class NetworkingDebug {
     JFrame nameFrame;
     boolean needName;
     String userName;
+    public JFrame frame;
 
     public void go() {
         userName = this.getPort();
-        JFrame frame = new JFrame("Ludicrously Simple Chat Client");
+         frame = new JFrame("Ludicrously Simple Chat Client");
         JPanel mainPanel = new JPanel();
         outgoing = new JTextField(20);
         incoming = new JTextArea(15, 20);
@@ -49,6 +47,13 @@ public class NetworkingDebug {
         readerThread.start();
         outgoing.addKeyListener(new EnterListener());
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosed(e);
+                readerThread.interrupt();
+            }
+        });
         frame.setSize(400, 350);
         frame.setResizable(false);
 
@@ -66,6 +71,8 @@ public class NetworkingDebug {
             System.out.println("Networking Established");
         } catch (IOException ex) {
             System.out.println("Failed to set up networking");
+            ex.printStackTrace();
+            frame.dispose();
         }
 
     }// close set up networking
@@ -79,6 +86,7 @@ public class NetworkingDebug {
                 writer.flush();
             } catch (Exception ex) {
                 ex.printStackTrace();
+                frame.dispose();
             }
             outgoing.setText("");
             outgoing.requestFocus();
@@ -102,6 +110,7 @@ public class NetworkingDebug {
                     writer.flush();
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                    frame.dispose();
 
                 }
                 outgoing.setText("");
@@ -131,7 +140,9 @@ public class NetworkingDebug {
                     incoming.append(message + "\n");
                 } // close while
             } catch (Exception ex) {
-                ex.printStackTrace();
+                Logging.logInfo("failed to open netowrking debig window");
+                frame.dispose();
+
             }
         }// close run
     }// close runnable

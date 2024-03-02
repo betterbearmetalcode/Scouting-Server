@@ -19,6 +19,8 @@ public class DataTransferClient extends Thread {
         socket = sock;
         this.start();
     }
+
+
     private BufferedReader reader;
     @Override
     public void run() {
@@ -54,11 +56,7 @@ public class DataTransferClient extends Thread {
     public void kill() {
         Logging.logInfo("killing client");
         alive = false;
-        try {
-            reader.close();
-        } catch (IOException e) {
-            this.interrupt();
-        }
+        this.interrupt();
     }
 }
 

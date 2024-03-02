@@ -22,6 +22,8 @@ public class MainController implements Initializable {
 
     public ScrollPane scrollPane;
 
+    public static NetworkingDebug debug;
+
     public void debugggy(ActionEvent event) {
         System.out.println("Debug button pressed");
         try {
@@ -75,7 +77,7 @@ public class MainController implements Initializable {
                 Logging.logError(e);
             }
         }*/
-        NetworkingDebug debug = new NetworkingDebug();
+        debug = new NetworkingDebug();
         debug.go();
     }
 

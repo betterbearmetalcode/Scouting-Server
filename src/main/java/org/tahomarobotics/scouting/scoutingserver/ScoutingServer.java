@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.tahomarobotics.scouting.scoutingserver.controller.MainController;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
@@ -66,7 +67,10 @@ public class ScoutingServer extends Application {
         mainStage.setScene(dataCollectionScene);
         currentScene = SCENES.QR_SCANNER;
         mainStage.getIcons().add(new Image(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Logo.jpg"));
-        mainStage.setOnCloseRequest(event -> ServerUtil.setServerStatus(false));
+        mainStage.setOnCloseRequest(event -> {
+            ServerUtil.setServerStatus(false);
+            MainController.debug.frame.dispose();
+        });
         mainStage.show();
 
 
