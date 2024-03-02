@@ -1,58 +1,94 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
-import java.io.*;
+import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.function.Consumer;
 
-public class ServerUtil extends Thread {
-    private final ServerSocket serverSocket;
-    private String message;
-    public ServerUtil(int port) throws IOException {
-        serverSocket = new ServerSocket(port);
+public class ServerUtil {
+
+    private static ServerSocket serverSocket;
+
+    private static boolean acceptingConnections = false;
+
+    private static boolean serverThreadRunning = false;
+
+    private static Thread serverThread;
+
+    static {
+        try {
+            serverSocket = new ServerSocket(Constants.WIRED_DATA_TRANSFER_PORT);
+        } catch (IOException e) {
+            Logging.logError(e, "Failed to set up wired data transfer server");
+        }
     }
 
-    public InetAddress getInetAddress() {
+    public static ArrayList<DataTransferClient> clients = new ArrayList<>();
+
+    public static InetAddress getInetAddress() {
         return serverSocket.getInetAddress();
     }
 
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                Socket clientSocket = serverSocket.accept();
-                handleClient(clientSocket);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+    public static void startServer() {
+        if (!serverThreadRunning) {
+            serverThreadRunning = true;
+            //client acceptance loop
+            //server loop
+            serverThread = new Thread(() -> {
+                Logging.logInfo("Server Started");
+                while (serverThreadRunning) {
+                    while (acceptingConnections) {
+                        try {
+                            Socket clientSocket = serverSocket.accept();
 
+                            Logging.logInfo("Connection from Client", true);
+                            clients.add(new DataTransferClient(clientSocket, QRScannerController.activeTable));
+                        } catch (IOException e) {
+                            Logging.logError(e, "Failed to accept client connection");
+                        }
+                    }//client acceptance loop
+                }//server loop
+                Logging.logInfo("Server Stopped");
+            });
+            serverThread.start();
+            allowConnetions();
         }
+
     }
 
-    public String getMessage() {
-        return message;
+    public static void allowConnetions() {
+        acceptingConnections = true;
+
     }
 
-    private void handleClient(Socket socket) throws IOException {
+    public static void denyConnections() {
+        acceptingConnections = false;
         try {
-            OutputStream outputStream = socket.getOutputStream();
-            InputStream inputStream = socket.getInputStream();
-            PrintWriter writer = new PrintWriter(outputStream, true);
-
-            // Send a message to the client
-            writer.println("Hello from the server!");
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line = reader.readLine();
-            while (line != null) {
-                line = reader.readLine();
-                message = line;
+            serverSocket.close();
+        } catch (IOException e) {
+            if (serverThread != null) {
+                serverThread.interrupt();
+                serverThreadRunning = false;
+                Logging.logError(e, "Failed to stop connections, so stopped server");
+            }else {
+                Logging.logError(e, "Failed to stop server");
             }
 
-            // Close the socket
-            socket.close();
-        } catch (IOException ignored) {
-
         }
+    }
+
+    public static void stopServer() {
+        Logging.logInfo("Attempting to stop server");
+        denyConnections();
+        serverThreadRunning = false;
+        clients.forEach(DataTransferClient::kill);
     }
 }

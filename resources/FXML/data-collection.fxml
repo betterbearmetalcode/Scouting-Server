@@ -50,6 +50,7 @@
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </HBox.margin>
                         </Button>
+                        <Button mnemonicParsing="false" onAction="#startWiredDataCollectionServer" text="Start Wired Data Colleciton Server" />
                      </children>
                   </HBox>
                </children>

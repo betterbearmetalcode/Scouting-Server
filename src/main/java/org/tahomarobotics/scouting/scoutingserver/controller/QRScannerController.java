@@ -79,7 +79,7 @@ public class QRScannerController {
                         FileInputStream inputStream = new FileInputStream(file);
                         JSONArray arr = new JSONArray(new String(inputStream.readAllBytes()));
                         for (Object o : arr.toList()) {
-                            DatabaseManager.storeRawQRData((int) System.currentTimeMillis(), (String) o, "\"" + activeTable + "\"");
+                            DatabaseManager.storeRawQRData((String) o, "\"" + activeTable + "\"");
                         }
 
                         inputStream.close();
@@ -128,10 +128,14 @@ public class QRScannerController {
 
         String qrData = QRCodeUtil.readQRCode(fp);
         System.out.println("Scanner QR Code: " + qrData);
-        DatabaseManager.storeRawQRData((int) System.currentTimeMillis(), qrData, tableName);
+        DatabaseManager.storeRawQRData( qrData, tableName);
         return qrData;
     }
 
+    @FXML
+    public void startWiredDataCollectionServer(ActionEvent event) {
+        ServerUtil.startServer();
+    }
 
     public void setActiveTable(String s) {
         activeTable = s;
@@ -151,9 +155,12 @@ public class QRScannerController {
     }
 
     public void writeToDataCollectionConsole(String str, Color color) {
-        Label l = new Label(str);
-        l.setTextFill(color);
-        imageViewBox.getChildren().add(l);
+        Platform.runLater(() -> {
+            Label l = new Label(str);
+            l.setTextFill(color);
+            imageViewBox.getChildren().add(l);
+        });
+
     }
     public void writeToDataCollectionConsole(String str) {
         writeToDataCollectionConsole(str, Color.BLACK);

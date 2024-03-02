@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -9,9 +10,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.DataTransferClient;
 import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 
 import java.awt.*;
@@ -51,19 +54,7 @@ public class ScoutingServer extends Application {
     static VBox dataCollectionRoot;
     static VBox dataRoot;
 
-    private static final ServerUtil transferServer;
 
-    static {
-        try {
-            transferServer = new ServerUtil(8880);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static ServerUtil getTransferServer() {
-        return transferServer;
-    }
 
 
     public static QRScannerController qrScannerController = new QRScannerController();
@@ -75,7 +66,9 @@ public class ScoutingServer extends Application {
         mainStage.setScene(dataCollectionScene);
         currentScene = SCENES.QR_SCANNER;
         mainStage.getIcons().add(new Image(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Logo.jpg"));
+        mainStage.setOnCloseRequest(event -> ServerUtil.stopServer());
         mainStage.show();
+
 
         //set up resources folder if not already created
         File databseFilepath = new File(Constants.DATABASE_FILEPATH);

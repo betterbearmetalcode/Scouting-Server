@@ -24,6 +24,8 @@ public class Constants {
 
     public static final String QR_DATA_DELIMITER = "/";
 
+    public static final int WIRED_DATA_TRANSFER_PORT = 45482;
+
     public static final String TEST_QR_STRING_1 = "1/2046/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest1/teleNotes";
     public static final String TEST_QR_STRING_2 = "1/4414/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest2/teleNotes";
 

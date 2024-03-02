@@ -6,9 +6,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.shape.HLineTo;
 import javafx.util.Pair;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
+import org.tahomarobotics.scouting.scoutingserver.util.NetworkingDebug;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.QRCodeUtil;
@@ -78,8 +80,8 @@ public class MainController implements Initializable {
                 Logging.logError(e);
             }
         }*/
-        System.out.println(ScoutingServer.getTransferServer().getMessage());
-        System.out.println(ScoutingServer.getTransferServer().getInetAddress().getHostAddress());
+        NetworkingDebug debug = new NetworkingDebug();
+        debug.go();
     }
 
     @Override

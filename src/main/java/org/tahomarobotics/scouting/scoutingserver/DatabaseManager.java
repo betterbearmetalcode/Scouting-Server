@@ -16,7 +16,7 @@ import java.util.*;
 public class DatabaseManager {
 
 
-    public static void storeRawQRData(int timestamp, String dataRaw, String tablename) throws IOException {
+    public static void storeRawQRData(String dataRaw, String tablename) throws IOException {
         try {
             String[] data = dataRaw.split(Constants.QR_DATA_DELIMITER);
             QRRecord m = new QRRecord(Integer.parseInt(data[0]),//match num
@@ -42,7 +42,7 @@ public class DatabaseManager {
                     data[20],//auto notes
                     data[21]);//tele notes
 
-            SQLUtil.execNoReturn("INSERT INTO " + tablename + " VALUES (" + m.getDataForSQL() + ")");
+            SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + m.getDataForSQL() + ")");
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database: " + m, Color.GREEN);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             System.err.println("Failed to construct MatchRecord, likly corruppted Data");
@@ -54,8 +54,8 @@ public class DatabaseManager {
         }
     }
 
-    public static void storeRawQRData(int timestamp, JSONObject dataJSON, String tablename) throws IOException {
-        storeRawQRData(timestamp, dataJSON.getString( (String) Arrays.stream(dataJSON.keySet().toArray()).toList().get(0)), tablename);
+    public static void storeRawQRData(JSONObject dataJSON, String tablename) throws IOException {
+        storeRawQRData(dataJSON.getString( (String) Arrays.stream(dataJSON.keySet().toArray()).toList().get(0)), tablename);
 
     }
 
