@@ -1,18 +1,13 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.util.Pair;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil.SQLDatatype;
-import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
+import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
-
-import static java.util.Map.entry;
 
 public class Constants {
     //qr codes images are cached in this folder. Filenames are the timestamp they were created and file extensions are .bmp
@@ -125,7 +120,7 @@ public class Constants {
 
     public static int LOW_ERROR_THRESHOLD = 3;
 
-    public static Robot defaultRobot = new Robot(DatabaseManager.RobotPosition.NO_DATA, -1, null, null);
+    public static RobotPositon defaultRobotPositon = new RobotPositon(DatabaseManager.RobotPosition.NO_DATA, -1, null, null);
 
 
 

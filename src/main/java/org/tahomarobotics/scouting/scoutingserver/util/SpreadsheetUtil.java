@@ -2,63 +2,30 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 
 
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.util.Pair;
-import org.dhatim.fastexcel.ConditionalFormattingRule;
+import javafx.scene.paint.Paint;
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
-import org.dhatim.fastexcel.reader.Cell;
-import org.dhatim.fastexcel.reader.ReadableWorkbook;
-import org.dhatim.fastexcel.reader.Row;
-import org.dhatim.fastexcel.reader.Sheet;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.controller.DataController;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
-import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
+import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
+import org.tahomarobotics.scouting.scoutingserver.util.data.Team;
 
-import javax.print.attribute.standard.JobName;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Stream;
 
 public class SpreadsheetUtil {
 
     private static final String RAW_DATA_SHEET_NAME = "Raw Data";
 
-    private static final String CALCULATED_DATA_SHEET_NAME = "Calculated Data";
-
-/*    public static Map<Integer, List<String>> readFromSpreadSheet(String fileLocation) {
-        Map<Integer, List<String>> data = new HashMap<>();
-
-        try (FileInputStream file = new FileInputStream(fileLocation); ReadableWorkbook wb = new ReadableWorkbook(file)) {
-            Sheet sheet = wb.getFirstSheet();
-            try (Stream<Row> rows = sheet.openStream()) {
-                rows.forEach(r -> {
-                    data.put(r.getRowNum(), new ArrayList<>());
-
-                    for (Cell cell : r) {
-                        data.get(r.getRowNum()).add(cell.getRawValue());
-                    }
-                });
-            }
-        } catch (IOException e) {
-            Logging.logError(e);
-        }
-
-        return data;
-
-
-    }*/
-
-
-    public static void writeToSpreadSheet(ArrayList<Match> data, File currDir, String eventKey) throws IOException, InterruptedException {
+    public static void writeToSpreadSheet(ArrayList<Match> data, File currDir, String eventKey, String activeTableName) throws IOException, InterruptedException {
         //query TBA for data not gathered by scouts
         //auto leave
         //tele climb
@@ -79,11 +46,9 @@ public class SpreadsheetUtil {
             }
 
         }
-
         String path = currDir.getAbsolutePath();
         try (OutputStream os = Files.newOutputStream(Paths.get(path)); Workbook wb = new Workbook(os, "Scouting Excel Database", "1.0")) {
             Worksheet ws = wb.newWorksheet(SpreadsheetUtil.RAW_DATA_SHEET_NAME);
-
             int rowNum = 1;
             for (Match match : data) {
                 HashMap<String, HashMap<String, Object>> breakdown = null;
@@ -96,18 +61,18 @@ public class SpreadsheetUtil {
                 int numRobotsWritten = 0;
 
 
-                for (Robot robot : match.robots()) {
+                for (RobotPositon robotPositon : match.robotPositons()) {
                     if (numRobotsWritten >= 6) {
                         //we can't have more than six robots in a match, this would be an edge case though
                         continue;
                     }
-                    int robotNum = (robot.robotPosition().ordinal() % 3) + 1;
+                    int robotNum = (robotPositon.robotPosition().ordinal() % 3) + 1;
                     int climbPoints = 0;
                     boolean autoLeave = false;
                     int endgame = 0;
                     if (breakdown != null) {
                         //if we have internet, set stuff, otherwise the default is used
-                        HashMap<String, Object> allianceBreakdown = breakdown.get((robot.record().position().ordinal() < 3) ? "red" : "blue");
+                        HashMap<String, Object> allianceBreakdown = breakdown.get((robotPositon.record().position().ordinal() < 3) ? "red" : "blue");
                         autoLeave = Objects.equals(allianceBreakdown.get("autoLineRobot" + robotNum), "Yes");
                         climbPoints = 0;
                         endgame = 0;
@@ -128,19 +93,19 @@ public class SpreadsheetUtil {
 
                     ;
 
-                    int teleAmpPoints = robot.record().teleAmp() * Constants.TELE_AMP_NOTE_POINTS;
-                    int teleSpeakerPoints = robot.record().teleSpeaker() * Constants.TELE_SPEAKER_NOTE_POINTS;
-                    int trapPoints = robot.record().teleTrap() * Constants.TELE_TRAP_POINTS;
+                    int teleAmpPoints = robotPositon.record().teleAmp() * Constants.TELE_AMP_NOTE_POINTS;
+                    int teleSpeakerPoints = robotPositon.record().teleSpeaker() * Constants.TELE_SPEAKER_NOTE_POINTS;
+                    int trapPoints = robotPositon.record().teleTrap() * Constants.TELE_TRAP_POINTS;
                     int telePoints = teleAmpPoints + teleSpeakerPoints + trapPoints + climbPoints;
-                    int autoPoints = (robot.record().autoAmp() * Constants.AUTO_AMP_NOTE_POINTS) + (robot.record().autoSpeaker() * Constants.AUTO_SPEAKER_NOTE_POINTS) + (autoLeave ? 2 : 0);
-                    int toalNotesScored = robot.record().autoAmp() + robot.record().autoSpeaker() + robot.record().teleAmp() + robot.record().teleSpeaker();
-                    int toalNotesMissed = robot.record().autoAmpMissed() + robot.record().autoAmpMissed() + robot.record().teleAmpMissed() + robot.record().teleSpeakerMissed();
-                    LinkedList<DataPoint> output = robot.data();
+                    int autoPoints = (robotPositon.record().autoAmp() * Constants.AUTO_AMP_NOTE_POINTS) + (robotPositon.record().autoSpeaker() * Constants.AUTO_SPEAKER_NOTE_POINTS) + (autoLeave ? 2 : 0);
+                    int toalNotesScored = robotPositon.record().autoAmp() + robotPositon.record().autoSpeaker() + robotPositon.record().teleAmp() + robotPositon.record().teleSpeaker();
+                    int toalNotesMissed = robotPositon.record().autoAmpMissed() + robotPositon.record().autoAmpMissed() + robotPositon.record().teleAmpMissed() + robotPositon.record().teleSpeakerMissed();
+                    LinkedList<DataPoint> output = robotPositon.data();
                     output.add(new DataPoint("Left In Auto", autoLeave ? "1" : "0"));
                     output.add(new DataPoint("EndameResult", String.valueOf(endgame)));
                     output.add(new DataPoint("End Raw Data", ""));
-                    output.add(new DataPoint("Total Auto Notes", String.valueOf(robot.record().autoAmp() + robot.record().autoSpeaker())));
-                    output.add(new DataPoint("Total Tele Notes", String.valueOf(robot.record().teleAmp() + robot.record().teleSpeaker())));
+                    output.add(new DataPoint("Total Auto Notes", String.valueOf(robotPositon.record().autoAmp() + robotPositon.record().autoSpeaker())));
+                    output.add(new DataPoint("Total Tele Notes", String.valueOf(robotPositon.record().teleAmp() + robotPositon.record().teleSpeaker())));
                     output.add(new DataPoint("Auto Points Added", String.valueOf(autoPoints)));
                     output.add(new DataPoint("Tele Points Added", String.valueOf(telePoints)));
                     output.add(new DataPoint("Total Points Added", String.valueOf(autoPoints + telePoints)));
@@ -180,6 +145,48 @@ public class SpreadsheetUtil {
                     rowNum++;
                 }
             }//end for each match
+            //alright, we have exported all the normal data, now below it notes by team and match
+
+            //make an array of team objects
+            try {
+                ArrayList<Team> teams = new ArrayList<>();
+                rowNum++;
+                int titleRow = rowNum;
+                rowNum++;
+                int maxMatches =  0;
+                //get a list of all the teams we have scouted
+                ArrayList<HashMap<String, Object>> teamsScouted = SQLUtil.exec("SELECT DISTINCT " + Constants.SQLColumnName.TEAM_NUM + " FROM " + activeTableName);
+                teamsScouted.sort(Comparator.comparingInt(o -> Integer.parseInt(o.get(Constants.SQLColumnName.TEAM_NUM.toString()).toString())));
+                //for each team, loop through their qualification matches in order and put the auto and tele notes down in each column
+                for (HashMap<String, Object> map : teamsScouted) {
+                    int teamNum = (int) map.get(Constants.SQLColumnName.TEAM_NUM.toString());
+                    ArrayList<HashMap<String, Object>> teamsMatches = SQLUtil.exec("SELECT " + Constants.SQLColumnName.AUTO_COMMENTS + ", " + Constants.SQLColumnName.TELE_COMMENTS + " FROM " + activeTableName + " WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{String.valueOf(teamNum)});
+                    maxMatches = Math.max(maxMatches, teamsMatches.size());
+                    for (int i = 0; i < teamsMatches.size() + 1; i++) {
+                        if (i == 0) {
+                            //then this is the fist column, write the team number
+                            ws.value(rowNum, i, teamNum);
+                        }else {
+                            ws.value(rowNum, i , teamsMatches.get(i-1).get(Constants.SQLColumnName.AUTO_COMMENTS.toString()).toString() + ":" + teamsMatches.get(i-1).get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString());
+                            ws.rowHeight(rowNum, 100);
+                        }
+
+                    }
+                    rowNum++;
+                }
+                for (int i = 0; i < maxMatches + 1; i++) {
+                    if (i == 0) {
+                        //then this is the first column of the title row
+                        ws.value(titleRow, i, "Team Number: ");
+                    }else {
+                        ws.value(titleRow, i, "Match Number " + i);
+                    }
+                }
+
+                ws.range(titleRow, 0, rowNum, maxMatches).style().wrapText(true);
+            } catch (SQLException e) {
+                Logging.logError(e, "Failed to export comments, whatever");
+            }
         }//end try
     }//end method
 

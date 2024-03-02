@@ -28,9 +28,8 @@ import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
-import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
+import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
 
-import java.beans.IndexedPropertyDescriptor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -126,7 +125,8 @@ public class TabController {
         File file = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
         if (file != null) {
             try {
-                SpreadsheetUtil.writeToSpreadSheet(databaseData, file, currentEventCode);//should add button later if buranik insists to export raw wihtout formulas
+
+                SpreadsheetUtil.writeToSpreadSheet(databaseData, file, currentEventCode, tableName);//should add button later if buranik insists to export raw wihtout formulas
             } catch (IOException ex) {
                 Logging.logError(ex, "IO error while exporting or fetching TBA Data");
             } catch (InterruptedException ex) {
@@ -221,18 +221,18 @@ public class TabController {
                }
 
 
-            for (Robot robot : match.robots()) {
+            for (RobotPositon robotPositon : match.robotPositons()) {
                 DataPoint.ErrorLevel maxErrorForThisRobot = DataPoint.ErrorLevel.ZERO;
-                Label robotLabel = new Label(robot.robotPosition().toString() + ": " + robot.teamNumber());
+                Label robotLabel = new Label(robotPositon.robotPosition().toString() + ": " + robotPositon.teamNumber());
                 TreeItem<Label> robotItem = new TreeItem<>(robotLabel);
                 matchItem.getChildren().add(robotItem);
                 try {
-                    robotItem.setExpanded(expainsionStructure.get(match.matchNumber() - 1).getValue().get(robot.robotPosition().ordinal()));
+                    robotItem.setExpanded(expainsionStructure.get(match.matchNumber() - 1).getValue().get(robotPositon.robotPosition().ordinal()));
                 }catch (IndexOutOfBoundsException e) {
                     robotItem.setExpanded(false);
                 }
 
-                for (DataPoint dataPoint : robot.data()) {
+                for (DataPoint dataPoint : robotPositon.data()) {
                     Label l = new Label(dataPoint.toString());
                     l.setTextFill(DataPoint.color.get(dataPoint.getErrorLevel()));
                     TreeItem<Label> dataItem = new TreeItem<>(l);
@@ -420,8 +420,8 @@ public class TabController {
                 int matchNum = Integer.parseInt(matchItem.getValue().getText().split(" ")[1]);
                 int teamNum = Integer.parseInt(robotItem.getValue().getText().split(" ")[1]);
                 Match match = databaseData.stream().filter(match1 -> match1.matchNumber() == matchNum).findFirst().get();
-                Robot robot = match.robots().stream().filter(robot1 -> robot1.teamNumber() == teamNum).findFirst().get();
-                robot.data().replaceAll(dataPoint -> {
+                RobotPositon robotPositon = match.robotPositons().stream().filter(robot1 -> robot1.teamNumber() == teamNum).findFirst().get();
+                robotPositon.data().replaceAll(dataPoint -> {
                     if (Objects.equals(dataPoint.getName().replaceAll("_", " ").toLowerCase(), tokens[0])) {
                         //then this is the datapoint we are looking for
                         DataPoint newData = new DataPoint(newString);

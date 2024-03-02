@@ -1,14 +1,13 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.scene.paint.Color;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchRecordComparator;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
-import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
+import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -284,14 +283,14 @@ public class DatabaseManager {
             for (int i  =1; i < numMatches + 1; i++) {
                 //for each match that we have data on
 
-                ArrayList<Robot> robots = new ArrayList<>();
+                ArrayList<RobotPositon> robotPositons = new ArrayList<>();
                 final int finalI = i;
                 List<QRRecord> rawRobots = rawData.stream().filter(matchRecord -> matchRecord.matchNumber == finalI).toList();
                 for (QRRecord robot : rawRobots) {
                     //for each robot in this match
-                    robots.add(new Robot(robot.position, robot.teamNumber, robot.getDataAsList(), robot));
+                    robotPositons.add(new RobotPositon(robot.position, robot.teamNumber, robot.getDataAsList(), robot));
                 }
-                output.add(new Match(i, robots));
+                output.add(new Match(i, robotPositons));
 
             }
         }else {

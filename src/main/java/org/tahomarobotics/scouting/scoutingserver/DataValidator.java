@@ -5,11 +5,10 @@ import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
-import org.tahomarobotics.scouting.scoutingserver.util.data.Robot;
+import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Predicate;
 
 public class DataValidator {
 
@@ -25,24 +24,24 @@ public class DataValidator {
             ArrayList<Object> rawList =  new ArrayList<>(eventMatches.toList());
 
             for (Match matchData : databaseData) {
-                ArrayList<Robot> corectedRobots = new ArrayList<>();
+                ArrayList<RobotPositon> corectedRobotPositons = new ArrayList<>();
                 Optional<Object> matchTBAData =  getTBAMatchObject(rawList, eventCode, matchData.matchNumber());
                 if (matchTBAData.isEmpty()) {
                     //then we don't hava data for this matach and can't validate it so just add the original data and try the next match
                     output.add(matchData);
                     continue;
                 }
-                if (!matchData.robots().isEmpty()) {
-                    List<Robot> redRobots = matchData.robots().stream().filter(robot -> robot.robotPosition().ordinal() < 3).toList();
-                    List<Robot> blueRobots = matchData.robots().stream().filter(robot -> robot.robotPosition().ordinal() > 2).toList();
+                if (!matchData.robotPositons().isEmpty()) {
+                    List<RobotPositon> redRobotPositons = matchData.robotPositons().stream().filter(robot -> robot.robotPosition().ordinal() < 3).toList();
+                    List<RobotPositon> blueRobotPositons = matchData.robotPositons().stream().filter(robot -> robot.robotPosition().ordinal() > 2).toList();
                     HashMap<String, Object> matchDatum = (HashMap<String, Object>) matchTBAData.get();
                     HashMap<String, Object> matchScoreBreakdown = (HashMap<String, Object>) matchDatum.get("score_breakdown");
                     HashMap<String, Object> redAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("red");
                     HashMap<String, Object> blueAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("blue");
 
-                    corectedRobots.addAll(correctAlliance(redRobots.size() == 3, redRobots, redAllianceScoreBreakdown));
-                    corectedRobots.addAll(correctAlliance(blueRobots.size() == 3, blueRobots, blueAllianceScoreBreakdown));
-                    output.add(new Match(matchData.matchNumber(), new ArrayList<>(corectedRobots)));
+                    corectedRobotPositons.addAll(correctAlliance(redRobotPositons.size() == 3, redRobotPositons, redAllianceScoreBreakdown));
+                    corectedRobotPositons.addAll(correctAlliance(blueRobotPositons.size() == 3, blueRobotPositons, blueAllianceScoreBreakdown));
+                    output.add(new Match(matchData.matchNumber(), new ArrayList<>(corectedRobotPositons)));
                 }
 
             }
@@ -57,8 +56,8 @@ public class DataValidator {
 
     }
 
-    private static ArrayList<Robot> correctAlliance(boolean allianceComplete, List<Robot> robots, HashMap<String, Object> breakdown) {
-        ArrayList<Robot> correctedAlliance = new ArrayList<>();
+    private static ArrayList<RobotPositon> correctAlliance(boolean allianceComplete, List<RobotPositon> robotPositons, HashMap<String, Object> breakdown) {
+        ArrayList<RobotPositon> correctedAlliance = new ArrayList<>();
         int autoSpeakerTrue = (int) breakdown.get("autoSpeakerNoteCount");
 
         int autoAmpTrue = (int) breakdown.get("autoAmpNoteCount");
@@ -70,20 +69,20 @@ public class DataValidator {
         int teleAmpMeasured = 0;
         if (allianceComplete) {
             //calculate measured values to compare against true
-            if (robots.size() != 3) {
+            if (robotPositons.size() != 3) {
                 Logging.logError(null, "Internal Datavalidation Error for match");
                 allianceComplete = false;
             }
-            autoSpeakerMeasured = robots.get(0).record().autoSpeaker() + robots.get(1).record().autoSpeaker() + robots.get(2).record().autoSpeaker();
-            autoAmpMeasured = robots.get(0).record().autoAmp() + robots.get(1).record().autoAmp() +robots.get(2).record().autoAmp();
-            teleSpeakerMeasured = robots.get(0).record().teleSpeaker() + robots.get(1).record().teleSpeaker() +robots.get(2).record().teleSpeaker();
-            teleAmpMeasured = robots.get(0).record().teleAmp() + robots.get(1).record().teleAmp() +robots.get(2).record().teleAmp();
+            autoSpeakerMeasured = robotPositons.get(0).record().autoSpeaker() + robotPositons.get(1).record().autoSpeaker() + robotPositons.get(2).record().autoSpeaker();
+            autoAmpMeasured = robotPositons.get(0).record().autoAmp() + robotPositons.get(1).record().autoAmp() + robotPositons.get(2).record().autoAmp();
+            teleSpeakerMeasured = robotPositons.get(0).record().teleSpeaker() + robotPositons.get(1).record().teleSpeaker() + robotPositons.get(2).record().teleSpeaker();
+            teleAmpMeasured = robotPositons.get(0).record().teleAmp() + robotPositons.get(1).record().teleAmp() + robotPositons.get(2).record().teleAmp();
 
         }
-        for (Robot robot : robots) {
+        for (RobotPositon robotPositon : robotPositons) {
             LinkedList<DataPoint> recordTemp = new LinkedList<>();
             //for each robot
-            for (DataPoint dataPoint : robot.data()) {
+            for (DataPoint dataPoint : robotPositon.data()) {
                 if (!allianceComplete) {
                     //then there is missing data for at least on robot or there is excess data and the whole match will be marked as unknown
                     recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
@@ -111,13 +110,13 @@ public class DataValidator {
                                 break;
                             }
                             case TELE_TRAP -> {
-                                int robotPositonNum = (robot.record().position().ordinal() % 3)+1;
+                                int robotPositonNum = (robotPositon.record().position().ordinal() % 3)+1;
                                 String climb = (String) breakdown.get("endGameRobot" + robotPositonNum);
                                 boolean trap = false;
                                 if (!Objects.equals(climb, "None") && !Objects.equals(climb, "Parked")) {
                                     trap = (boolean) breakdown.get("trap" + climb);
                                 }
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (trap == (robot.record().teleTrap() > 0))?(0):(3)));
+                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (trap == (robotPositon.record().teleTrap() > 0))?(0):(3)));
                                 break;
                             }
                             case TELE_SPEAKER_MISSED, TELE_AMP_MISSED, AUTO_SPEAKER_MISSED, AUTO_AMP_MISSED, F1, F2, F3, M1, M2, M3, M4, M5 -> {
@@ -132,7 +131,7 @@ public class DataValidator {
 
 
             }
-            correctedAlliance.add(new Robot(robot.robotPosition(), robot.teamNumber(), recordTemp, robot.record()));
+            correctedAlliance.add(new RobotPositon(robotPositon.robotPosition(), robotPositon.teamNumber(), recordTemp, robotPositon.record()));
 
         }
         return correctedAlliance;
