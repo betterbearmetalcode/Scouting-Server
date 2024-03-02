@@ -2,6 +2,7 @@ package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.scene.paint.Color;
 import org.json.JSONObject;
+import org.tahomarobotics.scouting.scoutingserver.util.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchRecordComparator;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
@@ -43,14 +44,16 @@ public class DatabaseManager {
                     data[21]);//tele notes
 
             SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + m.getDataForSQL() + ")");
-            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database: " + m, Color.GREEN);
+            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ m, Color.GREEN);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            System.err.println("Failed to construct MatchRecord, likly corruppted Data");
-            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed o construct QrRecord, likly corrupted data", Color.RED);
-            Logging.logError(e);
+            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed to construct QrRecord, likly corrupted data", Color.RED);
+            Logging.logError(e, "Failed to construct match record, most likly corrupted data");
         } catch (SQLException e) {
 
             Logging.logError(e);
+        } catch (DuplicateDataException e) {
+            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Duplicate Data Detected, skipping", Color.ORANGE);
+            Logging.logInfo("Duplicate Data detected, skipping");
         }
     }
 

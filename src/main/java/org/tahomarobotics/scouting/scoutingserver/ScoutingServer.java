@@ -66,7 +66,7 @@ public class ScoutingServer extends Application {
         mainStage.setScene(dataCollectionScene);
         currentScene = SCENES.QR_SCANNER;
         mainStage.getIcons().add(new Image(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Logo.jpg"));
-        mainStage.setOnCloseRequest(event -> ServerUtil.stopServer());
+        mainStage.setOnCloseRequest(event -> ServerUtil.setServerStatus(false));
         mainStage.show();
 
 

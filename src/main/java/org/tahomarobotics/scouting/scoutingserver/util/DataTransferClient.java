@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -14,10 +15,8 @@ public class DataTransferClient extends Thread {
 
     private Socket socket;
 
-    private String tableName;
-    public DataTransferClient(Socket sock, String table) throws IOException {
+    public DataTransferClient(Socket sock) throws IOException {
         socket = sock;
-        this.tableName = table;
         this.start();
     }
     private BufferedReader reader;
@@ -41,7 +40,7 @@ public class DataTransferClient extends Thread {
                 while (line != null && alive) {
                     line = reader.readLine();
                     System.out.println("Revieved data: " + line);
-                    DatabaseManager.storeRawQRData(line, tableName);
+                    DatabaseManager.storeRawQRData(line, QRScannerController.activeTable);
 
                 }
                 socket.close();

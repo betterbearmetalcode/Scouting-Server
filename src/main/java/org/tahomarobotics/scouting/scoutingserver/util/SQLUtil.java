@@ -11,7 +11,7 @@ public class SQLUtil {
     private static final Object[] EMPTY_PARAMS = {};
 
 
-    public static void addTable(String tableName, String schema) throws SQLException, IllegalArgumentException {
+    public static void addTableIfNotExists(String tableName, String schema) throws SQLException, IllegalArgumentException, DuplicateDataException {
         String statement = "CREATE TABLE IF NOT EXISTS \"" + tableName + "\"(" + schema + ", PRIMARY KEY (" + Constants.SQLColumnName.MATCH_NUM + ", " + Constants.SQLColumnName.TEAM_NUM  + "))";
         execNoReturn(statement);
     }
@@ -26,11 +26,11 @@ public class SQLUtil {
         }
     }
 
-    public static void execNoReturn(String statement) throws SQLException, IllegalArgumentException {
+    public static void execNoReturn(String statement) throws SQLException, IllegalArgumentException, DuplicateDataException {
         execNoReturn(statement, SQLUtil.EMPTY_PARAMS);
     }
 
-    public static void execNoReturn(String statement, Object[] params) throws SQLException, IllegalArgumentException {
+    public static void execNoReturn(String statement, Object[] params) throws SQLException, IllegalArgumentException, DuplicateDataException {
         try {
             PreparedStatement toExec = connection.prepareStatement(statement);
             Integer count = 1;
@@ -44,10 +44,11 @@ public class SQLUtil {
             Logging.logInfo("Executed sql Query: " + statement);
         } catch (SQLException e){
             if (e.getMessage().startsWith("[SQLITE_CONSTRAINT_PRIMARYKEY]")) {
-                Logging.logInfo("Duplicate Data Detected, Skipping");
+                throw new DuplicateDataException("Duplicate Data Detected, Skipping", e);
+
             }else {
-                Logging.logError(e, "Executed sql Query: " + statement + "\nRolling Back Transaction");
                 connection.rollback();
+                throw new SQLException("\"Executed sql Query:" + statement + "\\nRolling Back Transaction\"", e);
 
             }
 

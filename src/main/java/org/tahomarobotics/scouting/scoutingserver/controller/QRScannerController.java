@@ -5,14 +5,12 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
@@ -22,9 +20,6 @@ import java.io.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 
@@ -40,14 +35,16 @@ public class QRScannerController {
 
     public Button takePictureButton;
 
+    public Button serverButton;
+
 
     @FXML
     private void initialize() {
         selectedDatabaseLabel.setText("No Database Selected");
         jsonImprt.setDisable(true);
         takePictureButton.setDisable(true);
-
         ScoutingServer.qrScannerController  = this;
+        ServerUtil.setServerStatus(false);
     }
 
 
@@ -79,7 +76,7 @@ public class QRScannerController {
                         FileInputStream inputStream = new FileInputStream(file);
                         JSONArray arr = new JSONArray(new String(inputStream.readAllBytes()));
                         for (Object o : arr.toList()) {
-                            DatabaseManager.storeRawQRData((String) o, "\"" + activeTable + "\"");
+                            DatabaseManager.storeRawQRData((String) o, activeTable);
                         }
 
                         inputStream.close();
@@ -133,21 +130,27 @@ public class QRScannerController {
     }
 
     @FXML
-    public void startWiredDataCollectionServer(ActionEvent event) {
-        ServerUtil.startServer();
+    public void toggleServerStatus(ActionEvent event) {
+        ServerUtil.setServerStatus(!ServerUtil.isServerThreadRunning());
+        if (ServerUtil.isServerThreadRunning()) {
+            serverButton.setText("Stop Server");
+        }else {
+            serverButton.setText("Start Data Transfer Server");
+        }
     }
 
     public void setActiveTable(String s) {
         activeTable = s;
         jsonImprt.setDisable(false);
         takePictureButton.setDisable(false);
+        serverButton.setDisable(false);
+
     }
 
 
     public void logScan(boolean successful, String qrData) {
         String str = successful?"Successfully scanned Qr code: " + qrData:"Failed to scan Qr code";
-
-        System.out.println(str);
+        Logging.logInfo("tried to scan qr code: succesful=" + successful);
 
         writeToDataCollectionConsole(str, successful?Color.GREEN:Color.RED);
 
@@ -162,8 +165,7 @@ public class QRScannerController {
         });
 
     }
-    public void writeToDataCollectionConsole(String str) {
-        writeToDataCollectionConsole(str, Color.BLACK);
-    }
+
+
 
 }

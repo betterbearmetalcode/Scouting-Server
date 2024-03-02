@@ -5,6 +5,7 @@ import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class TableChooserDialog extends Dialog<String> {
                 try {
                     listView.getItems().set(event.getIndex(), event.getNewValue());
                     SQLUtil.execNoReturn("ALTER TABLE \"" + oldValue + "\" RENAME TO \"" + event.getNewValue() + "\"");
-                } catch (SQLException e) {
+                } catch (SQLException | DuplicateDataException e) {
                     Logging.logError(e);
                 }
             }
@@ -48,6 +49,12 @@ public class TableChooserDialog extends Dialog<String> {
                 if (listView.getSelectionModel().getSelectedItem() == null) {
                     return "";
                 }else {
+                    try {
+                        SQLUtil.addTableIfNotExists(listView.getSelectionModel().getSelectedItem(), SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
+                    } catch (SQLException | DuplicateDataException e) {
+                        Logging.logError(e, "Failed to create table");
+                        return "";
+                    }
                     return listView.getSelectionModel().getSelectedItem();
                 }
 
@@ -64,8 +71,8 @@ public class TableChooserDialog extends Dialog<String> {
             try {
                 String name = "New Database";
                 listView.getItems().add(name);
-                SQLUtil.addTable(name, SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
-            } catch (SQLException e) {
+                SQLUtil.addTableIfNotExists(name, SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
+            } catch (SQLException | DuplicateDataException e) {
                 Logging.logError(e);
             }
         });
@@ -75,7 +82,7 @@ public class TableChooserDialog extends Dialog<String> {
             try {
                 SQLUtil.execNoReturn("DROP TABLE IF EXISTS '" + listView.getSelectionModel().getSelectedItem() + "'");
                 listView.getItems().remove(listView.getSelectionModel().getSelectedItem());
-            } catch (SQLException e) {
+            } catch (SQLException | DuplicateDataException e) {
                 Logging.logError(e);
             }
         });
@@ -99,7 +106,7 @@ public class TableChooserDialog extends Dialog<String> {
 
                 SQLUtil.execNoReturn("CREATE TABLE '" + name + "' AS  SELECT *  FROM '" + listView.getSelectionModel().getSelectedItem() + "'");
                 listView.getItems().add(name);
-            } catch (SQLException e) {
+            } catch (SQLException | DuplicateDataException e) {
                 Logging.logError(e);
             }
         });

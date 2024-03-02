@@ -23,6 +23,7 @@ import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DataValidator;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
+import org.tahomarobotics.scouting.scoutingserver.util.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
@@ -468,7 +469,7 @@ public class TabController {
                                     setEditMode(false);
                                 }
                             }, 10);
-                        } catch (SQLException e) {
+                        } catch (SQLException | DuplicateDataException e) {
                             Logging.logError(e, "Error updatingSQLDatabase");
                             cancelEdit();
                             return dataPoint;

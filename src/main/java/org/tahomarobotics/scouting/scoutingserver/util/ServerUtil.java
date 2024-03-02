@@ -17,78 +17,81 @@ public class ServerUtil {
 
     private static ServerSocket serverSocket;
 
-    private static boolean acceptingConnections = false;
+
+    public static boolean isServerThreadRunning() {
+        return serverThreadRunning;
+    }
 
     private static boolean serverThreadRunning = false;
 
     private static Thread serverThread;
 
-    static {
-        try {
-            serverSocket = new ServerSocket(Constants.WIRED_DATA_TRANSFER_PORT);
-        } catch (IOException e) {
-            Logging.logError(e, "Failed to set up wired data transfer server");
-        }
-    }
 
-    public static ArrayList<DataTransferClient> clients = new ArrayList<>();
+    private  static final ArrayList<DataTransferClient> clients = new ArrayList<>();
 
     public static InetAddress getInetAddress() {
         return serverSocket.getInetAddress();
     }
 
-    public static void startServer() {
+    public static void setServerStatus(boolean running) {
+        if (ServerUtil.isServerThreadRunning() != running) {
+            //if the server is not in the state we want it
+            if (running) {
+                ServerUtil.startServer();
+            }else {
+                ServerUtil.stopServer();
+            }
+        }
+    }
+
+    private static void startServer() {
         if (!serverThreadRunning) {
             serverThreadRunning = true;
             //client acceptance loop
+            try {
+                serverSocket = new ServerSocket(Constants.WIRED_DATA_TRANSFER_PORT);
+            } catch (IOException e) {
+                Logging.logError(e, "Failed to set up wired data transfer server");
+            }
             //server loop
             serverThread = new Thread(() -> {
                 Logging.logInfo("Server Started");
                 while (serverThreadRunning) {
-                    while (acceptingConnections) {
-                        try {
-                            Socket clientSocket = serverSocket.accept();
+                    try {
+                        Socket clientSocket = serverSocket.accept();
 
-                            Logging.logInfo("Connection from Client", true);
-                            clients.add(new DataTransferClient(clientSocket, QRScannerController.activeTable));
-                        } catch (IOException e) {
+                        Logging.logInfo("Connection from Client", true);
+                        clients.add(new DataTransferClient(clientSocket));
+                    } catch (IOException e) {
+                        if (serverThreadRunning) {
                             Logging.logError(e, "Failed to accept client connection");
+                            //if the server thread is not running, then we are trying to close, and this exception is thrown when closing so ignore it
+                        }else {
+                            Logging.logInfo("Ignoring IO excepion, when shutting down server");
                         }
-                    }//client acceptance loop
+
+                    }
                 }//server loop
                 Logging.logInfo("Server Stopped");
             });
             serverThread.start();
-            allowConnetions();
         }
 
     }
 
-    public static void allowConnetions() {
-        acceptingConnections = true;
 
-    }
 
-    public static void denyConnections() {
-        acceptingConnections = false;
+    private static void stopServer() {
+        Logging.logInfo("Attempting to stop server");
+        serverThreadRunning = false;
         try {
             serverSocket.close();
         } catch (IOException e) {
             if (serverThread != null) {
                 serverThread.interrupt();
-                serverThreadRunning = false;
-                Logging.logError(e, "Failed to stop connections, so stopped server");
-            }else {
-                Logging.logError(e, "Failed to stop server");
             }
 
         }
-    }
-
-    public static void stopServer() {
-        Logging.logInfo("Attempting to stop server");
-        denyConnections();
-        serverThreadRunning = false;
         clients.forEach(DataTransferClient::kill);
     }
 }

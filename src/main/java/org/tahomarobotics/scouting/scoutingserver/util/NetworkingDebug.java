@@ -1,6 +1,9 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
+import org.tahomarobotics.scouting.scoutingserver.Constants;
+
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -45,7 +48,7 @@ public class NetworkingDebug {
         Thread readerThread = new Thread(new IncomingReader());
         readerThread.start();
         outgoing.addKeyListener(new EnterListener());
-        frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(400, 350);
         frame.setResizable(false);
 
@@ -63,7 +66,6 @@ public class NetworkingDebug {
             System.out.println("Networking Established");
         } catch (IOException ex) {
             System.out.println("Failed to set up networking");
-            System.exit(0);
         }
 
     }// close set up networking
@@ -139,7 +141,7 @@ public class NetworkingDebug {
         nameFrame = new JFrame("enter ip and port");
         JPanel namePanel = new JPanel();
         nameField = new JTextField(20);
-        nameField.setText("127.0.0.1:45482");
+        nameField.setText("127.0.0.1:" + Constants.WIRED_DATA_TRANSFER_PORT);
         JButton ok = new JButton("Ok");
         ok.addActionListener(new okListener());
         namePanel.add(nameField);
