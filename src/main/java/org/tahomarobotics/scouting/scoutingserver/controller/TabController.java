@@ -329,7 +329,8 @@ public class TabController {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Save Backup");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " "));
+        chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + ".json");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
         File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
         try {
             if (!selectedFile.exists()) {

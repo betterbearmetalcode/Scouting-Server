@@ -41,7 +41,8 @@ javafx {
 dependencies {
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 
   // https://mvnrepository.com/artifact/org.json/json
   implementation group: 'org.json', name: 'json', version: '20231013'

@@ -157,19 +157,19 @@ public class SpreadsheetUtil {
             rowNum++;
             int maxMatches =  0;
             //get a list of all the teams we have scouted
-            ArrayList<HashMap<String, Object>> teamsScouted = SQLUtil.exec("SELECT DISTINCT " + Constants.SQLColumnName.TEAM_NUM + " FROM " + activeTableName);
+            ArrayList<HashMap<String, Object>> teamsScouted = SQLUtil.exec("SELECT DISTINCT " + Constants.SQLColumnName.TEAM_NUM + " FROM \"" + activeTableName + "\"");
             teamsScouted.sort(Comparator.comparingInt(o -> Integer.parseInt(o.get(Constants.SQLColumnName.TEAM_NUM.toString()).toString())));
             //for each team, loop through their qualification matches in order and put the auto and tele notes down in each column
             for (HashMap<String, Object> map : teamsScouted) {
                 int teamNum = (int) map.get(Constants.SQLColumnName.TEAM_NUM.toString());
-                ArrayList<HashMap<String, Object>> teamsMatches = SQLUtil.exec("SELECT " + Constants.SQLColumnName.AUTO_COMMENTS + ", " + Constants.SQLColumnName.TELE_COMMENTS + " FROM " + activeTableName + " WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{String.valueOf(teamNum)});
+                ArrayList<HashMap<String, Object>> teamsMatches = SQLUtil.exec("SELECT " + Constants.SQLColumnName.AUTO_COMMENTS + ", " + Constants.SQLColumnName.TELE_COMMENTS + " FROM \"" + activeTableName + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{String.valueOf(teamNum)});
                 maxMatches = Math.max(maxMatches, teamsMatches.size());
                 for (int i = 0; i < teamsMatches.size() + 1; i++) {
                     if (i == 0) {
                         //then this is the fist column, write the team number
                         ws.value(rowNum, i, teamNum);
                     }else {
-                        ws.value(rowNum, i , teamsMatches.get(i-1).get(Constants.SQLColumnName.AUTO_COMMENTS.toString()).toString() + ":" + teamsMatches.get(i-1).get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString());
+                        ws.value(rowNum, i , teamsMatches.get(i-1).get(Constants.SQLColumnName.AUTO_COMMENTS.toString()).toString().replace("No Comments", "") + ":" + teamsMatches.get(i-1).get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().replace("No Comments", ""));
                         ws.rowHeight(rowNum, 100);
                     }
 
