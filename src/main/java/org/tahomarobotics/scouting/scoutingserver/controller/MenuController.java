@@ -3,6 +3,12 @@ package org.tahomarobotics.scouting.scoutingserver.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
@@ -12,6 +18,8 @@ import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MenuController extends VBox {
 
@@ -28,21 +36,14 @@ public class MenuController extends VBox {
 
     @FXML
     public void backToMainMenu(ActionEvent event) {
-        //no main menu, just a help button
-        if (ScoutingServer.currentScene != ScoutingServer.SCENES.MAIN_MENU) {
-
-
-            ScoutingServer.setCurrentScene(ScoutingServer.mainScene);
-            ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
-        }
         //open tutorial
-/*        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
                 Desktop.getDesktop().browse(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Tutorial/TutorialPage.html").toURI());
             } catch (IOException e) {
                 Logging.logError(e);
             }
-        }*/
+        }
     }
 
     @FXML
@@ -64,6 +65,37 @@ public class MenuController extends VBox {
             ScoutingServer.currentScene = ScoutingServer.SCENES.DATA_CORRECTION;
         }
     }
+
+    @FXML
+    public void developerToolsButton(ActionEvent event) {
+        TextField textField = new TextField();
+        Dialog<Boolean> dialog = new Dialog<>();
+        FlowPane pane = new FlowPane(new Label("Enter Password: "), textField);
+        dialog.getDialogPane().setContent(pane);
+        dialog.setTitle("Enter Developer Password");
+        dialog.setHeaderText("");
+        ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == okButton) {
+                return textField.getText().equals(Constants.developerPassword);
+            }else {
+                return false;
+            }
+        });
+        Optional<Boolean> result = dialog.showAndWait();
+        AtomicReference<Boolean> selectedEvent = new AtomicReference<>(false);
+        result.ifPresent(selectedEvent::set);
+        if (selectedEvent.get()) {
+            if (ScoutingServer.currentScene != ScoutingServer.SCENES.MAIN_MENU) {
+
+
+                ScoutingServer.setCurrentScene(ScoutingServer.mainScene);
+                ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
+            }
+        }
+    }
+
 
 
 }
