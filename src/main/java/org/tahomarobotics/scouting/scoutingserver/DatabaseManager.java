@@ -43,18 +43,24 @@ public class DatabaseManager {
                     data[20],//auto notes
                     data[21]);//tele notes
 
-            SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + m.getDataForSQL() + ")");
-            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ m, Color.GREEN);
+            storeQrRecord(m, tablename);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed to construct QrRecord, likly corrupted data", Color.RED);
             Logging.logError(e, "Failed to construct match record, most likly corrupted data");
-        } catch (SQLException e) {
+        }
+    }
 
+    public static void storeQrRecord(QRRecord record, String tablename) {
+        try {
+            SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + record.getDataForSQL() + ")");
+            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ record, Color.GREEN);
+        } catch (SQLException e) {
             Logging.logError(e);
         } catch (DuplicateDataException e) {
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Duplicate Data Detected, skipping", Color.ORANGE);
             Logging.logInfo("Duplicate Data detected, skipping");
         }
+
     }
 
     public static void storeRawQRData(JSONObject dataJSON, String tablename) throws IOException {

@@ -45,7 +45,7 @@
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </HBox.margin>
                         </Button>
-                        <Button fx:id="takePictureButton" mnemonicParsing="false" onAction="#loadScannedQRCodes" prefHeight="26.0" prefWidth="158.0" text="Load Scanned QR codes">
+                        <Button fx:id="takePictureButton" mnemonicParsing="false" onAction="#loadCSV" prefHeight="26.0" prefWidth="158.0" text="Load CSV File">
                            <HBox.margin>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </HBox.margin>

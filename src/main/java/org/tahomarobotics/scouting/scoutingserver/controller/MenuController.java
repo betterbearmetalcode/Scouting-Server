@@ -68,7 +68,7 @@ public class MenuController extends VBox {
 
     @FXML
     public void developerToolsButton(ActionEvent event) {
-        TextField textField = new TextField();
+        /*TextField textField = new TextField();
         Dialog<Boolean> dialog = new Dialog<>();
         FlowPane pane = new FlowPane(new Label("Enter Password: "), textField);
         dialog.getDialogPane().setContent(pane);
@@ -93,6 +93,12 @@ public class MenuController extends VBox {
                 ScoutingServer.setCurrentScene(ScoutingServer.mainScene);
                 ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
             }
+        }*/
+        if (ScoutingServer.currentScene != ScoutingServer.SCENES.MAIN_MENU) {
+
+
+            ScoutingServer.setCurrentScene(ScoutingServer.mainScene);
+            ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
         }
     }
 
