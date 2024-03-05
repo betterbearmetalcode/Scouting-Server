@@ -93,4 +93,8 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
     }
+
+    public void terminate(ActionEvent event) {
+        System.exit(0);
+    }
 }
