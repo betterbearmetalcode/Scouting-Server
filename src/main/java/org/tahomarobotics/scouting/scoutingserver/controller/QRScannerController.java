@@ -7,13 +7,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.json.CDL;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.*;
@@ -76,11 +73,8 @@ public class QRScannerController {
                 for (File file : selectedFile) {
                     if (file.exists()) {
                         FileInputStream inputStream = new FileInputStream(file);
-                        JSONArray arr = new JSONArray(new String(inputStream.readAllBytes()));
-                        for (Object o : arr.toList()) {
-                            DatabaseManager.storeRawQRData((String) o, activeTable);
-                        }
-
+                        JSONObject object = new JSONObject(new String(inputStream.readAllBytes()));
+                        DatabaseManager.importJSONObject(object, activeTable);
                         inputStream.close();
                     }
 
@@ -90,12 +84,16 @@ public class QRScannerController {
         } catch (IOException e) {
             Logging.logError(e);
         }
+
     }
+
+
 
 
     //consider this https://www.tutorialspoint.com/java_mysql/java_mysql_quick_guide.html
     @FXML
     public void loadCSV(ActionEvent event) {
+        //for for qr scanner
        /* DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Select Import Directory");
 

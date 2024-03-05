@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.scene.paint.Color;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.util.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
@@ -48,6 +49,20 @@ public class DatabaseManager {
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed to construct QrRecord, likly corrupted data", Color.RED);
             Logging.logError(e, "Failed to construct match record, most likly corrupted data");
         }
+    }
+
+    public static void importJSONObject(JSONObject object, String activeTable) {
+        object.keys().forEachRemaining(s -> {
+            JSONArray arr = object.getJSONArray(s);
+            for (Object o : arr.toList()) {
+                String string = o.toString();
+                try {
+                    DatabaseManager.storeRawQRData(string, activeTable);
+                } catch (IOException e) {
+                    Logging.logError(e, "failed to import qr string");
+                }
+            }
+        });
     }
 
     public static void storeQrRecord(QRRecord record, String tablename) {
