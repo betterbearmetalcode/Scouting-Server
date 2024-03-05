@@ -116,7 +116,9 @@ public class Constants {
 
 
     public static int LOW_ERROR_THRESHOLD = 3;
+    public static final String DEVELOPER_PASSWORD = "2046devPass";
 
+    public static boolean devUnlocked = false;
     public static class UIValues {
 
         public static final double WIDTH_MULTIPLIER = .75;
@@ -225,8 +227,6 @@ public class Constants {
             buttonBarHeightProperty.set(UIValues.MIN_MAIN_BUTTON_BAR_HEIGHT);
         }
     }
-
-    public static String developerPassword = "2046devPass";
 
 
 }

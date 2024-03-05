@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class SQLUtil {
 
     private static Connection connection;
-    private static final Object[] EMPTY_PARAMS = {};
+    public static final Object[] EMPTY_PARAMS = {};
 
 
     public static void addTableIfNotExists(String tableName, String schema) throws SQLException, IllegalArgumentException, DuplicateDataException {
