@@ -1,5 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
+import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
 
@@ -38,13 +39,18 @@ public class DataTransferClient extends Thread {
                 writer.println("Hello from the server!");
 
                 reader = new BufferedReader(new InputStreamReader(inputStream));
-                String line = reader.readLine();
-                while (line != null && alive) {
-                    line = reader.readLine();
-                    System.out.println("Revieved data: " + line);
-                    DatabaseManager.storeRawQRData(line, QRScannerController.activeTable);
-
+                StringBuilder builder = new StringBuilder();
+                while (true) {
+                    String line = reader.readLine();
+                    if (line != null) {
+                        builder.append(line);
+                        System.out.println("Revieved data: " + line);
+                    }else  {
+                        break;
+                    }
                 }
+                System.out.println("Storing data: " + builder);
+                DatabaseManager.importJSONObject(new JSONObject(builder.toString()), QRScannerController.activeTable);
                 socket.close();
             }
             Logging.logInfo("Closing client Connection");

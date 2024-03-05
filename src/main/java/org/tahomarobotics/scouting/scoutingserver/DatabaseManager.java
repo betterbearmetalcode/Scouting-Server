@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.scene.paint.Color;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.util.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
@@ -43,18 +44,38 @@ public class DatabaseManager {
                     data[20],//auto notes
                     data[21]);//tele notes
 
-            SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + m.getDataForSQL() + ")");
-            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ m, Color.GREEN);
+            storeQrRecord(m, tablename);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed to construct QrRecord, likly corrupted data", Color.RED);
             Logging.logError(e, "Failed to construct match record, most likly corrupted data");
-        } catch (SQLException e) {
+        }
+    }
 
+    public static void importJSONObject(JSONObject object, String activeTable) {
+        object.keys().forEachRemaining(s -> {
+            JSONArray arr = object.getJSONArray(s);
+            for (Object o : arr.toList()) {
+                String string = o.toString();
+                try {
+                    DatabaseManager.storeRawQRData(string, activeTable);
+                } catch (IOException e) {
+                    Logging.logError(e, "failed to import qr string");
+                }
+            }
+        });
+    }
+
+    public static void storeQrRecord(QRRecord record, String tablename) {
+        try {
+            SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + record.getDataForSQL() + ")");
+            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ record, Color.GREEN);
+        } catch (SQLException e) {
             Logging.logError(e);
         } catch (DuplicateDataException e) {
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Duplicate Data Detected, skipping", Color.ORANGE);
             Logging.logInfo("Duplicate Data detected, skipping");
         }
+
     }
 
     public static void storeRawQRData(JSONObject dataJSON, String tablename) throws IOException {

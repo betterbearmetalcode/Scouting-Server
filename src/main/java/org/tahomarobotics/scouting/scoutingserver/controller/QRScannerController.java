@@ -7,11 +7,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import org.json.CDL;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.*;
@@ -74,11 +73,8 @@ public class QRScannerController {
                 for (File file : selectedFile) {
                     if (file.exists()) {
                         FileInputStream inputStream = new FileInputStream(file);
-                        JSONArray arr = new JSONArray(new String(inputStream.readAllBytes()));
-                        for (Object o : arr.toList()) {
-                            DatabaseManager.storeRawQRData((String) o, activeTable);
-                        }
-
+                        JSONObject object = new JSONObject(new String(inputStream.readAllBytes()));
+                        DatabaseManager.importJSONObject(object, activeTable);
                         inputStream.close();
                     }
 
@@ -88,13 +84,17 @@ public class QRScannerController {
         } catch (IOException e) {
             Logging.logError(e);
         }
+
     }
+
+
 
 
     //consider this https://www.tutorialspoint.com/java_mysql/java_mysql_quick_guide.html
     @FXML
-    public void loadScannedQRCodes(ActionEvent event) {
-        DirectoryChooser chooser = new DirectoryChooser();
+    public void loadCSV(ActionEvent event) {
+        //for for qr scanner
+       /* DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Select Import Directory");
 
         File defaultDirectory = new File(System.getProperty("user.home"));
@@ -116,7 +116,56 @@ public class QRScannerController {
                     Logging.logError(e, "Failed to read JSON: ");
                 }
             }
+        }*/
+
+        FileChooser chooser = new FileChooser();
+        File selectedFile = chooser.showOpenDialog(ScoutingServer.mainStage.getOwner());
+        try {
+            FileInputStream inputStream = new FileInputStream(selectedFile);
+            String csv = new String(inputStream.readAllBytes());
+            csv = csv.replaceAll("\r", "");
+            JSONArray result = CDL.toJSONArray(csv);
+
+            for (Object o : result) {
+                JSONObject data = (JSONObject) o;
+                try {
+                    //if any of these fail, then skip the data
+                    int x = data.getInt("Match #");
+                    int y = data.getInt("Team #");
+                    DatabaseManager.RobotPosition.valueOf(data.getString("Position"));
+                }catch (Exception e) {
+                    continue;
+                }
+                DatabaseManager.QRRecord m = new DatabaseManager.QRRecord(data.getInt("Match #"),//match num
+                        data.getInt("Team #"),//team num
+                        DatabaseManager.RobotPosition.valueOf(data.getString("Position")),//allinace pos
+                        data.optInt("Auto Speaker", 0),//auto speaker
+                        data.optInt("Auto Amp", 0),//auto amp
+                        data.optInt("Auto Speaker Missed", 0),//auto speaker missed
+                        data.optInt("Auto Amp Missed", 0),//auto amp missed
+                        data.optInt("F1", 0),//F1
+                        data.optInt("F2", 0),//F2
+                        data.optInt("F3", 0),//F3
+                        data.optInt("M1", 0),//M1
+                        data.optInt("M2", 0),//M2
+                        data.optInt("M3", 0),//M3
+                        data.optInt("M4", 0),//M4
+                        data.optInt("M5", 0),//M5
+                        data.optInt("Tele Speaker", 0),//tele speaker
+                        data.optInt("Tele Amp", 0),//tele amp
+                        data.optInt("Tele Trap", 0),//tele trap
+                        data.optInt("Tele Speaker Missed", 0),//tele speakermissed
+                        data.optInt("Tele Amp missed", 0),//tele amp missed
+                        data.optString("Auto Comments", "No Comments"),//auto notes
+                        data.optString("Tele Comments", "No Comments"));//tele notes
+                DatabaseManager.storeQrRecord(m, activeTable);
+            }
+
+            inputStream.close();
+        } catch (IOException e) {
+            Logging.logError(e);
         }
+
 
     }
 
