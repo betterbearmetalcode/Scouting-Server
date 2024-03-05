@@ -226,7 +226,5 @@ public class Constants {
         }
     }
 
-    public static String developerPassword = "2046devPass";
-
 
 }

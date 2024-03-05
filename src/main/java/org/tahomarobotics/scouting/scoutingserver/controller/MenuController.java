@@ -3,12 +3,6 @@ package org.tahomarobotics.scouting.scoutingserver.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
@@ -18,8 +12,6 @@ import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MenuController extends VBox {
 
@@ -36,14 +28,21 @@ public class MenuController extends VBox {
 
     @FXML
     public void backToMainMenu(ActionEvent event) {
+        //no main menu, just a help button
+        if (ScoutingServer.currentScene != ScoutingServer.SCENES.MAIN_MENU) {
+
+
+            ScoutingServer.setCurrentScene(ScoutingServer.mainScene);
+            ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
+        }
         //open tutorial
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+/*        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
                 Desktop.getDesktop().browse(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Tutorial/TutorialPage.html").toURI());
             } catch (IOException e) {
                 Logging.logError(e);
             }
-        }
+        }*/
     }
 
     @FXML
@@ -101,7 +100,6 @@ public class MenuController extends VBox {
             ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
         }
     }
-
 
 
 }
