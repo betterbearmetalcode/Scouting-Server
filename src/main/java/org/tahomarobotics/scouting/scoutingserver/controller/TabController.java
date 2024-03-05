@@ -13,12 +13,14 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.robot.Robot;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DataValidator;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
@@ -315,17 +317,21 @@ public class TabController {
     @FXML
     public void saveJSONBackup(ActionEvent event) {
         Logging.logInfo("Making JSON Backup of " + tableName);
-        refresh();
-        JSONArray output = new JSONArray();
-        for (Match databaseDatum : databaseData) {
-            for (RobotPositon robotPositon : databaseDatum.robotPositons()) {
-                StringBuilder builder = new StringBuilder();
-                for (DataPoint datum : robotPositon.data()) {
-                    builder.append(datum.getValue().replaceAll("\"", "")).append(Constants.QR_DATA_DELIMITER);
+        JSONObject output = new JSONObject();
+        for (DatabaseManager.RobotPosition robotPosition : DatabaseManager.RobotPosition.values()) {
+            //get all the data for each of the positions
+            LinkedList<DatabaseManager.QRRecord> data = DatabaseManager.readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"" + " WHERE "  + Constants.SQLColumnName.ALLIANCE_POS + "=?", new Object[]{robotPosition.ordinal()});
+            JSONArray positionArray = new JSONArray();
+            for (DatabaseManager.QRRecord record : data) {
+                StringBuilder qrBuilder = new StringBuilder();
+                for (DataPoint dataPoint : record.getDataAsList()) {
+                    qrBuilder.append(dataPoint.getValue().replaceAll("\"", "")).append(Constants.QR_DATA_DELIMITER);
                 }
-                output.put(builder.toString());
+                positionArray.put(qrBuilder.toString().substring(0, qrBuilder.toString().length() - 1));
             }
+            output.put(robotPosition.name(), positionArray);
         }
+
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Save Backup");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));

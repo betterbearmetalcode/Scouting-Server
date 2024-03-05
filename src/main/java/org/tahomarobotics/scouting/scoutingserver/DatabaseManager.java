@@ -85,9 +85,13 @@ public class DatabaseManager {
 
 
     public static LinkedList<QRRecord> readDatabase(String tableName) throws IOException {
+        return readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"", SQLUtil.EMPTY_PARAMS);
+    }
+
+    public static LinkedList<QRRecord> readDatabase(String tableName, String customStatement, Object[] params) {
         LinkedList<QRRecord> output = new LinkedList<>();
         try {
-            ArrayList<HashMap<String, Object>> data = SQLUtil.exec("SELECT * FROM \"" + tableName + "\"");
+            ArrayList<HashMap<String, Object>> data = SQLUtil.exec(customStatement, params);
             for (HashMap<String, Object> row : data) {
                 //for each row in the sql database
                 output.add(new QRRecord(
