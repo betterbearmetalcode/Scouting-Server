@@ -42,7 +42,7 @@ public class Logging {
         LOGGER.log(Level.SEVERE, customMessage, e);
         Platform.runLater(() -> {
 
-            Alert alert = new Alert(Alert.AlertType.ERROR,customMessage + ((e.getMessage() == null)?"":e.getMessage()));
+            Alert alert = new Alert(Alert.AlertType.ERROR,customMessage + " " + ((e.getMessage() == null)?"":e.getMessage()));
             alert.showAndWait();
         });
 
