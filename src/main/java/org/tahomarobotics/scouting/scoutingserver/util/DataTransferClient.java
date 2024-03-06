@@ -52,6 +52,7 @@ public class DataTransferClient extends Thread {
                 System.out.println("Storing data: " + builder);
                 DatabaseManager.importJSONObject(new JSONObject(builder.toString()), QRScannerController.activeTable);
                 socket.close();
+                alive = false;
             }
             Logging.logInfo("Closing client Connection");
         } catch (IOException ignored) {
