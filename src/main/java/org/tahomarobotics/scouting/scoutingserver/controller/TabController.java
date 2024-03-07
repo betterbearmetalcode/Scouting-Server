@@ -13,7 +13,6 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.robot.Robot;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
@@ -54,7 +53,10 @@ public class TabController {
     public Button validateDataButton;
     @FXML
     public Button exportButton;
+    @FXML
+    public CheckBox exportNotesCheckbox;
     private ArrayList<Match> databaseData;
+
     public String tableName;
 
     private TreeItem<Label> rootItem;
@@ -126,7 +128,7 @@ public class TabController {
         if (file != null) {
             try {
 
-                SpreadsheetUtil.writeToSpreadSheet(databaseData, file, currentEventCode, tableName);//should add button later if buranik insists to export raw wihtout formulas
+                SpreadsheetUtil.writeToSpreadSheet(databaseData, file, currentEventCode, tableName, exportNotesCheckbox.isSelected());//should add button later if buranik insists to export raw wihtout formulas
             } catch (IOException ex) {
                 Logging.logError(ex, "IO error while exporting or fetching TBA Data");
             } catch (InterruptedException ex) {

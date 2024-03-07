@@ -23,7 +23,7 @@ public class SpreadsheetUtil {
 
     private static final String RAW_DATA_SHEET_NAME = "Raw Data";
 
-    public static void writeToSpreadSheet(ArrayList<Match> data, File currDir, String eventKey, String activeTableName) throws IOException, InterruptedException {
+    public static void writeToSpreadSheet(ArrayList<Match> data, File currDir, String eventKey, String activeTableName, boolean exportNotes) throws IOException, InterruptedException {
         //query TBA for data not gathered by scouts
         //auto leave
         //tele climb
@@ -143,7 +143,10 @@ public class SpreadsheetUtil {
                     rowNum++;
                 }
             }//end for each match
-            exportNotes(activeTableName, rowNum, ws);
+            if (exportNotes) {
+                exportNotes(activeTableName, rowNum, ws);
+            }
+
         }//end try
     }//end method
 
