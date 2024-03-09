@@ -2,8 +2,9 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="488.0" prefWidth="683.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.ChartsController">
@@ -11,13 +12,17 @@
       <SplitPane dividerPositions="0.20755347593582885" prefHeight="499.0" prefWidth="676.0">
         <items>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" />
-            <VBox fx:id="mainBox" prefHeight="200.0" prefWidth="100.0">
+            <VBox fx:id="mainBox">
                <children>
-                  <HBox alignment="CENTER" prefHeight="38.0" prefWidth="538.0">
-                     <children>
-                        <Button mnemonicParsing="false" onAction="#generateTeleTotals" text="Generate Tele Totals'" />
-                     </children>
-                  </HBox>
+                  <TabPane fx:id="tabPane" prefHeight="507.0" prefWidth="538.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab>
+                           <graphic>
+                              <Button mnemonicParsing="false" onAction="#newTab" style="-fx-background-color: f4f4f4;" text="+" />
+                           </graphic>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
                </children>
             </VBox>
         </items>

@@ -67,13 +67,13 @@ public class DatabaseManager {
 
     public static void storeQrRecord(QRRecord record, String tablename) {
         try {
-            SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + record.getDataForSQL() + ")");
+            SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + record.getDataForSQL() + ")", false);
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ record, Color.GREEN);
         } catch (SQLException e) {
             Logging.logError(e);
         } catch (DuplicateDataException e) {
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Duplicate Data Detected, skipping", Color.ORANGE);
-            Logging.logInfo("Duplicate Data detected, skipping");
+
         }
 
     }
@@ -85,13 +85,13 @@ public class DatabaseManager {
 
 
     public static LinkedList<QRRecord> readDatabase(String tableName) throws IOException {
-        return readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"", SQLUtil.EMPTY_PARAMS);
+        return readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"", SQLUtil.EMPTY_PARAMS, true);
     }
 
-    public static LinkedList<QRRecord> readDatabase(String tableName, String customStatement, Object[] params) {
+    public static LinkedList<QRRecord> readDatabase(String tableName, String customStatement, Object[] params, boolean log) {
         LinkedList<QRRecord> output = new LinkedList<>();
         try {
-            ArrayList<HashMap<String, Object>> data = SQLUtil.exec(customStatement, params);
+            ArrayList<HashMap<String, Object>> data = SQLUtil.exec(customStatement, params, log);
             for (HashMap<String, Object> row : data) {
                 //for each row in the sql database
                 output.add(new QRRecord(
@@ -322,4 +322,10 @@ public class DatabaseManager {
         return output;
     }
 
+    public static double getAverage(Constants.SQLColumnName column, String teamName, String table, boolean log) throws SQLException {
+        ArrayList<HashMap<String, Object>> raw = SQLUtil.exec("SELECT " + column + " FROM \"" + table + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{teamName}, log);
+        ArrayList<Integer> data = new ArrayList<>();
+        raw.forEach(map -> {data.add(Integer.valueOf(map.get(column.toString()).toString()));});
+        return (double) data.stream().mapToInt(Integer::intValue).sum() /data.size();
+    }
 }

@@ -32,16 +32,22 @@ public class DataValidator {
                     continue;
                 }
                 if (!matchData.robotPositons().isEmpty()) {
-                    List<RobotPositon> redRobotPositons = matchData.robotPositons().stream().filter(robot -> robot.robotPosition().ordinal() < 3).toList();
-                    List<RobotPositon> blueRobotPositons = matchData.robotPositons().stream().filter(robot -> robot.robotPosition().ordinal() > 2).toList();
-                    HashMap<String, Object> matchDatum = (HashMap<String, Object>) matchTBAData.get();
-                    HashMap<String, Object> matchScoreBreakdown = (HashMap<String, Object>) matchDatum.get("score_breakdown");
-                    HashMap<String, Object> redAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("red");
-                    HashMap<String, Object> blueAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("blue");
+                    try {
+                        List<RobotPositon> redRobotPositons = matchData.robotPositons().stream().filter(robot -> robot.robotPosition().ordinal() < 3).toList();
+                        List<RobotPositon> blueRobotPositons = matchData.robotPositons().stream().filter(robot -> robot.robotPosition().ordinal() > 2).toList();
+                        HashMap<String, Object> matchDatum = (HashMap<String, Object>) matchTBAData.get();
+                        HashMap<String, Object> matchScoreBreakdown = (HashMap<String, Object>) matchDatum.get("score_breakdown");
+                        HashMap<String, Object> redAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("red");
+                        HashMap<String, Object> blueAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("blue");
 
-                    corectedRobotPositons.addAll(correctAlliance(redRobotPositons.size() == 3, redRobotPositons, redAllianceScoreBreakdown));
-                    corectedRobotPositons.addAll(correctAlliance(blueRobotPositons.size() == 3, blueRobotPositons, blueAllianceScoreBreakdown));
-                    output.add(new Match(matchData.matchNumber(), new ArrayList<>(corectedRobotPositons)));
+                        corectedRobotPositons.addAll(correctAlliance(redRobotPositons.size() == 3, redRobotPositons, redAllianceScoreBreakdown));
+                        corectedRobotPositons.addAll(correctAlliance(blueRobotPositons.size() == 3, blueRobotPositons, blueAllianceScoreBreakdown));
+                        output.add(new Match(matchData.matchNumber(), new ArrayList<>(corectedRobotPositons)));
+                    }catch (NullPointerException e) {
+                        //null pointer menas that there is no breakdown yet so skip validation
+                        Logging.logInfo(e.getMessage() + " skipping validation of this match because TBA not updated");
+                    }
+
                 }
 
             }

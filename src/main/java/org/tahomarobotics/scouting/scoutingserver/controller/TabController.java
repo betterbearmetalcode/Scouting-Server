@@ -322,7 +322,7 @@ public class TabController {
         JSONObject output = new JSONObject();
         for (DatabaseManager.RobotPosition robotPosition : DatabaseManager.RobotPosition.values()) {
             //get all the data for each of the positions
-            LinkedList<DatabaseManager.QRRecord> data = DatabaseManager.readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"" + " WHERE "  + Constants.SQLColumnName.ALLIANCE_POS + "=?", new Object[]{robotPosition.ordinal()});
+            LinkedList<DatabaseManager.QRRecord> data = DatabaseManager.readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"" + " WHERE "  + Constants.SQLColumnName.ALLIANCE_POS + "=?", new Object[]{robotPosition.ordinal()}, false);
             JSONArray positionArray = new JSONArray();
             for (DatabaseManager.QRRecord record : data) {
                 StringBuilder qrBuilder = new StringBuilder();
@@ -470,7 +470,7 @@ public class TabController {
                         statementBuilder.append(" WHERE ").append(Constants.SQLColumnName.TEAM_NUM).append("=?");
                         statementBuilder.append(" AND ").append(Constants.SQLColumnName.MATCH_NUM).append("=?");
                         try {
-                            SQLUtil.execNoReturn(statementBuilder.toString(), new String[] {newLabel.getText(), String.valueOf(teamNum), String.valueOf(matchNum)});
+                            SQLUtil.execNoReturn(statementBuilder.toString(), new String[] {newLabel.getText(), String.valueOf(teamNum), String.valueOf(matchNum)}, true);
                             Timer timer = new Timer();
                             timer.schedule(new TimerTask() {
                                 @Override
