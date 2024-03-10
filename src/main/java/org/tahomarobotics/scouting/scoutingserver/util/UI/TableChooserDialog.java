@@ -79,7 +79,14 @@ public class TableChooserDialog extends Dialog<String> {
                 Logging.logError(e);
             }
         });
-        Button duplicateButton = getButton(listView);
+        Button duplicateButton = new Button("Clear Database");
+        duplicateButton.setOnAction(event -> {
+            try {
+                SQLUtil.execNoReturn("DELETE FROM \"" + listView.getSelectionModel().getSelectedItem() + "\"");
+            } catch (SQLException | DuplicateDataException e) {
+                Logging.logError(e);
+            }
+        });
         Button deleteButton = new Button("Delete");
         deleteButton.setOnAction(event -> {
             try {
@@ -91,29 +98,6 @@ public class TableChooserDialog extends Dialog<String> {
         });
         FlowPane pane = new FlowPane(newCompetitionButton, duplicateButton, deleteButton);
         return new VBox(listView, pane);
-    }
-
-    private static Button getButton(ListView<String> listView) {
-        Button duplicateButton = new Button("Duplicate");
-        duplicateButton.setOnAction(event -> {
-            try {
-                String name = listView.getSelectionModel().getSelectedItem() + "-Copy";
-                while (true) {
-                    if (listView.getItems().contains(name)) {
-                        name = name.concat("-Copy ");
-                    } else {
-                        break;
-                    }
-                }
-
-
-                SQLUtil.execNoReturn("CREATE TABLE '" + name + "' AS  SELECT *  FROM '" + listView.getSelectionModel().getSelectedItem() + "'");
-                listView.getItems().add(name);
-            } catch (SQLException | DuplicateDataException e) {
-                Logging.logError(e);
-            }
-        });
-        return duplicateButton;
     }
 
 
