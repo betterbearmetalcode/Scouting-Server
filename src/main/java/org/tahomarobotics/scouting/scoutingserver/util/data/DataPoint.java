@@ -45,7 +45,7 @@ public class DataPoint {
             Map.entry(ErrorLevel.UNKNOWN, Color.BLUE)
     ));
 
-    public DataPoint(String theName, String theValue ,double errorLevel) {
+    public DataPoint(String theName, String theValue, double errorLevel) {
         this.name = theName;
         this.value = theValue;
         this.howOff = errorLevel;

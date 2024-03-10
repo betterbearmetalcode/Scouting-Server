@@ -115,7 +115,7 @@ public class Constants {
     public static final int TELE_TRAP_POINTS = 5;
 
 
-    public static int LOW_ERROR_THRESHOLD = 2;
+    public static int LOW_ERROR_THRESHOLD = 3;
     public static final String DEVELOPER_PASSWORD = "2046devPass";
 
     public static boolean devUnlocked = false;

@@ -11,6 +11,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
@@ -267,15 +268,17 @@ public class TabController {
         }
 
         AutoCompletionBinding<String> autoCompletionBinding = TextFields.bindAutoCompletion(autoCompetionField, options);
-
-        FlowPane pane = new FlowPane(new Label("Enter Competition: "), autoCompetionField);
-        dialog.getDialogPane().setContent(pane);
+        Spinner<Integer> dataValidationThresholdSpinner = new Spinner<>();
+        dataValidationThresholdSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1,10,3));
+        dataValidationThresholdSpinner.setPrefWidth(65);
+        dialog.getDialogPane().setContent(new VBox(new FlowPane(new Label("Enter Competition: "), autoCompetionField), new FlowPane(new Label("High Error Threshold: "), dataValidationThresholdSpinner)));
         dialog.setTitle("Select Competition For Data Validation");
         dialog.setHeaderText("");
         ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == okButton) {
+                Constants.LOW_ERROR_THRESHOLD = dataValidationThresholdSpinner.getValue();
                 return autoCompetionField.getText();
             }else {
                 return "";
