@@ -23,7 +23,7 @@ public class SpreadsheetUtil {
 
     private static final String RAW_DATA_SHEET_NAME = "Raw Data";
 
-    public static void writeToSpreadSheet(ArrayList<Match> data, File currDir, String eventKey, String activeTableName) throws IOException, InterruptedException {
+    public static void writeToSpreadSheet(ArrayList<Match> data, File currDir, String eventKey, String activeTableName, boolean exportNotes) throws IOException, InterruptedException {
         //query TBA for data not gathered by scouts
         //auto leave
         //tele climb
@@ -51,9 +51,17 @@ public class SpreadsheetUtil {
             for (Match match : data) {
                 HashMap<String, HashMap<String, Object>> breakdown = null;
                 if (haveInternet) {
-                    HashMap<String, HashMap<String, HashMap<String, Object>>> matchObject = (HashMap<String, HashMap<String, HashMap<String, Object>>>) rawArr.toList().stream().filter(o -> Objects.equals(((HashMap<String, String>) o).get("key"), eventKey + "_qm" + match.matchNumber())).findFirst().get();
-                    Logging.logInfo("WroteRow: " + matchObject);
-                    breakdown = matchObject.get("score_breakdown");
+                    //HashMap<String, HashMap<String, HashMap<String, Object>>> matchObject = (HashMap<String, HashMap<String, HashMap<String, Object>>>) rawArr.toList().stream().filter(o -> Objects.equals(((HashMap<String, String>) o).get("key"), eventKey + "_qm" + match.matchNumber())).findFirst().get();
+                    Optional<Object> optional = rawArr.toList().stream().filter(o -> Objects.equals(((HashMap<String, String>) o).get("key"), eventKey + "_qm" + match.matchNumber())).findFirst();
+                    if (optional.isPresent()) {
+                        HashMap<String, HashMap<String, HashMap<String, Object>>> matchObject = (HashMap<String, HashMap<String, HashMap<String, Object>>>) optional.get();
+                        Logging.logInfo("WroteRow: " + matchObject);
+                        breakdown = matchObject.get("score_breakdown");
+                    }else {
+                        breakdown = null;
+                        Logging.logInfo("using null breakdown for matc exporting "  + match.matchNumber());
+                    }
+
                 }
 
                 int numRobotsWritten = 0;
@@ -88,8 +96,6 @@ public class SpreadsheetUtil {
 
                         }
                     }
-
-                    ;
 
                     int teleAmpPoints = robotPositon.record().teleAmp() * Constants.TELE_AMP_NOTE_POINTS;
                     int teleSpeakerPoints = robotPositon.record().teleSpeaker() * Constants.TELE_SPEAKER_NOTE_POINTS;
@@ -143,7 +149,10 @@ public class SpreadsheetUtil {
                     rowNum++;
                 }
             }//end for each match
-            exportNotes(activeTableName, rowNum, ws);
+            if (exportNotes) {
+                exportNotes(activeTableName, rowNum, ws);
+            }
+
         }//end try
     }//end method
 
@@ -157,12 +166,12 @@ public class SpreadsheetUtil {
             rowNum++;
             int maxMatches =  0;
             //get a list of all the teams we have scouted
-            ArrayList<HashMap<String, Object>> teamsScouted = SQLUtil.exec("SELECT DISTINCT " + Constants.SQLColumnName.TEAM_NUM + " FROM \"" + activeTableName + "\"");
+            ArrayList<HashMap<String, Object>> teamsScouted = SQLUtil.exec("SELECT DISTINCT " + Constants.SQLColumnName.TEAM_NUM + " FROM \"" + activeTableName + "\"", true);
             teamsScouted.sort(Comparator.comparingInt(o -> Integer.parseInt(o.get(Constants.SQLColumnName.TEAM_NUM.toString()).toString())));
             //for each team, loop through their qualification matches in order and put the auto and tele notes down in each column
             for (HashMap<String, Object> map : teamsScouted) {
                 int teamNum = (int) map.get(Constants.SQLColumnName.TEAM_NUM.toString());
-                ArrayList<HashMap<String, Object>> teamsMatches = SQLUtil.exec("SELECT " + Constants.SQLColumnName.AUTO_COMMENTS + ", " + Constants.SQLColumnName.TELE_COMMENTS + " FROM \"" + activeTableName + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{String.valueOf(teamNum)});
+                ArrayList<HashMap<String, Object>> teamsMatches = SQLUtil.exec("SELECT " + Constants.SQLColumnName.AUTO_COMMENTS + ", " + Constants.SQLColumnName.TELE_COMMENTS + " FROM \"" + activeTableName + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{String.valueOf(teamNum)}, false);
                 maxMatches = Math.max(maxMatches, teamsMatches.size());
                 for (int i = 0; i < teamsMatches.size() + 1; i++) {
                     if (i == 0) {

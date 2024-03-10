@@ -27,10 +27,14 @@ public class SQLUtil {
     }
 
     public static void execNoReturn(String statement) throws SQLException, IllegalArgumentException, DuplicateDataException {
-        execNoReturn(statement, SQLUtil.EMPTY_PARAMS);
+        execNoReturn(statement, SQLUtil.EMPTY_PARAMS, true);
     }
 
-    public static void execNoReturn(String statement, Object[] params) throws SQLException, IllegalArgumentException, DuplicateDataException {
+    public static void execNoReturn(String statement, boolean log) throws SQLException, IllegalArgumentException, DuplicateDataException {
+        execNoReturn(statement, SQLUtil.EMPTY_PARAMS, log);
+    }
+
+    public static void execNoReturn(String statement, Object[] params, boolean log) throws SQLException, IllegalArgumentException, DuplicateDataException {
         try {
             PreparedStatement toExec = connection.prepareStatement(statement);
             Integer count = 1;
@@ -41,7 +45,10 @@ public class SQLUtil {
             toExec.executeUpdate();
             connection.commit();
             toExec.close();
-            Logging.logInfo("Executed sql Query: " + statement);
+            if (log)  {
+                Logging.logInfo("Executed sql Query: " + statement);
+            }
+
         } catch (SQLException e){
             if (e.getMessage().startsWith("[SQLITE_CONSTRAINT_PRIMARYKEY]")) {
                 throw new DuplicateDataException("Duplicate Data Detected, Skipping", e);
@@ -56,11 +63,11 @@ public class SQLUtil {
         }
     }
 
-    public static ArrayList<HashMap<String, Object>> exec(String statement) throws SQLException, IllegalArgumentException {
-        return exec(statement, SQLUtil.EMPTY_PARAMS);
+    public static ArrayList<HashMap<String, Object>> exec(String statement, boolean log) throws SQLException, IllegalArgumentException {
+        return exec(statement, SQLUtil.EMPTY_PARAMS, log);
     }
 
-    public static ArrayList<HashMap<String, Object>> exec(String statement, Object[] params) throws SQLException, IllegalArgumentException {
+    public static ArrayList<HashMap<String, Object>> exec(String statement, Object[] params, boolean log) throws SQLException, IllegalArgumentException {
         try {
             PreparedStatement toExec = connection.prepareStatement(statement);
             Integer count = 1;
@@ -73,10 +80,16 @@ public class SQLUtil {
             ArrayList<HashMap<String, Object>> toReturn = processResultSet(results);
             results.close();
             toExec.close();
-            Logging.logInfo("Executed sql Query: " + statement);
+            if (log) {
+                Logging.logInfo("Executed sql Query: " + statement);
+            }
+
             return toReturn;
         } catch (SQLException e){
-            Logging.logError(e, "Executed sql Query: " + statement + "\nRolling Back Transaction");
+            if (log) {
+                Logging.logError(e, "Executed sql Query: " + statement + "\nRolling Back Transaction");
+            }
+
             connection.rollback();
         }
         return new ArrayList<>();

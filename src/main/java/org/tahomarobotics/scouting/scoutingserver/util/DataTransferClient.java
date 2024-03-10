@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 import org.json.JSONObject;
+import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
 
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 
 public class DataTransferClient extends Thread {
 
-    private boolean alive = true;
+
 
     private Socket socket;
 
@@ -25,44 +26,48 @@ public class DataTransferClient extends Thread {
     private BufferedReader reader;
     @Override
     public void run() {
+        long start = System.currentTimeMillis();
+        Logging.logInfo("Starting Data transfer");
+        StringBuilder builder = new StringBuilder();
         try {
 
+            InputStream inputStream = socket.getInputStream();
 
-            // Close the socket
 
-            while (alive) {
-                OutputStream outputStream = socket.getOutputStream();
-                InputStream inputStream = socket.getInputStream();
-                PrintWriter writer = new PrintWriter(outputStream, true);
-
-                // Send a message to the client
-                writer.println("Hello from the server!");
-
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-                StringBuilder builder = new StringBuilder();
-                while (true) {
-                    String line = reader.readLine();
-                    if (line != null) {
-                        builder.append(line);
-                        System.out.println("Revieved data: " + line);
-                    }else  {
-                        break;
-                    }
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            builder = new StringBuilder();
+            while (true) {
+                String line = reader.readLine();
+                if (line != null) {
+                    builder.append(line);
+                }else  {
+                    break;
                 }
-                System.out.println("Storing data: " + builder);
-                DatabaseManager.importJSONObject(new JSONObject(builder.toString()), QRScannerController.activeTable);
-                socket.close();
-                alive = false;
             }
+            Logging.logInfo("storing data, time elapsed: " + (System.currentTimeMillis() - start));
+            DatabaseManager.importJSONObject(new JSONObject(builder.toString()), QRScannerController.activeTable);
+            Logging.logInfo("data is" + builder);
             Logging.logInfo("Closing client Connection");
         } catch (IOException ignored) {
             Logging.logError(ignored, "error imprting data probably");
+            if (!builder.isEmpty()) {
+                Logging.logInfo("Recived some data but failed to recieve all, data saved to logs at " + Constants.BASE_APP_DATA_FILEPATH + "/resources/logs", true);
+                Logging.logInfo("Time Elapsed: " + (System.currentTimeMillis() - start));
+                Logging.logInfo(builder.toString());
+            }
+
+        }finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                Logging.logError(e);
+            }
+
         }
     }
 
     public void kill() {
         Logging.logInfo("killing client");
-        alive = false;
         this.interrupt();
     }
 }

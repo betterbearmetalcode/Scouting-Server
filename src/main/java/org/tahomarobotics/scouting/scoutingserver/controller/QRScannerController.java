@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.*;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.TableChooserDialog;
 
 import java.io.*;
 import java.sql.SQLException;
@@ -143,14 +144,14 @@ public class QRScannerController {
                         data.optInt("Auto Amp", 0),//auto amp
                         data.optInt("Auto Speaker Missed", 0),//auto speaker missed
                         data.optInt("Auto Amp Missed", 0),//auto amp missed
-                        data.optInt("F1", 0),//F1
-                        data.optInt("F2", 0),//F2
-                        data.optInt("F3", 0),//F3
-                        data.optInt("M1", 0),//M1
-                        data.optInt("M2", 0),//M2
-                        data.optInt("M3", 0),//M3
-                        data.optInt("M4", 0),//M4
-                        data.optInt("M5", 0),//M5
+                        data.optInt("a", 0),//F1
+                        data.optInt("b", 0),//F2
+                        data.optInt("c", 0),//F3
+                        data.optInt("1", 0),//M1
+                        data.optInt("2", 0),//M2
+                        data.optInt("3", 0),//M3
+                        data.optInt("4", 0),//M4
+                        data.optInt("5", 0),//M5
                         data.optInt("Tele Speaker", 0),//tele speaker
                         data.optInt("Tele Amp", 0),//tele amp
                         data.optInt("Tele Trap", 0),//tele trap

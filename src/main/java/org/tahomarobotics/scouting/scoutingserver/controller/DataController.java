@@ -1,7 +1,5 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -10,14 +8,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
-import org.tahomarobotics.scouting.scoutingserver.util.TableChooserDialog;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.TableChooserDialog;
 
 import java.awt.*;
 import java.io.File;

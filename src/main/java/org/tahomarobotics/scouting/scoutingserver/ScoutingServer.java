@@ -1,26 +1,22 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.chart.StackedBarChart;
 import javafx.scene.control.*;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import org.tahomarobotics.scouting.scoutingserver.controller.MainController;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.DataTransferClient;
 import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 
 import static org.tahomarobotics.scouting.scoutingserver.Constants.UIValues.*;
@@ -31,7 +27,8 @@ public class ScoutingServer extends Application {
         MAIN_MENU,
         QR_SCANNER,
         DATA_CORRECTION,
-        DATA_SCENE
+        DATA_SCENE,
+        CHARTS
     }
 
     public static SCENES currentScene;
@@ -42,7 +39,7 @@ public class ScoutingServer extends Application {
 
     public static AnchorPane dataHamburgerMenu;
 
-    public static AnchorPane dataCorrectionHamburgerMenu;
+    public static AnchorPane chartHamburgerMenu;
 
     public static Scene dataCorrectionScene;
 
@@ -51,10 +48,13 @@ public class ScoutingServer extends Application {
     public static Scene dataScene;
 
     public static Stage mainStage;
+
+    public static Scene chartsScene;
     static VBox mainRoot;
     static VBox dataCollectionRoot;
     static VBox dataRoot;
 
+    static VBox chartsRoot;
 
 
 
@@ -130,15 +130,26 @@ public class ScoutingServer extends Application {
         FXMLLoader dataHamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
         dataHamburgerMenu = new AnchorPane((AnchorPane) dataHamburgerLoader.load());
 
+
+        FXMLLoader chartLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/chart-scene.fxml").toURI().toURL());
+        chartsScene = new Scene(chartLoader.load());
+
+        FXMLLoader chartsHamburgerMenuLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
+        chartHamburgerMenu = new AnchorPane((AnchorPane) chartsHamburgerMenuLoader.load());
+
         setUpMainScene();
         setUpQRScannerScene();
 
         setUpDataScene();
 
+        setUpChartsScene();
+
         resize();
 
 
     }
+
+
 
 
     public static void main(String[] args) {
@@ -236,6 +247,35 @@ public class ScoutingServer extends Application {
         flowPane.setMinHeight(MIN_MAIN_BUTTON_BAR_HEIGHT);
         flowPane.setMaxHeight(MIN_MAIN_BUTTON_BAR_HEIGHT);
 
+
+
+    }
+
+    private void setUpChartsScene() {
+        double appWidth = getAppWidth();
+        double appHeight = getAppHeight();
+
+        VBox parent = (VBox) chartsScene.getRoot();
+        chartsRoot = parent;
+        SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
+        AnchorPane menuPane = (AnchorPane) splitPane.getItems().get(0);
+        menuPane.getChildren().add(chartHamburgerMenu);
+
+
+        parent.setPrefSize(appWidth, appHeight);
+        splitPane.prefHeightProperty().bind(chartsRoot.heightProperty());
+        splitPane.prefWidthProperty().bind(chartsRoot.widthProperty());
+        menuPane.prefHeightProperty().bind(chartsRoot.heightProperty());
+        chartHamburgerMenu.prefHeightProperty().bind(chartsRoot.heightProperty());
+        chartHamburgerMenu.setMinWidth(MIN_HAMBURGER_MENU_SIZE);
+        chartHamburgerMenu.setMaxWidth(chartHamburgerMenu.getMinWidth());
+        menuPane.prefWidthProperty().bind(chartHamburgerMenu.widthProperty());
+        menuPane.setMinWidth(chartHamburgerMenu.getMinWidth());
+        menuPane.setMaxWidth(chartHamburgerMenu.getMaxWidth());
+
+        VBox mainVbox = (VBox) splitPane.getItems().get(1);
+        mainVbox.prefHeightProperty().bind(chartsRoot.heightProperty());
+        mainVbox.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
 
 
     }

@@ -10,11 +10,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="825.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="825.0" styleClass="root" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController">
    <children>
-      <SplitPane dividerPositions="0.1085972850678733" prefHeight="601.0" prefWidth="826.0">
+      <SplitPane dividerPositions="0.1085972850678733" prefHeight="601.0" prefWidth="826.0"
+      >
         <items>
-          <AnchorPane maxWidth="-Infinity" minHeight="0.0" minWidth="-Infinity" prefHeight="457.0" prefWidth="93.0" />
+          <AnchorPane maxWidth="-Infinity" minHeight="0.0" minWidth="-Infinity" prefHeight="457.0" prefWidth="93.0"/>
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
                   <HBox alignment="CENTER" prefHeight="48.0" prefWidth="785.0">
@@ -32,7 +33,7 @@
                      </children>
                   </HBox>
                   <Separator prefWidth="200.0" />
-                  <ScrollPane prefHeight="482.0" prefWidth="724.0">
+                  <ScrollPane prefHeight="482.0" prefWidth="724.0" stylesheets="@stylesheet.css">
                      <content>
                         <VBox fx:id="imageViewBox" prefHeight="411.0" prefWidth="766.0" />
                      </content>

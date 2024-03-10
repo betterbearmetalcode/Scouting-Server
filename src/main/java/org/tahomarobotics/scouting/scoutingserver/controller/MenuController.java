@@ -11,7 +11,6 @@ import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
-import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 
 import java.awt.*;
 import java.io.File;
@@ -104,7 +103,15 @@ public class MenuController extends VBox {
             }
         }
     }
+    @FXML
+    public void openCharts(ActionEvent event) {
+        if (ScoutingServer.currentScene != ScoutingServer.SCENES.CHARTS) {
 
+
+            ScoutingServer.setCurrentScene(ScoutingServer.chartsScene);
+            ScoutingServer.currentScene = ScoutingServer.SCENES.CHARTS;
+        }
+    }
 
 
 
