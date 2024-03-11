@@ -5,35 +5,27 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTreeCell;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
-import org.controlsfx.control.textfield.AutoCompletionBinding;
-import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.DataValidator;
-import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
-import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
-import org.tahomarobotics.scouting.scoutingserver.util.DuplicateDataException;
-import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
+import org.tahomarobotics.scouting.scoutingserver.*;
+import org.tahomarobotics.scouting.scoutingserver.util.*;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.DataValidationCompetitionChooser;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
-import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.OperationAbortedByUserException;
 
 import java.io.*;
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -62,7 +54,7 @@ public class TabController {
 
     private TreeItem<Label> rootItem;
     private JSONArray eventList;
-    private final ArrayList<Pair<String, String>> otherEvents = new ArrayList<>();
+ //   private final ArrayList<Pair<String, String>> otherEvents = new ArrayList<>();
     private String currentEventCode = "";
     private  boolean editmode = false;
 
@@ -108,37 +100,64 @@ public class TabController {
     }
 
     @FXML
-    public void export(Event e) {
+    public void export(Event event) {
         Logging.logInfo("Exporting");
-        if (!validateData()) {
-            return;//really only need to refresh, but want the data to look "the same" for the user after exporting
-        }
-        FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(new File(Constants.DATABASE_FILEPATH));
-        chooser.setTitle("Select Export Location");
-        chooser.setInitialFileName("export " + new Date(System.currentTimeMillis()).toString().replaceAll(":", "-"));
-        chooser.getExtensionFilters().add(0, new FileChooser.ExtensionFilter("Excel Files", ".xls"));
+        //first gather the nessacary data from tba to export and check to make sure
+        //everything is good and ready before showing the user a save dialog
+        //save dialog should be the last dialog becuase in the user's mind the file is already created when that dialog comes up
 
+
+
+        //gather TBA data
+        //first figure out which competition we are at
         if ("".equals(currentEventCode)) {
+            //if no event code has been selected
             if (selectCompetition()) {
+                //if the selection fails or is canceled etc
                 Logging.logInfo("Export Aborted");
                 return;
             }
         }
+        //gather TBA data and prepare a list of teams who are at the comp
+        Exporter exporter;
+        try {
+            exporter = new Exporter(currentEventCode, tableName);
+        } catch (IOException  | InterruptedException e) {
+            Logging.logError(e, "Failed to construct exporter like while executing API requests, aborting export");
+            return;
+        }catch (OperationAbortedByUserException e) {
+            Logging.logInfo("export cancelled by user because there is no internet");
+            return;
+        } catch (SQLException e) {
+            Logging.logError(e, "Failed to select teams from database, aborting export");
+            return;
+        }
+        //code here  will only run if exporter was successfully initialized
+        ArrayList<ArrayList<String>> data = new ArrayList<>();
+        try {
+            data = exporter.export(exportNotesCheckbox.isSelected());
+        } catch (SQLException e) {
+            Logging.logError(e, "failed to generate exported data");
+        }
+
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(new File(Constants.DATABASE_FILEPATH));
+        chooser.setTitle("Select Export Location");
+        chooser.setInitialFileName("export " + new Date(System.currentTimeMillis()).toString().replaceAll(":", "-"));
+        chooser.getExtensionFilters().add(0, new FileChooser.ExtensionFilter("Excel Files", ".xlsx"));
+
+
         File file = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
         if (file != null) {
             try {
 
-                SpreadsheetUtil.writeToSpreadSheet(databaseData, file, currentEventCode, tableName, exportNotesCheckbox.isSelected());//should add button later if buranik insists to export raw wihtout formulas
+                SpreadsheetUtil.writeArrayToSpreadsheet(data, file);
             } catch (IOException ex) {
-                Logging.logError(ex, "IO error while exporting or fetching TBA Data");
-            } catch (InterruptedException ex) {
-                Logging.logError(ex, "Interrupted Exception while Fetching TBA data ");
+                Logging.logError(ex, "IO error while writing to spreadsheet");
             }
         }else {
             Logging.logInfo("Export Aborted");
         }
-
     }
 
     @FXML
@@ -256,41 +275,14 @@ public class TabController {
 
     }
     public boolean selectCompetition() {
-        Logging.logInfo("Selecting Competiton COde");
-        Dialog<String> dialog = new Dialog<>();
-        TextField autoCompetionField = new TextField();
-        ArrayList<String> options = new ArrayList<>();
-        otherEvents.clear();
-        for (Object o : eventList.toList()) {
-            HashMap<String, String> comp = (HashMap<String, String>) o;
-            otherEvents.add(new Pair<>(comp.get("key"), comp.get("name")));
-            options.add(comp.get("name"));
-        }
-
-        AutoCompletionBinding<String> autoCompletionBinding = TextFields.bindAutoCompletion(autoCompetionField, options);
-        Spinner<Integer> dataValidationThresholdSpinner = new Spinner<>();
-        dataValidationThresholdSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1,10,3));
-        dataValidationThresholdSpinner.setPrefWidth(65);
-        dialog.getDialogPane().setContent(new VBox(new FlowPane(new Label("Enter Competition: "), autoCompetionField), new FlowPane(new Label("High Error Threshold: "), dataValidationThresholdSpinner)));
-        dialog.setTitle("Select Competition For Data Validation");
-        dialog.setHeaderText("");
-        ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == okButton) {
-                Constants.LOW_ERROR_THRESHOLD = dataValidationThresholdSpinner.getValue();
-                return autoCompetionField.getText();
-            }else {
-                return "";
-            }
-        });
-        Optional<String> result = dialog.showAndWait();
+        Logging.logInfo("asking user to select which competition they are at");
+        DataValidationCompetitionChooser chooser = new DataValidationCompetitionChooser();
+        Optional<String> result = chooser.showAndWait();
         AtomicReference<String> selectedEvent = new AtomicReference<>("");
         result.ifPresent(selectedEvent::set);
         String temp = selectedEvent.get();
         if (!Objects.equals(temp, "")) {
-
-            Optional<Pair<String, String>> event = otherEvents.stream().filter(s -> s.getValue().equals(temp)).findFirst();
+            Optional<Pair<String, String>> event = chooser.getOtherEvents().stream().filter(s -> s.getValue().equals(temp)).findFirst();
             AtomicReference<Pair<String,String>> selectedEventCode = new AtomicReference<>(new Pair<>("",""));
             event.ifPresent(selectedEventCode::set);
             currentEventCode = selectedEventCode.get().getKey();
