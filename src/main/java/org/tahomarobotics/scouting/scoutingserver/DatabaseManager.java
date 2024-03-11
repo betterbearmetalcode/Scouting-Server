@@ -3,7 +3,7 @@ package org.tahomarobotics.scouting.scoutingserver;
 import javafx.scene.paint.Color;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.tahomarobotics.scouting.scoutingserver.util.DuplicateDataException;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchRecordComparator;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;

@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.sql.*;
 import java.util.ArrayList;

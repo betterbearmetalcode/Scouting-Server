@@ -2,6 +2,8 @@ package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.util.Pair;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil.SQLDatatype;
 import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
@@ -72,6 +74,19 @@ public class Constants {
         AUTO_COMMENTS,
         TELE_COMMENTS
 
+    }
+    public enum ExportedDataMetrics {
+         LEFT_IN_AUTO,
+         END_GAME_RESULT,
+        END_RAW_DATA,
+        TOTAL_AUTO_NOTES,
+        TOTAL_TELE_NOTES,
+        AUTO_POINTS_ADDED,
+        TELE_POINTS_ADDED,
+        TOTAL_POINTS_ADDED,
+        TOTAL_NOTES_SCORED,
+        TOTAL_NOTES_MISSED,
+        TOTAL_NOTES
     }
 
 
@@ -227,6 +242,14 @@ public class Constants {
             buttonBarHeightProperty.set(UIValues.MIN_MAIN_BUTTON_BAR_HEIGHT);
         }
     }
-
+    public static boolean askQuestion(String question) {
+        Dialog<Boolean> continueDialog = new Dialog<>();
+        continueDialog.setTitle("Continue?");
+        continueDialog.setHeaderText(question);
+        continueDialog.getDialogPane().getButtonTypes().addAll(ButtonType.YES, ButtonType.NO);
+        continueDialog.setResultConverter(buttonType -> {return buttonType == ButtonType.YES;});
+        Optional<Boolean> result = continueDialog.showAndWait();
+        return result.orElse(false);
+    }
 
 }

@@ -2,21 +2,19 @@ package org.tahomarobotics.scouting.scoutingserver.util.UI;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.util.Chart;
-import org.tahomarobotics.scouting.scoutingserver.util.DuplicateDataException;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import static org.tahomarobotics.scouting.scoutingserver.Constants.SQLColumnName.*;
 

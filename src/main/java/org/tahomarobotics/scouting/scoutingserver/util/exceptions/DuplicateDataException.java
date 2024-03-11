@@ -1,4 +1,4 @@
-package org.tahomarobotics.scouting.scoutingserver.util;
+package org.tahomarobotics.scouting.scoutingserver.util.exceptions;
 
 import java.sql.SQLException;
 
