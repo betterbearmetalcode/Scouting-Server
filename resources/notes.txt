@@ -8,7 +8,7 @@ TeleAmpNUm
 teleTrapNUm
 endgamePos
 lost comms
-autoNotes
+lost comms
 TeleNOtes
 
 for a match QR code
@@ -41,7 +41,7 @@ m5
 <tele trap>=whole number
 <tele speaker missed>
 <tele amp missed>
-<auto notes>=string
+<lost comms>=boolean(number
 <tele notes>=string
 
 a "/" will be used as the delimiter
