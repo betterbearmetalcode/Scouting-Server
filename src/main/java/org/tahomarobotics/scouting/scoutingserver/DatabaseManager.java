@@ -41,7 +41,7 @@ public class DatabaseManager {
                     Integer.parseInt(data[17]),//tele trap
                     Integer.parseInt(data[18]),//tele speakermissed
                     Integer.parseInt(data[19]),//tele amp missed
-                    data[20],//auto notes
+                    Integer.parseInt(data[20]),//lost comms
                     data[21]);//tele notes
 
             storeQrRecord(m, tablename);
@@ -116,7 +116,7 @@ public class DatabaseManager {
                         (int) row.get(Constants.SQLColumnName.TELE_TRAP.toString()),
                         (int) row.get(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString()),
                         (int) row.get(Constants.SQLColumnName.TELE_AMP_MISSED.toString()),
-                        (String) row.get(Constants.SQLColumnName.AUTO_COMMENTS.toString()),
+                        (int) row.get(Constants.SQLColumnName.LOST_COMMS.toString()),
                         (String) row.get(Constants.SQLColumnName.TELE_COMMENTS.toString())
 
                 ));
@@ -220,7 +220,7 @@ public class DatabaseManager {
                            int teleTrap,
                            int teleSpeakerMissed,
                            int teleAmpMissed,
-                           String autoNotes,
+                           int lostComms,
                            String teleNotes
     ) {
 
@@ -250,7 +250,7 @@ public class DatabaseManager {
             output.add(new DataPoint(Constants.SQLColumnName.TELE_TRAP.toString(), String.valueOf(teleTrap)));
             output.add(new DataPoint(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString(), String.valueOf(teleSpeakerMissed)));
             output.add(new DataPoint(Constants.SQLColumnName.TELE_AMP_MISSED.toString(), String.valueOf(teleAmpMissed)));
-            output.add(new DataPoint(Constants.SQLColumnName.AUTO_COMMENTS.toString(), "\"" + autoNotes + "\""));
+            output.add(new DataPoint(Constants.SQLColumnName.LOST_COMMS.toString(), String.valueOf(lostComms)));
             output.add(new DataPoint(Constants.SQLColumnName.TELE_COMMENTS.toString(), "\"" + teleNotes + "\""));
 
 
@@ -278,19 +278,8 @@ public class DatabaseManager {
                     teleTrap + ", " +
                     teleSpeakerMissed + ", " +
                     teleAmpMissed + ", " +
-                    "\"" + autoNotes + "\", " +
+                    lostComms + ", " +
                     "\"" + teleNotes + "\"";
-/*            StringBuilder  builder = new StringBuilder();
-            LinkedList<Pair<String, String>> data = getDataAsList();
-            for (Pair<String, String> pair : data) {
-                if (data.peekLast().equals(pair)) {
-                    builder.append(pair.getValue());
-                }else {
-                    builder.append(pair.getValue()).append(", ");
-                }
-
-            }
-            return builder.toString();*/
         }
 
 

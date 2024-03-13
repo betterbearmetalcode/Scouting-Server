@@ -324,7 +324,13 @@ public class TabController {
                 for (DataPoint dataPoint : record.getDataAsList()) {
                     qrBuilder.append(dataPoint.getValue().replaceAll("\"", "")).append(Constants.QR_DATA_DELIMITER);
                 }
-                positionArray.put(qrBuilder.toString().substring(0, qrBuilder.toString().length() - 1));
+                if (qrBuilder.toString().split(Constants.QR_DATA_DELIMITER).length == 21) {
+                    //this happens when there are no notes
+                    System.out.println("Fixing qr string: " + qrBuilder);
+                    qrBuilder.replace(qrBuilder.length() - 1, qrBuilder.length(), "No Comments/");
+                    System.out.println("Fixed String: " + qrBuilder);
+                }
+                positionArray.put(qrBuilder.substring(0, qrBuilder.toString().length() - 1));
             }
             output.put(robotPosition.name(), positionArray);
         }
@@ -404,7 +410,7 @@ public class TabController {
         public void startEdit() {
             if (this.getTreeItem().isLeaf()) {
                 String name = this.getTreeItem().getValue().getText().split(":")[0];
-                if ((Objects.equals(name, Constants.SQLColumnName.ALLIANCE_POS.toString().replaceAll("_", " ").toLowerCase())) || (Objects.equals(name, Constants.SQLColumnName.TEAM_NUM.toString().replaceAll("_", " ").toLowerCase())) ||(Objects.equals(name, Constants.SQLColumnName.MATCH_NUM.toString().replaceAll("_", " ").toLowerCase())) ||(Objects.equals(name, Constants.SQLColumnName.AUTO_COMMENTS.toString().replaceAll("_", " ").toLowerCase())) || (Objects.equals(name, Constants.SQLColumnName.TELE_COMMENTS.toString().replaceAll("_", " ").toLowerCase())) ) {
+                if ((Objects.equals(name, Constants.SQLColumnName.ALLIANCE_POS.toString().replaceAll("_", " ").toLowerCase())) || (Objects.equals(name, Constants.SQLColumnName.TEAM_NUM.toString().replaceAll("_", " ").toLowerCase())) ||(Objects.equals(name, Constants.SQLColumnName.MATCH_NUM.toString().replaceAll("_", " ").toLowerCase()))  || (Objects.equals(name, Constants.SQLColumnName.TELE_COMMENTS.toString().replaceAll("_", " ").toLowerCase())) ) {
                     //then this is a comment
                     cancelEdit();
                     Logging.logInfo("This data cannot be edited", true);

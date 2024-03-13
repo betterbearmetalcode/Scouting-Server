@@ -94,31 +94,6 @@ public class QRScannerController {
     //consider this https://www.tutorialspoint.com/java_mysql/java_mysql_quick_guide.html
     @FXML
     public void loadCSV(ActionEvent event) {
-        //for for qr scanner
-       /* DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Select Import Directory");
-
-        File defaultDirectory = new File(System.getProperty("user.home"));
-        chooser.setInitialDirectory(defaultDirectory);
-
-        File dir = chooser.showDialog(ScoutingServer.mainStage);
-        File[] arr = dir.listFiles(pathname -> (pathname.getName().toLowerCase().endsWith(".png") || pathname.getName().toLowerCase().endsWith(".jpg")));
-        if (arr != null) {
-            for (File file : arr) {
-                try {
-                    String data = readStoredImage(Constants.QR_IAMGE_QUERY_LOCATION + file.getName(), "\"" + activeTable + "\"");
-                    logScan(true, data);
-                } catch (IOException e) {
-                    Logging.logError(e);
-                } catch (NotFoundException e) {
-                    Logging.logError(e, "Failed to scan QR Code: " + file.getName());
-                    logScan(false, "");
-                }catch (JSONException e) {
-                    Logging.logError(e, "Failed to read JSON: ");
-                }
-            }
-        }*/
-
         FileChooser chooser = new FileChooser();
         File selectedFile = chooser.showOpenDialog(ScoutingServer.mainStage.getOwner());
         try {
@@ -157,7 +132,7 @@ public class QRScannerController {
                         data.optInt("Tele Trap", 0),//tele trap
                         data.optInt("Tele Speaker Missed", 0),//tele speakermissed
                         data.optInt("Tele Amp missed", 0),//tele amp missed
-                        data.optString("Auto Comments", "No Comments"),//auto notes
+                        data.optInt("Lost Comms", 0),//auto notes
                         data.optString("Tele Comments", "No Comments"));//tele notes
                 DatabaseManager.storeQrRecord(m, activeTable);
             }
