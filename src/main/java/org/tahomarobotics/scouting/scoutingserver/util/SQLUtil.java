@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.sql.*;
@@ -36,6 +37,10 @@ public class SQLUtil {
     }
 
     public static void execNoReturn(String statement, Object[] params, boolean log) throws SQLException, IllegalArgumentException, DuplicateDataException {
+        execNoReturn(statement, params, log, null);
+    }
+
+    public static void execNoReturn(String statement, Object[] params, boolean log, DatabaseManager.QRRecord record) throws SQLException, IllegalArgumentException, DuplicateDataException {
         try {
             PreparedStatement toExec = connection.prepareStatement(statement);
             Integer count = 1;
@@ -52,7 +57,7 @@ public class SQLUtil {
 
         } catch (SQLException e){
             if (e.getMessage().startsWith("[SQLITE_CONSTRAINT_PRIMARYKEY]")) {
-                throw new DuplicateDataException("Duplicate Data Detected, Skipping", e);
+                handleDuplicateData(statement, record);
 
             }else {
                 connection.rollback();
@@ -69,6 +74,7 @@ public class SQLUtil {
     }
 
     public static ArrayList<HashMap<String, Object>> exec(String statement, Object[] params, boolean log) throws SQLException, IllegalArgumentException {
+
         try {
             PreparedStatement toExec = connection.prepareStatement(statement);
             Integer count = 1;
@@ -144,6 +150,29 @@ public class SQLUtil {
 
         }
         return output;
+    }
+
+
+    private static void handleDuplicateData(String statement, DatabaseManager.QRRecord newRecord) throws DuplicateDataException {
+        String[] tokens = statement.split("\\(")[1].replaceAll(" ", "").split(",");
+        String matchNum = tokens[0];
+        String teamNum = tokens[1];
+        String tableName = statement.split("INTO ")[1].split("\"")[1].replaceAll("\"", "");
+        //first check if the new and old data is the same, if it is, then do nothing, if its different, then throw a duolicate data exception with both the new and old records
+        try {
+            ArrayList<HashMap<String, Object>> oldMap = SQLUtil.exec("SELECT * FROM \"" + tableName + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=? AND " + Constants.SQLColumnName.MATCH_NUM + "=?", new Object[]{teamNum, matchNum}, true );
+            if (newRecord != null) {
+                //record should not be null if called by method storing data
+                DatabaseManager.QRRecord oldRecord = DatabaseManager.getRecord(oldMap.get(0));
+                if (!newRecord.equals(oldRecord)) {
+                    //if they are not the same then we need to throw a duplicate data exception
+                    throw new DuplicateDataException("Duplicate Data Detected", new SQLException(statement), oldRecord, newRecord);
+                }
+            }
+        } catch (SQLException e) {
+            Logging.logError(e);
+            //at this point whatever, just skip it
+        }
     }
 
 }

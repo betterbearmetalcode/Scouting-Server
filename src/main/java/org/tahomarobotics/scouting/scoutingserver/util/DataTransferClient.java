@@ -4,6 +4,7 @@ import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -45,11 +46,13 @@ public class DataTransferClient extends Thread {
                 }
             }
             Logging.logInfo("storing data, time elapsed: " + (System.currentTimeMillis() - start));
-            DatabaseManager.importJSONObject(new JSONObject(builder.toString()), QRScannerController.activeTable);
+            ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONObject(new JSONObject(builder.toString()), QRScannerController.activeTable);
+            QRScannerController.handleDuplicates(duplicates);
+
             Logging.logInfo("data is" + builder);
             Logging.logInfo("Closing client Connection");
-        } catch (IOException ignored) {
-            Logging.logError(ignored, "error imprting data probably");
+        } catch (IOException e) {
+            Logging.logError(e, "error imprting data probably");
             if (!builder.isEmpty()) {
                 Logging.logInfo("Recived some data but failed to recieve all, data saved to logs at " + Constants.BASE_APP_DATA_FILEPATH + "/resources/logs", true);
                 Logging.logInfo("Time Elapsed: " + (System.currentTimeMillis() - start));

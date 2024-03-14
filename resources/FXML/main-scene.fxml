@@ -44,7 +44,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="root" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="659.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.MainController">
+<VBox fx:id="root" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="659.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.DebugController">
    <children>
       <SplitPane dividerPositions="0.2822681704260651" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="665.0" prefWidth="640.0">
         <items>

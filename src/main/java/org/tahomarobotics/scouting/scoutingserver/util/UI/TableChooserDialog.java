@@ -28,8 +28,10 @@ public class TableChooserDialog extends Dialog<String> {
             String oldValue = event.getSource().getItems().get(event.getIndex());
             if (!Objects.equals(oldValue, event.getNewValue())) {
                 try {
-                    listView.getItems().set(event.getIndex(), event.getNewValue());
-                    SQLUtil.execNoReturn("ALTER TABLE \"" + oldValue + "\" RENAME TO \"" + event.getNewValue() + "\"");
+                    String processedNewValue = event.getNewValue().replaceAll("'", "");//we can't use ' in names as it breaks sql
+                    SQLUtil.execNoReturn("ALTER TABLE \"" + oldValue + "\" RENAME TO \"" + processedNewValue + "\"");
+                    listView.getItems().set(event.getIndex(), processedNewValue);
+
                 } catch (SQLException | DuplicateDataException e) {
                     Logging.logError(e);
                 }
@@ -72,14 +74,15 @@ public class TableChooserDialog extends Dialog<String> {
         newCompetitionButton.setOnAction(event -> {
             try {
                 String name = "New Database";
-                listView.getItems().add(name);
                 SQLUtil.addTableIfNotExists(name, SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
+                listView.getItems().add(name);
+
             } catch (SQLException | DuplicateDataException e) {
                 Logging.logError(e);
             }
         });
-        Button duplicateButton = new Button("Clear Database");
-        duplicateButton.setOnAction(event -> {
+        Button clearDatabaseButton = new Button("Clear Database");
+        clearDatabaseButton.setOnAction(event -> {
             try {
                 SQLUtil.execNoReturn("DELETE FROM \"" + listView.getSelectionModel().getSelectedItem() + "\"");
             } catch (SQLException | DuplicateDataException e) {
@@ -95,7 +98,7 @@ public class TableChooserDialog extends Dialog<String> {
                 Logging.logError(e);
             }
         });
-        FlowPane pane = new FlowPane(newCompetitionButton, duplicateButton, deleteButton);
+        FlowPane pane = new FlowPane(newCompetitionButton, clearDatabaseButton, deleteButton);
         return new VBox(listView, pane);
     }
 
