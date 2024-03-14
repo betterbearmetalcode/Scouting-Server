@@ -60,7 +60,7 @@ public class ServerUtil {
                     try {
                         Socket clientSocket = serverSocket.accept();
 
-                        Logging.logInfo("Connection from Client", true);
+                        Logging.logInfo("Connection from Client", false);
                         clients.add(new DataTransferClient(clientSocket));
                     } catch (IOException e) {
                         if (serverThreadRunning) {

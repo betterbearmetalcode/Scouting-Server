@@ -1,6 +1,5 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
-import com.google.zxing.NotFoundException;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,19 +7,23 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
 import org.json.CDL;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.*;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.DuplicateDataResolvedDialog;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.TableChooserDialog;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.io.*;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 
 public class QRScannerController {
@@ -71,11 +74,13 @@ public class QRScannerController {
             chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
             List<File> selectedFile = chooser.showOpenMultipleDialog(ScoutingServer.mainStage.getOwner());
             if (selectedFile != null) {
+
                 for (File file : selectedFile) {
                     if (file.exists()) {
                         FileInputStream inputStream = new FileInputStream(file);
                         JSONObject object = new JSONObject(new String(inputStream.readAllBytes()));
-                        DatabaseManager.importJSONObject(object, activeTable);
+                        ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONObject(object, activeTable);
+                        handleDuplicates(duplicates);
                         inputStream.close();
                     }
 
@@ -94,39 +99,17 @@ public class QRScannerController {
     //consider this https://www.tutorialspoint.com/java_mysql/java_mysql_quick_guide.html
     @FXML
     public void loadCSV(ActionEvent event) {
-        //for for qr scanner
-       /* DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Select Import Directory");
-
-        File defaultDirectory = new File(System.getProperty("user.home"));
-        chooser.setInitialDirectory(defaultDirectory);
-
-        File dir = chooser.showDialog(ScoutingServer.mainStage);
-        File[] arr = dir.listFiles(pathname -> (pathname.getName().toLowerCase().endsWith(".png") || pathname.getName().toLowerCase().endsWith(".jpg")));
-        if (arr != null) {
-            for (File file : arr) {
-                try {
-                    String data = readStoredImage(Constants.QR_IAMGE_QUERY_LOCATION + file.getName(), "\"" + activeTable + "\"");
-                    logScan(true, data);
-                } catch (IOException e) {
-                    Logging.logError(e);
-                } catch (NotFoundException e) {
-                    Logging.logError(e, "Failed to scan QR Code: " + file.getName());
-                    logScan(false, "");
-                }catch (JSONException e) {
-                    Logging.logError(e, "Failed to read JSON: ");
-                }
-            }
-        }*/
-
         FileChooser chooser = new FileChooser();
         File selectedFile = chooser.showOpenDialog(ScoutingServer.mainStage.getOwner());
         try {
+            if (selectedFile == null) {
+                return;
+            }
             FileInputStream inputStream = new FileInputStream(selectedFile);
             String csv = new String(inputStream.readAllBytes());
             csv = csv.replaceAll("\r", "");
             JSONArray result = CDL.toJSONArray(csv);
-
+            ArrayList<DuplicateDataException> duplicates = new ArrayList<>();
             for (Object o : result) {
                 JSONObject data = (JSONObject) o;
                 try {
@@ -157,27 +140,23 @@ public class QRScannerController {
                         data.optInt("Tele Trap", 0),//tele trap
                         data.optInt("Tele Speaker Missed", 0),//tele speakermissed
                         data.optInt("Tele Amp missed", 0),//tele amp missed
-                        data.optString("Auto Comments", "No Comments"),//auto notes
+                        data.optInt("Lost Comms", 0),//auto notes
                         data.optString("Tele Comments", "No Comments"));//tele notes
-                DatabaseManager.storeQrRecord(m, activeTable);
+                try {
+                    DatabaseManager.storeQrRecord(m, activeTable);
+                } catch (DuplicateDataException e) {
+                    duplicates.add(e);
+                }
             }
+            handleDuplicates(duplicates);
 
             inputStream.close();
         } catch (IOException e) {
             Logging.logError(e);
         }
-
-
     }
 
-    public static String readStoredImage(String fp, String tableName) throws IOException, NotFoundException {
-        //if we have got this far in the code, than the iamge has succesfully be written to the disk
 
-        String qrData = QRCodeUtil.readQRCode(fp);
-        System.out.println("Scanner QR Code: " + qrData);
-        DatabaseManager.storeRawQRData( qrData, tableName);
-        return qrData;
-    }
 
     @FXML
     public void toggleServerStatus(ActionEvent event) {
@@ -213,6 +192,36 @@ public class QRScannerController {
             l.setTextFill(color);
             imageViewBox.getChildren().add(l);
         });
+
+    }
+
+    public static void handleDuplicates(ArrayList<DuplicateDataException> duplicates) {
+        if (duplicates.isEmpty()) {
+            return;
+        }
+        Platform.runLater(() -> {
+            //this method has to use a duplicate data handler to go through all the duplicates and generate a list of records which should be added
+            //then for each of these records, all the ones in the database that have the same match and team number are deleted and re added
+            DuplicateDataResolvedDialog dialog = new DuplicateDataResolvedDialog(duplicates);
+            Optional<ArrayList<DatabaseManager.QRRecord>> recordToAdd = dialog.showAndWait();
+            recordToAdd.ifPresent(qrRecords -> {
+                for (DatabaseManager.QRRecord qrRecord : qrRecords) {
+                    //first delete the old record from the database that caused the duplicate then add the one we want to add
+                    try {
+                        SQLUtil.execNoReturn("DELETE FROM \"" + activeTable + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=? AND " + Constants.SQLColumnName.MATCH_NUM + "=?", new Object[]{String.valueOf(qrRecord.teamNumber()), String.valueOf(qrRecord.matchNumber())}, true);
+                    } catch (SQLException | DuplicateDataException e) {
+                        Logging.logError(e);
+                    }
+                    try {
+                        DatabaseManager.storeQrRecord(qrRecord, activeTable);
+                    } catch (DuplicateDataException e) {
+                        Logging.logInfo("Gosh dang it, got duplicate data again after trying to resolve duplicate data, just giving up now", true);
+                    }
+
+                }
+            });
+        });
+
 
     }
 

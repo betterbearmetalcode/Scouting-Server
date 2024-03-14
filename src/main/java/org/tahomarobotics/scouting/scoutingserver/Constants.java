@@ -71,7 +71,7 @@ public class Constants {
         TELE_SPEAKER_MISSED,
         TELE_AMP_MISSED,
 
-        AUTO_COMMENTS,
+        LOST_COMMS,
         TELE_COMMENTS
 
     }
@@ -111,7 +111,7 @@ public class Constants {
             new ColumnType(SQLColumnName.TELE_TRAP, SQLDatatype.INTEGER),
             new ColumnType(SQLColumnName.TELE_SPEAKER_MISSED, SQLDatatype.INTEGER),
             new ColumnType(SQLColumnName.TELE_AMP_MISSED, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.AUTO_COMMENTS, SQLDatatype.TEXT),
+            new ColumnType(SQLColumnName.LOST_COMMS, SQLDatatype.INTEGER),
             new ColumnType(SQLColumnName.TELE_COMMENTS, SQLDatatype.TEXT)
 
     ));

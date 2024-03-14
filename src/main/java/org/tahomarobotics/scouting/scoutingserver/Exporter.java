@@ -90,11 +90,11 @@ public class Exporter {
                 if (teamsToSkip.contains(teamNum)) {
                     continue;
                 }
-                ArrayList<HashMap<String, Object>> teamsMatches = SQLUtil.exec("SELECT " + Constants.SQLColumnName.AUTO_COMMENTS + ", " + Constants.SQLColumnName.TELE_COMMENTS + " FROM \"" + tableName + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{String.valueOf(teamNum)}, false);
+                ArrayList<HashMap<String, Object>> teamsMatches = SQLUtil.exec("SELECT " + Constants.SQLColumnName.TELE_COMMENTS + " FROM \"" + tableName + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{String.valueOf(teamNum)}, false);
                 ArrayList<String> row = new ArrayList<>();
                 row.add(String.valueOf(teamNum));
                 for (HashMap<String, Object> teamsMatch : teamsMatches) {
-                    row.add(teamsMatch.get(Constants.SQLColumnName.AUTO_COMMENTS.toString()).toString().replace("No Comments", "") + ":" + teamsMatch.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().replace("No Comments", ""));
+                    row.add(teamsMatch.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().replace("No Comments", ""));
                 }
                 output.add(row);
             }

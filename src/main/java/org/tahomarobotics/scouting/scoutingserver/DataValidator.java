@@ -96,7 +96,7 @@ public class DataValidator {
                     try {
                         switch (Constants.SQLColumnName.valueOf(dataPoint.getName())) {
 
-                            case MATCH_NUM, TEAM_NUM, ALLIANCE_POS,AUTO_COMMENTS, TELE_COMMENTS -> {
+                            case MATCH_NUM, TEAM_NUM, ALLIANCE_POS, TELE_COMMENTS -> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), 0));
                                 break;
                             }
@@ -125,7 +125,7 @@ public class DataValidator {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (trap == (robotPositon.record().teleTrap() > 0))?(0):(3)));
                                 break;
                             }
-                            case TELE_SPEAKER_MISSED, TELE_AMP_MISSED, AUTO_SPEAKER_MISSED, AUTO_AMP_MISSED, F1, F2, F3, M1, M2, M3, M4, M5 -> {
+                            case TELE_SPEAKER_MISSED, TELE_AMP_MISSED, AUTO_SPEAKER_MISSED, AUTO_AMP_MISSED, F1, F2, F3, M1, M2, M3, M4, M5, LOST_COMMS-> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
                                 break;
                             }

@@ -3,6 +3,7 @@ package org.tahomarobotics.scouting.scoutingserver;
 import javafx.scene.paint.Color;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.DuplicateDataResolvedDialog;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchRecordComparator;
@@ -18,7 +19,7 @@ import java.util.*;
 public class DatabaseManager {
 
 
-    public static void storeRawQRData(String dataRaw, String tablename) throws IOException {
+    public static void storeRawQRData(String dataRaw, String tablename) throws IOException, DuplicateDataException {
         try {
             String[] data = dataRaw.split(Constants.QR_DATA_DELIMITER);
             QRRecord m = new QRRecord(Integer.parseInt(data[0]),//match num
@@ -41,7 +42,7 @@ public class DatabaseManager {
                     Integer.parseInt(data[17]),//tele trap
                     Integer.parseInt(data[18]),//tele speakermissed
                     Integer.parseInt(data[19]),//tele amp missed
-                    data[20],//auto notes
+                    Integer.parseInt(data[20]),//lost comms
                     data[21]);//tele notes
 
             storeQrRecord(m, tablename);
@@ -51,34 +52,37 @@ public class DatabaseManager {
         }
     }
 
-    public static void importJSONObject(JSONObject object, String activeTable) {
-        object.keys().forEachRemaining(s -> {
+    public static ArrayList<DuplicateDataException> importJSONObject(JSONObject object, String activeTable) {
+        ArrayList<DuplicateDataException> duplicates = new ArrayList<>();
+        for (String s : object.keySet()) {
             JSONArray arr = object.getJSONArray(s);
+
             for (Object o : arr.toList()) {
                 String string = o.toString();
                 try {
                     DatabaseManager.storeRawQRData(string, activeTable);
                 } catch (IOException e) {
                     Logging.logError(e, "failed to import qr string");
+                } catch (DuplicateDataException e) {
+                    duplicates.add(e);
                 }
             }
-        });
+        }
+        return duplicates;
     }
 
-    public static void storeQrRecord(QRRecord record, String tablename) {
+    //the king of storage methods, all the data storage methods eventually call this one, it is the final leg of the chain
+    public static void storeQrRecord(QRRecord record, String tablename) throws DuplicateDataException {
         try {
-            SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + record.getDataForSQL() + ")", false);
+            SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + record.getDataForSQL() + ")",new Object[]{}, false, record);
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ record, Color.GREEN);
         } catch (SQLException e) {
             Logging.logError(e);
-        } catch (DuplicateDataException e) {
-            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Duplicate Data Detected, skipping", Color.ORANGE);
-
         }
 
     }
 
-    public static void storeRawQRData(JSONObject dataJSON, String tablename) throws IOException {
+    public static void storeRawQRData(JSONObject dataJSON, String tablename) throws IOException, DuplicateDataException {
         storeRawQRData(dataJSON.getString( (String) Arrays.stream(dataJSON.keySet().toArray()).toList().get(0)), tablename);
 
     }
@@ -94,37 +98,39 @@ public class DatabaseManager {
             ArrayList<HashMap<String, Object>> data = SQLUtil.exec(customStatement, params, log);
             for (HashMap<String, Object> row : data) {
                 //for each row in the sql database
-                output.add(new QRRecord(
-                        (int) row.get(Constants.SQLColumnName.MATCH_NUM.toString()),
-                        (int) row.get(Constants.SQLColumnName.TEAM_NUM.toString()),
-                        getRobotPositionFromNum((int) row.get(Constants.SQLColumnName.ALLIANCE_POS.toString())),
-                        (int) row.get(Constants.SQLColumnName.AUTO_SPEAKER.toString()),
-                        (int) row.get(Constants.SQLColumnName.AUTO_AMP.toString()),
-                        (int) row.get(Constants.SQLColumnName.AUTO_SPEAKER_MISSED.toString()),
-                        (int) row.get(Constants.SQLColumnName.AUTO_AMP_MISSED.toString()),
-                        (int) row.get(Constants.SQLColumnName.F1.toString()),
-                        (int) row.get(Constants.SQLColumnName.F2.toString()),
-                        (int) row.get(Constants.SQLColumnName.F3.toString()),
-                        (int) row.get(Constants.SQLColumnName.M1.toString()),
-                        (int) row.get(Constants.SQLColumnName.M2.toString()),
-                        (int) row.get(Constants.SQLColumnName.M3.toString()),
-                        (int) row.get(Constants.SQLColumnName.M4.toString()),
-                        (int) row.get(Constants.SQLColumnName.M5.toString()),
-
-                        (int) row.get(Constants.SQLColumnName.TELE_SPEAKER.toString()),
-                        (int) row.get(Constants.SQLColumnName.TELE_AMP.toString()),
-                        (int) row.get(Constants.SQLColumnName.TELE_TRAP.toString()),
-                        (int) row.get(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString()),
-                        (int) row.get(Constants.SQLColumnName.TELE_AMP_MISSED.toString()),
-                        (String) row.get(Constants.SQLColumnName.AUTO_COMMENTS.toString()),
-                        (String) row.get(Constants.SQLColumnName.TELE_COMMENTS.toString())
-
-                ));
+                output.add(getRecord(row));
             }
         } catch (SQLException e) {
             Logging.logError(e, "failed to read database: " + tableName);
         }
         return output;
+    }
+
+    public static QRRecord getRecord(HashMap<String, Object> rawData) {
+        return new QRRecord(
+                (int) rawData.get(Constants.SQLColumnName.MATCH_NUM.toString()),
+                (int) rawData.get(Constants.SQLColumnName.TEAM_NUM.toString()),
+                getRobotPositionFromNum((int) rawData.get(Constants.SQLColumnName.ALLIANCE_POS.toString())),
+                (int) rawData.get(Constants.SQLColumnName.AUTO_SPEAKER.toString()),
+                (int) rawData.get(Constants.SQLColumnName.AUTO_AMP.toString()),
+                (int) rawData.get(Constants.SQLColumnName.AUTO_SPEAKER_MISSED.toString()),
+                (int) rawData.get(Constants.SQLColumnName.AUTO_AMP_MISSED.toString()),
+                (int) rawData.get(Constants.SQLColumnName.F1.toString()),
+                (int) rawData.get(Constants.SQLColumnName.F2.toString()),
+                (int) rawData.get(Constants.SQLColumnName.F3.toString()),
+                (int) rawData.get(Constants.SQLColumnName.M1.toString()),
+                (int) rawData.get(Constants.SQLColumnName.M2.toString()),
+                (int) rawData.get(Constants.SQLColumnName.M3.toString()),
+                (int) rawData.get(Constants.SQLColumnName.M4.toString()),
+                (int) rawData.get(Constants.SQLColumnName.M5.toString()),
+
+                (int) rawData.get(Constants.SQLColumnName.TELE_SPEAKER.toString()),
+                (int) rawData.get(Constants.SQLColumnName.TELE_AMP.toString()),
+                (int) rawData.get(Constants.SQLColumnName.TELE_TRAP.toString()),
+                (int) rawData.get(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString()),
+                (int) rawData.get(Constants.SQLColumnName.TELE_AMP_MISSED.toString()),
+                (int) rawData.get(Constants.SQLColumnName.LOST_COMMS.toString()),
+                (String) rawData.get(Constants.SQLColumnName.TELE_COMMENTS.toString()));
     }
 
 
@@ -220,7 +226,7 @@ public class DatabaseManager {
                            int teleTrap,
                            int teleSpeakerMissed,
                            int teleAmpMissed,
-                           String autoNotes,
+                           int lostComms,
                            String teleNotes
     ) {
 
@@ -250,7 +256,7 @@ public class DatabaseManager {
             output.add(new DataPoint(Constants.SQLColumnName.TELE_TRAP.toString(), String.valueOf(teleTrap)));
             output.add(new DataPoint(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString(), String.valueOf(teleSpeakerMissed)));
             output.add(new DataPoint(Constants.SQLColumnName.TELE_AMP_MISSED.toString(), String.valueOf(teleAmpMissed)));
-            output.add(new DataPoint(Constants.SQLColumnName.AUTO_COMMENTS.toString(), "\"" + autoNotes + "\""));
+            output.add(new DataPoint(Constants.SQLColumnName.LOST_COMMS.toString(), String.valueOf(lostComms)));
             output.add(new DataPoint(Constants.SQLColumnName.TELE_COMMENTS.toString(), "\"" + teleNotes + "\""));
 
 
@@ -278,19 +284,8 @@ public class DatabaseManager {
                     teleTrap + ", " +
                     teleSpeakerMissed + ", " +
                     teleAmpMissed + ", " +
-                    "\"" + autoNotes + "\", " +
+                    lostComms + ", " +
                     "\"" + teleNotes + "\"";
-/*            StringBuilder  builder = new StringBuilder();
-            LinkedList<Pair<String, String>> data = getDataAsList();
-            for (Pair<String, String> pair : data) {
-                if (data.peekLast().equals(pair)) {
-                    builder.append(pair.getValue());
-                }else {
-                    builder.append(pair.getValue()).append(", ");
-                }
-
-            }
-            return builder.toString();*/
         }
 
 
