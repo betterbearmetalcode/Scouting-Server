@@ -8,7 +8,6 @@
       <Button fx:id="dataButton" layoutX="11.0" layoutY="119.0" mnemonicParsing="false" onAction="#openDataScene" text="Database Managment" />
       <Button fx:id="dataCollectionButton" layoutX="29.0" layoutY="61.0" mnemonicParsing="false" onAction="#enterDataCollectionScene" text="Data Collection" />
       <Button fx:id="mainMenuButton" layoutX="57.0" layoutY="14.0" mnemonicParsing="false" onAction="#backToMainMenu" text="Help" />
-      <Button layoutX="11.0" layoutY="333.0" mnemonicParsing="false" onAction="#developerToolsButton" text="Open Developer tools" />
       <Button layoutX="41.0" layoutY="165.0" mnemonicParsing="false" onAction="#openCharts" text="Charts" />
    </children>
 </AnchorPane>

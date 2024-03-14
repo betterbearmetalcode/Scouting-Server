@@ -56,7 +56,7 @@ public class DuplicateDataResolvedDialog extends Dialog<ArrayList<DatabaseManage
             CheckBox checkBox = new CheckBox("Overwrite?");
             checkBox.setSelected(true);
             checkBoxes.add(checkBox);
-            HBox box = new HBox(getTree(duplicate), checkBox);
+            HBox box = new HBox(getTree(duplicate),new VBox(checkBox, new Label("Match: " + duplicate.getOldData().matchNumber()), new Label("Team: " + duplicate.getOldData().teamNumber()), new Label("Position" + duplicate.getOldData().position().name())) );
             box.setPrefHeight(125);
            vbox.getChildren().add(box);
         }

@@ -199,26 +199,29 @@ public class QRScannerController {
         if (duplicates.isEmpty()) {
             return;
         }
-        //this method has to use a duplicate data handler to go through all the duplicates and generate a list of records which should be added
-        //then for each of these records, all the ones in the database that have the same match and team number are deleted and re added
-        DuplicateDataResolvedDialog dialog = new DuplicateDataResolvedDialog(duplicates);
-        Optional<ArrayList<DatabaseManager.QRRecord>> recordToAdd = dialog.showAndWait();
-        recordToAdd.ifPresent(qrRecords -> {
-            for (DatabaseManager.QRRecord qrRecord : qrRecords) {
-                //first delete the old record from the database that caused the duplicate then add the one we want to add
-                try {
-                    SQLUtil.execNoReturn("DELETE FROM \"" + activeTable + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=? AND " + Constants.SQLColumnName.MATCH_NUM + "=?", new Object[]{String.valueOf(qrRecord.teamNumber()), String.valueOf(qrRecord.matchNumber())}, true);
-                } catch (SQLException | DuplicateDataException e) {
-                    Logging.logError(e);
-                }
-                try {
-                    DatabaseManager.storeQrRecord(qrRecord, activeTable);
-                } catch (DuplicateDataException e) {
-                    Logging.logInfo("Gosh dang it, got duplicate data again after trying to resolve duplicate data, just giving up now", true);
-                }
+        Platform.runLater(() -> {
+            //this method has to use a duplicate data handler to go through all the duplicates and generate a list of records which should be added
+            //then for each of these records, all the ones in the database that have the same match and team number are deleted and re added
+            DuplicateDataResolvedDialog dialog = new DuplicateDataResolvedDialog(duplicates);
+            Optional<ArrayList<DatabaseManager.QRRecord>> recordToAdd = dialog.showAndWait();
+            recordToAdd.ifPresent(qrRecords -> {
+                for (DatabaseManager.QRRecord qrRecord : qrRecords) {
+                    //first delete the old record from the database that caused the duplicate then add the one we want to add
+                    try {
+                        SQLUtil.execNoReturn("DELETE FROM \"" + activeTable + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=? AND " + Constants.SQLColumnName.MATCH_NUM + "=?", new Object[]{String.valueOf(qrRecord.teamNumber()), String.valueOf(qrRecord.matchNumber())}, true);
+                    } catch (SQLException | DuplicateDataException e) {
+                        Logging.logError(e);
+                    }
+                    try {
+                        DatabaseManager.storeQrRecord(qrRecord, activeTable);
+                    } catch (DuplicateDataException e) {
+                        Logging.logInfo("Gosh dang it, got duplicate data again after trying to resolve duplicate data, just giving up now", true);
+                    }
 
-            }
+                }
+            });
         });
+
 
     }
 

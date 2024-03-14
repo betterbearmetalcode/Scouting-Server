@@ -55,17 +55,9 @@ public class ChartsController implements Initializable {
 
                 tab.setId(chart.title);
                 tab.setText(chart.title);
-                javafx.scene.control.Button udpateButton = new Button("Update");
-                tab.setContent(new VBox(chart, udpateButton));
+                tab.setContent(new VBox(chart));
                 chart.prefHeightProperty().bind(Constants.UIValues.appHeightProperty());
                 try {
-                    udpateButton.setOnAction(event1 -> {
-                        try {
-                            chart.update();
-                        } catch (SQLException e) {
-                            Logging.logError(e);
-                        }
-                    });
                     tabPane.setTabMaxHeight(Toolkit.getDefaultToolkit().getScreenSize().height);
                     tab.setClosable(true);
                     chart.update();
