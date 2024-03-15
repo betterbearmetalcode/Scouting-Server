@@ -320,7 +320,7 @@ public class TabController {
             LinkedList<DatabaseManager.QRRecord> data = DatabaseManager.readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"" + " WHERE "  + Constants.SQLColumnName.ALLIANCE_POS + "=?", new Object[]{robotPosition.ordinal()}, false);
             JSONArray positionArray = new JSONArray();
             for (DatabaseManager.QRRecord record : data) {
-                StringBuilder qrBuilder = new StringBuilder();
+                /*StringBuilder qrBuilder = new StringBuilder();
                 for (DataPoint dataPoint : record.getDataAsList()) {
                     qrBuilder.append(dataPoint.getValue().replaceAll("\"", "")).append(Constants.QR_DATA_DELIMITER);
                 }
@@ -330,7 +330,8 @@ public class TabController {
                     qrBuilder.replace(qrBuilder.length() - 1, qrBuilder.length(), "No Comments/");
                     System.out.println("Fixed String: " + qrBuilder);
                 }
-                positionArray.put(qrBuilder.substring(0, qrBuilder.toString().length() - 1));
+                positionArray.put(qrBuilder.substring(0, qrBuilder.toString().length() - 1));*/
+                positionArray.put(record.getQRString());
             }
             output.put(robotPosition.name(), positionArray);
         }

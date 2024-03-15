@@ -87,6 +87,11 @@ public class ScoutingServer extends Application {
             testImageFilepath.mkdirs();
         }
 
+        File duplicateDataFilepath = new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/duplicateDataBackups");
+        if (!duplicateDataFilepath.exists()) {
+            duplicateDataFilepath.mkdirs();
+        }
+
         //set up database
         try {
             SQLUtil.initialize(Constants.DATABASE_FILEPATH + Constants.SQL_DATABASE_NAME);

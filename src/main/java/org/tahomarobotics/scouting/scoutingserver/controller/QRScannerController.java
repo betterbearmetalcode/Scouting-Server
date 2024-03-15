@@ -7,7 +7,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import javafx.util.Pair;
 import org.json.CDL;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,7 +22,6 @@ import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 
 public class QRScannerController {
@@ -72,25 +70,28 @@ public class QRScannerController {
             chooser.setTitle("Select JSON File");
             chooser.setInitialDirectory(new File(System.getProperty("user.home")));
             chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
-            List<File> selectedFile = chooser.showOpenMultipleDialog(ScoutingServer.mainStage.getOwner());
-            if (selectedFile != null) {
-
-                for (File file : selectedFile) {
-                    if (file.exists()) {
-                        FileInputStream inputStream = new FileInputStream(file);
-                        JSONObject object = new JSONObject(new String(inputStream.readAllBytes()));
-                        ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONObject(object, activeTable);
-                        handleDuplicates(duplicates);
-                        inputStream.close();
-                    }
-
-                }
-            }
+            importJSONFiles(chooser.showOpenMultipleDialog(ScoutingServer.mainStage.getOwner()));
 
         } catch (IOException e) {
             Logging.logError(e);
         }
 
+    }
+
+    private void importJSONFiles(List<File> files) throws IOException {
+        if (files != null) {
+
+            for (File file : files) {
+                if (file.exists()) {
+                    FileInputStream inputStream = new FileInputStream(file);
+                    JSONObject object = new JSONObject(new String(inputStream.readAllBytes()));
+                    ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONObject(object, activeTable);
+                    handleDuplicates(duplicates);
+                    inputStream.close();
+                }
+
+            }
+        }
     }
 
 
@@ -166,6 +167,20 @@ public class QRScannerController {
         }else {
             serverButton.setText("Start Data Transfer Server");
         }
+    }
+
+    @FXML
+    public void importDuplicateDataBackup(ActionEvent event) {
+        Logging.logInfo("Importing duplicate data backup");
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/duplicateDataBackups"));
+        chooser.setTitle("Select Backup to import");
+        try {
+            importJSONFiles(chooser.showOpenMultipleDialog(ScoutingServer.mainStage.getOwner()));
+        } catch (IOException e) {
+            Logging.logError(e);
+        }
+
     }
 
     public void setActiveTable(String s) {
