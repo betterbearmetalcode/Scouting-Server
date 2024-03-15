@@ -288,6 +288,18 @@ public class DatabaseManager {
                     "\"" + teleNotes + "\"";
         }
 
+        public String getQRString() {
+            StringBuilder qrBuilder = new StringBuilder();
+            for (DataPoint dataPoint : this.getDataAsList()) {
+                qrBuilder.append(dataPoint.getValue().replaceAll("\"", "")).append(Constants.QR_DATA_DELIMITER);
+            }
+            if (qrBuilder.toString().split(Constants.QR_DATA_DELIMITER).length == 21) {
+                //this happens when there are no notes
+                qrBuilder.replace(qrBuilder.length() - 1, qrBuilder.length(), "No Comments/");
+            }
+            return  qrBuilder.substring(0, qrBuilder.toString().length() - 1);
+        }
+
 
     }
 

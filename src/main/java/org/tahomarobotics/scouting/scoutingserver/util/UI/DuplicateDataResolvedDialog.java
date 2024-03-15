@@ -7,12 +7,18 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 //returns list of records to add
@@ -33,20 +39,48 @@ public class DuplicateDataResolvedDialog extends Dialog<ArrayList<DatabaseManage
         this.setResizable(true);
         this.getDialogPane().prefHeightProperty().bind(Constants.UIValues.appHeightProperty());
         this.getDialogPane().setPrefWidth(400);
-        this.setResultConverter(new Callback<ButtonType, ArrayList<DatabaseManager.QRRecord>>() {
-            @Override
-            public ArrayList<DatabaseManager.QRRecord> call(ButtonType param) {
-                ArrayList<DatabaseManager.QRRecord> output = new ArrayList<>();
-                for (int i = 0; i < duplicates.size(); i++) {
-                    if (checkBoxes.get(i).isSelected()) {
-                        //if its selected, the we want to overwrite and should use the new data
-                        output.add(duplicates.get(i).getNewData());
-                    }
-                    //otherwise, if we are not overwriting, the do nothing, as the data is already in the database and there is no need to delete and then add the same thing
+        this.setResultConverter(param -> {
+            ArrayList<DatabaseManager.QRRecord> output = new ArrayList<>();
+            for (int i = 0; i < duplicates.size(); i++) {
+                if (checkBoxes.get(i).isSelected()) {
+                    //if its selected, the we want to overwrite and should use the new data
+                    output.add(duplicates.get(i).getNewData());
                 }
-                return output;
+                //otherwise, if we are not overwriting, the do nothing, as the data is already in the database and there is no need to delete and then add the same thing
             }
+            return output;
         });
+
+        //save a backup json of all data just in case the user screws up and delete stuff
+        JSONObject backup = new JSONObject();
+        for (DatabaseManager.RobotPosition position : DatabaseManager.RobotPosition.values()) {
+            JSONArray positionArray = new JSONArray();
+            for (DuplicateDataException duplicate : duplicates) {
+                if (duplicate.getOldData().position() == position) {
+                    positionArray.put(duplicate.getOldData().getQRString());
+                }
+                if (duplicate.getNewData().position() == position) {
+                    positionArray.put(duplicate.getNewData().getQRString());
+                }
+            }
+            backup.put(position.name(), positionArray);
+        }
+
+
+        File outputFile = new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/duplicateDataBackups/Duplicate Data Backup " + new Date().toString().replaceAll(":", " ") + ".json");
+
+        try {
+            if (!outputFile.exists()) {
+                outputFile.createNewFile();
+            }
+            FileOutputStream outputStream = new FileOutputStream(outputFile);
+            outputStream.write(backup.toString().getBytes());
+            outputStream.flush();
+            outputStream.close();
+            Logging.logInfo("Created duplicate data backup");
+        } catch (IOException e) {
+            Logging.logInfo("Failed to create backup of duplicated data");
+        }
     }
 
     private VBox getVbox(ArrayList<DuplicateDataException> duplicates) {
