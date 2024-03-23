@@ -46,7 +46,7 @@ public class DatabaseManager {
                     data[21]);//tele notes
 
             storeQrRecord(m, tablename);
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IllegalStateException e) {
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed to construct QrRecord, likly corrupted data", Color.RED);
             Logging.logError(e, "Failed to construct match record, most likly corrupted data");
         }

@@ -34,8 +34,6 @@ public class TabController {
 
     @FXML
     private TreeView<Label> treeView;
-    @FXML
-    public Label selectedCompetitionLabel;
 
     @FXML
     public TabPane pane;
@@ -298,7 +296,6 @@ public class TabController {
             AtomicReference<Pair<String,String>> selectedEventCode = new AtomicReference<>(new Pair<>("",""));
             event.ifPresent(selectedEventCode::set);
             currentEventCode = selectedEventCode.get().getKey();
-            selectedCompetitionLabel.setText(temp);
 
         }else {
             currentEventCode =  "";
@@ -355,6 +352,18 @@ public class TabController {
         } catch (IOException e) {
             Logging.logError(e, "Failed to save backup");
         }
+    }
+
+    public void clearDatabase() {
+        Logging.logInfo("Clearing databse: " + tableName);
+        try {
+            SQLUtil.execNoReturn("DELETE FROM \"" + tableName + "\"");
+        } catch (SQLException | DuplicateDataException e) {
+            Logging.logError(e);
+        }
+        databaseData.clear();
+        rootItem.getChildren().clear();
+        refresh();
     }
 
 
