@@ -81,14 +81,6 @@ public class TableChooserDialog extends Dialog<String> {
                 Logging.logError(e);
             }
         });
-        Button clearDatabaseButton = new Button("Clear Database");
-        clearDatabaseButton.setOnAction(event -> {
-            try {
-                SQLUtil.execNoReturn("DELETE FROM \"" + listView.getSelectionModel().getSelectedItem() + "\"");
-            } catch (SQLException | DuplicateDataException e) {
-                Logging.logError(e);
-            }
-        });
         Button deleteButton = new Button("Delete");
         deleteButton.setOnAction(event -> {
             try {
@@ -98,7 +90,7 @@ public class TableChooserDialog extends Dialog<String> {
                 Logging.logError(e);
             }
         });
-        FlowPane pane = new FlowPane(newCompetitionButton, clearDatabaseButton, deleteButton);
+        FlowPane pane = new FlowPane(newCompetitionButton, deleteButton);
         return new VBox(listView, pane);
     }
 

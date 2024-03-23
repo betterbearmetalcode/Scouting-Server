@@ -25,7 +25,6 @@ import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataE
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.OperationAbortedByUserException;
 
 import java.io.*;
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -35,8 +34,6 @@ public class TabController {
 
     @FXML
     private TreeView<Label> treeView;
-    @FXML
-    public Label selectedCompetitionLabel;
 
     @FXML
     public TabPane pane;
@@ -266,10 +263,23 @@ public class TabController {
                 if (maxErrorForThisRobot.ordinal() > maxErrorLevelInThisMatch.ordinal()) {
                     maxErrorLevelInThisMatch = maxErrorForThisRobot;
                 }
-                robotLabel.setTextFill(DataPoint.color.get(maxErrorForThisRobot));
+                if (!robotPositon.isUnknown()) {
+                    robotLabel.setTextFill(DataPoint.color.get(maxErrorForThisRobot));
+                }else {
+                    robotLabel.setTextFill(DataPoint.color.get(DataPoint.ErrorLevel.UNKNOWN));
+                }
+
             }//end match for
-            matchLabel.setTextFill(DataPoint.color.get(maxErrorLevelInThisMatch));
-            rootItem.getChildren().add(matchItem);
+            if (!match.isUnknown()) {
+                matchLabel.setTextFill(DataPoint.color.get(maxErrorLevelInThisMatch));
+            }else {
+                matchLabel.setTextFill(DataPoint.color.get(DataPoint.ErrorLevel.UNKNOWN));
+            }
+
+            if (!matchItem.getChildren().isEmpty()) {
+                rootItem.getChildren().add(matchItem);
+            }
+
         }//end comp for
 
 
@@ -286,7 +296,6 @@ public class TabController {
             AtomicReference<Pair<String,String>> selectedEventCode = new AtomicReference<>(new Pair<>("",""));
             event.ifPresent(selectedEventCode::set);
             currentEventCode = selectedEventCode.get().getKey();
-            selectedCompetitionLabel.setText(temp);
 
         }else {
             currentEventCode =  "";
@@ -320,17 +329,6 @@ public class TabController {
             LinkedList<DatabaseManager.QRRecord> data = DatabaseManager.readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"" + " WHERE "  + Constants.SQLColumnName.ALLIANCE_POS + "=?", new Object[]{robotPosition.ordinal()}, false);
             JSONArray positionArray = new JSONArray();
             for (DatabaseManager.QRRecord record : data) {
-                /*StringBuilder qrBuilder = new StringBuilder();
-                for (DataPoint dataPoint : record.getDataAsList()) {
-                    qrBuilder.append(dataPoint.getValue().replaceAll("\"", "")).append(Constants.QR_DATA_DELIMITER);
-                }
-                if (qrBuilder.toString().split(Constants.QR_DATA_DELIMITER).length == 21) {
-                    //this happens when there are no notes
-                    System.out.println("Fixing qr string: " + qrBuilder);
-                    qrBuilder.replace(qrBuilder.length() - 1, qrBuilder.length(), "No Comments/");
-                    System.out.println("Fixed String: " + qrBuilder);
-                }
-                positionArray.put(qrBuilder.substring(0, qrBuilder.toString().length() - 1));*/
                 positionArray.put(record.getQRString());
             }
             output.put(robotPosition.name(), positionArray);
@@ -354,6 +352,18 @@ public class TabController {
         } catch (IOException e) {
             Logging.logError(e, "Failed to save backup");
         }
+    }
+
+    public void clearDatabase() {
+        Logging.logInfo("Clearing databse: " + tableName);
+        try {
+            SQLUtil.execNoReturn("DELETE FROM \"" + tableName + "\"");
+        } catch (SQLException | DuplicateDataException e) {
+            Logging.logError(e);
+        }
+        databaseData.clear();
+        rootItem.getChildren().clear();
+        refresh();
     }
 
 
