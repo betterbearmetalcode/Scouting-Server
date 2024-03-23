@@ -401,13 +401,38 @@ public class TabController {
             super(new CustomStringConverter());
             controller = c;
             MenuItem renameItem = new MenuItem("Edit");
-            menu.getItems().add(renameItem);
-            renameItem.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent arg0) {
-                    startEdit();
+            MenuItem deleteItem = new MenuItem("Delete");
+            menu.getItems().addAll(renameItem, deleteItem);
+
+            renameItem.setOnAction(arg0 -> startEdit());
+            deleteItem.setOnAction(event -> {
+                if (getTreeItem().getParent() == rootItem) {
+                    //then this is a match item
+                    System.out.println("match item");
+                    for (TreeItem<Label> positionItem : getTreeItem().getChildren()) {
+                        deletePositionItem(positionItem);
+                    }
+                }else if (getTreeItem().isLeaf()){
+                    deletePositionItem(getTreeItem().getParent());
+                }else {
+                    deletePositionItem(getTreeItem());
                 }
+                refresh();
+
+
             });
+        }
+
+        private void deletePositionItem(TreeItem<Label> positionItem) {
+            String teamNum = positionItem.getValue().getText().split(" ")[1];
+
+            String match = positionItem.getParent().getValue().getText().split(" ")[1];
+            try {
+                SQLUtil.execNoReturn("DELETE FROM \"" + tableName + "\" WHERE " + Constants.SQLColumnName.MATCH_NUM.name() + "=? AND " + Constants.SQLColumnName.TEAM_NUM.name() + "=?", new Object[]{match, teamNum}, true);
+
+            } catch (SQLException | DuplicateDataException e) {
+                Logging.logError(e, "Failed to delete datapoint");
+            }
         }
 
         @Override
