@@ -2,11 +2,7 @@ package org.tahomarobotics.scouting.scoutingserver.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
@@ -15,31 +11,32 @@ import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MenuController extends VBox {
+
+    public enum SCENES {
+        MAIN_MENU,
+        DATA_COLLECTION,
+        DATA_CORRECTION,
+        DATA_SCENE,
+        CHARTS,
+        MISC
+    }
 
     @FXML
     Button qrScannerButton = new Button();
 
     @FXML
     public void enterDataCollectionScene(ActionEvent event) {
-        if (ScoutingServer.currentScene != ScoutingServer.SCENES.QR_SCANNER) {
+        if (ScoutingServer.currentScene != SCENES.DATA_COLLECTION) {
             ScoutingServer.setCurrentScene(ScoutingServer.dataCollectionScene);
-            ScoutingServer.currentScene = ScoutingServer.SCENES.QR_SCANNER;
+            ScoutingServer.currentScene = SCENES.DATA_COLLECTION;
         }
     }
 
     @FXML
     public void backToMainMenu(ActionEvent event) {
         //no main menu, just a help button
-/*        if (ScoutingServer.currentScene != ScoutingServer.SCENES.MAIN_MENU) {
-
-
-            ScoutingServer.setCurrentScene(ScoutingServer.mainScene);
-            ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
-        }*/
         //open tutorial
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
@@ -52,24 +49,24 @@ public class MenuController extends VBox {
 
     @FXML
     public void openDataScene(ActionEvent event) {
-        if (ScoutingServer.currentScene != ScoutingServer.SCENES.DATA_SCENE) {
+        if (ScoutingServer.currentScene != SCENES.DATA_SCENE) {
 
 
             ScoutingServer.setCurrentScene(ScoutingServer.dataScene);
-            ScoutingServer.currentScene = ScoutingServer.SCENES.DATA_SCENE;
+            ScoutingServer.currentScene = SCENES.DATA_SCENE;
         }
     }
 
     @FXML
     public void enterDataCorrectionScene(ActionEvent event) {
-        if (ScoutingServer.currentScene != ScoutingServer.SCENES.DATA_CORRECTION) {
+        if (ScoutingServer.currentScene != SCENES.DATA_CORRECTION) {
 
 
             ScoutingServer.setCurrentScene(ScoutingServer.dataCorrectionScene);
-            ScoutingServer.currentScene = ScoutingServer.SCENES.DATA_CORRECTION;
+            ScoutingServer.currentScene = SCENES.DATA_CORRECTION;
         }
     }
-
+/*
     @FXML
     public void developerToolsButton(ActionEvent event) {
         AtomicReference<Boolean> selectedEvent = new AtomicReference<>(false);
@@ -102,14 +99,23 @@ public class MenuController extends VBox {
                 ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
             }
         }
-    }
+    }*/
     @FXML
     public void openCharts(ActionEvent event) {
-        if (ScoutingServer.currentScene != ScoutingServer.SCENES.CHARTS) {
+        if (ScoutingServer.currentScene != SCENES.CHARTS) {
 
 
             ScoutingServer.setCurrentScene(ScoutingServer.chartsScene);
-            ScoutingServer.currentScene = ScoutingServer.SCENES.CHARTS;
+            ScoutingServer.currentScene = SCENES.CHARTS;
+        }
+    }
+
+    public void openMiscScene(ActionEvent event) {
+        if (ScoutingServer.currentScene != SCENES.MISC) {
+
+
+            ScoutingServer.setCurrentScene(ScoutingServer.miscScene);
+            ScoutingServer.currentScene = SCENES.MISC;
         }
     }
 
