@@ -82,10 +82,6 @@ public class DatabaseManager {
 
     }
 
-    public static void storeRawQRData(JSONObject dataJSON, String tablename) throws IOException, DuplicateDataException {
-        storeRawQRData(dataJSON.getString( (String) Arrays.stream(dataJSON.keySet().toArray()).toList().get(0)), tablename);
-
-    }
 
 
     public static LinkedList<QRRecord> readDatabase(String tableName) throws IOException {
@@ -143,7 +139,6 @@ public class DatabaseManager {
         B1,
         B2,
         B3,
-        NO_DATA
     }
 
 
@@ -168,11 +163,11 @@ public class DatabaseManager {
             case 5 -> {
                 return RobotPosition.B3;
             }
-            case 6 ->
-            {
-                return RobotPosition.NO_DATA;
+            default -> {
+                Logging.logError(new IllegalStateException("Unexpected value when getting robot position from number, returning R1: " + num));
+                return RobotPosition.R1;
+
             }
-            default -> throw new IllegalStateException("Unexpected value: " + num);
         }
     }
 
@@ -184,24 +179,6 @@ public class DatabaseManager {
     }
 
 
-    public static EndgamePosition getEngamePositionFromNum(int pos) {
-        switch (pos) {
-
-            case 0 -> {
-                return EndgamePosition.NONE;
-            }
-            case 1 -> {
-                return EndgamePosition.PARKED;
-            }
-            case 2 -> {
-                return EndgamePosition.CLIMBED;
-            }
-            case 3 -> {
-                return EndgamePosition.HARMONIZED;
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + pos);
-        }
-    }
 
     public record QRRecord(int matchNumber,
                            int teamNumber,
