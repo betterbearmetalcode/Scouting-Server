@@ -41,6 +41,7 @@ public class Exporter {
                 throw new OperationAbortedByUserException("User aborted operation due to inability to fetch matches");
             }
         }
+        competitionData = optionalEventMatches.get();
 
     }
 
