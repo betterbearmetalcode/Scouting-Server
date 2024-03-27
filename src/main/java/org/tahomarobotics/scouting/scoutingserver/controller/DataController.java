@@ -117,6 +117,12 @@ public class DataController {
         }
     }
 
+    public static void refreshTabs() {
+        for (TabController controller : controllers) {
+            controller.refresh();
+        }
+    }
+
 
 
 }

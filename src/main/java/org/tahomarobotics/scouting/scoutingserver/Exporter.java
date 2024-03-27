@@ -7,20 +7,15 @@ import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.OperationAbortedByUserException;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.DoubleFunction;
 
 public class Exporter {
 
     private JSONArray competitionData;
-    private final ArrayList<Integer> teamsAtCompetition = new ArrayList<>();
     private final String eventCode;
-    private boolean haveInternet = true;
+    private boolean haveMatches = true;
 
     private final ArrayList<HashMap<String, Object>> teamsScouted;
 
@@ -31,25 +26,20 @@ public class Exporter {
     public Exporter(String theEventCode, String activeTableName) throws IOException, InterruptedException, OperationAbortedByUserException, SQLException {
         eventCode = theEventCode;
         tableName = activeTableName;
-        competitionData = APIUtil.get("/event/" + eventCode + "/matches");
-        JSONArray teamArr = APIUtil.get("/event/" + eventCode + "/teams/simple");//commented for offline development
-        for (Object o : teamArr) {
-            JSONObject teamObject = (JSONObject) o;
-            teamsAtCompetition.add(teamObject.getInt("team_number"));
-        }
 
         teamsScouted = SQLUtil.exec("SELECT DISTINCT " + Constants.SQLColumnName.TEAM_NUM + " FROM \"" + tableName + "\"", true);
         teamsScouted.sort(Comparator.comparingInt(o -> Integer.parseInt(o.get(Constants.SQLColumnName.TEAM_NUM.toString()).toString())));
-        if (competitionData.get(0).equals("NoInternet")) {
-            Logging.logInfo("Cannot export TBA Data");
-            haveInternet = false;
 
+
+        Optional<JSONArray> optionalEventMatches = APIUtil.getEventMatches(eventCode);
+        if (optionalEventMatches.isEmpty()) {
+            Logging.logInfo("Failed to fetch matches from tba");
+            haveMatches = false;
             //only confinue after alerting the user to the risks of exporing without internet
-            if (Constants.askQuestion("You are trying to export without internet, doing so will result in incorrect data because you cannot access TBA Continue?")) {
+            if (Constants.askQuestion("You are trying to export data without matches from tba, doing so will result in incorrect data because you cannot access TBA Continue?")) {
 
-                throw new OperationAbortedByUserException("User aborted operation due to lack of internet");
+                throw new OperationAbortedByUserException("User aborted operation due to inability to fetch matches");
             }
-
         }
 
     }
@@ -67,7 +57,7 @@ public class Exporter {
         for (HashMap<String, Object> matchNumMap : matchNums) {
             int matchNum =(int) matchNumMap.get(Constants.SQLColumnName.MATCH_NUM.toString());
             HashMap<String, HashMap<String, Object>> tbaMatchBreakdown = null;
-            if (haveInternet) {
+            if (haveMatches) {
 
                 Optional<Object> optional = competitionData.toList().stream().filter(o -> Objects.equals(((HashMap<String, String>) o).get("key"), eventCode + "_qm" + matchNum)).findFirst();
                 if (optional.isPresent()) {
@@ -105,16 +95,6 @@ public class Exporter {
 
     private ArrayList<String> getRow(HashMap<String, Object> sqlRow, HashMap<String, HashMap<String, Object>> matchBreakdown) {
         ArrayList<String> output = new ArrayList<>();
-        //check if this team is actually at the competition
-        int teamNum = (int) sqlRow.get(Constants.SQLColumnName.TEAM_NUM.toString());
-        if (!teamsAtCompetition.contains(teamNum)) {
-            //if they are not then ask the user if they want to skip this team
-            if (Constants.askQuestion("You are attempting to export data for team " + teamNum + ". Do you want to skip this team?")) {
-                //if the want to skip, than just return null
-                teamsToSkip.add(teamNum);
-                return null;
-            }
-        }
         //add all the raw data
         for (Constants.SQLColumnName sqlColumnName : Constants.SQLColumnName.values()) {
             output.add(sqlRow.get(sqlColumnName.toString()).toString());
