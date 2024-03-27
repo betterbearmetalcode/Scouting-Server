@@ -54,7 +54,7 @@ public class MenuController extends VBox {
 
 
             ScoutingServer.setCurrentScene(ScoutingServer.dataScene);
-            ScoutingServer.currentScene = ScoutingServer.SCENES.DATA_SCENE;
+            ScoutingServer.currentScene = SCENES.DATA_SCENE;
             DataController.refreshTabs();
         }
     }
