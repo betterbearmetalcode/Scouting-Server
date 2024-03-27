@@ -80,8 +80,8 @@ public class DataPoint {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(getName().replaceAll("_", " ").toLowerCase()).append(":");//name without underscores and a colon
-        stringBuilder.append(getValue()).append(":");//the value and a period
+        stringBuilder.append(getName().replaceAll("_", " ").toLowerCase()).append(":");//name without underscores and noteA colon
+        stringBuilder.append(getValue()).append(":");//the value and noteA period
         stringBuilder.append(" Error=");
         if (errorLevel == ErrorLevel.UNKNOWN) {
             stringBuilder.append(ErrorLevel.UNKNOWN);

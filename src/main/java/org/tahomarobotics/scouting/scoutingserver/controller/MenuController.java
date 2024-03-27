@@ -33,7 +33,7 @@ public class MenuController extends VBox {
 
     @FXML
     public void backToMainMenu(ActionEvent event) {
-        //no main menu, just a help button
+        //no main menu, just noteA help button
 /*        if (ScoutingServer.currentScene != ScoutingServer.SCENES.MAIN_MENU) {
 
 

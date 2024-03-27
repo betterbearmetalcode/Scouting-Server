@@ -128,14 +128,15 @@ public class QRScannerController {
                         data.optInt("Auto Amp", 0),//auto amp
                         data.optInt("Auto Speaker Missed", 0),//auto speaker missed
                         data.optInt("Auto Amp Missed", 0),//auto amp missed
-                        data.optInt("a", 0),//F1
-                        data.optInt("b", 0),//F2
-                        data.optInt("c", 0),//F3
+                        data.optInt("noteA", 0),//F1
+                        data.optInt("noteB", 0),//F2
+                        data.optInt("noteC", 0),//F3
                         data.optInt("1", 0),//M1
                         data.optInt("2", 0),//M2
                         data.optInt("3", 0),//M3
                         data.optInt("4", 0),//M4
                         data.optInt("5", 0),//M5
+                        data.optInt("A-Stop", 0),
                         data.optInt("Tele Speaker", 0),//tele speaker
                         data.optInt("Tele Amp", 0),//tele amp
                         data.optInt("Tele Trap", 0),//tele trap
@@ -215,7 +216,7 @@ public class QRScannerController {
             return;
         }
         Platform.runLater(() -> {
-            //this method has to use a duplicate data handler to go through all the duplicates and generate a list of records which should be added
+            //this method has to use noteA duplicate data handler to go through all the duplicates and generate noteA list of records which should be added
             //then for each of these records, all the ones in the database that have the same match and team number are deleted and re added
             DuplicateDataResolvedDialog dialog = new DuplicateDataResolvedDialog(duplicates);
             Optional<ArrayList<DatabaseManager.QRRecord>> recordToAdd = dialog.showAndWait();

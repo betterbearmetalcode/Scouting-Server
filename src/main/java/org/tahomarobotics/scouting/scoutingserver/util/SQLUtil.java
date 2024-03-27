@@ -128,7 +128,7 @@ public class SQLUtil {
 
     }
 
-    public static String createTableSchem(ArrayList<Constants.ColumnType> columns) {//the input is a hashmap of all the colums for a table, the key is the column name and the value is the database name
+    public static String createTableSchem(ArrayList<Constants.ColumnType> columns) {//the input is noteA hashmap of all the colums for noteA table, the key is the column name and the value is the database name
 
         StringBuilder builder = new StringBuilder();
         for (Constants.ColumnType type : columns) {
@@ -158,14 +158,14 @@ public class SQLUtil {
         String matchNum = tokens[0];
         String teamNum = tokens[1];
         String tableName = statement.split("INTO ")[1].split("\"")[1].replaceAll("\"", "");
-        //first check if the new and old data is the same, if it is, then do nothing, if its different, then throw a duolicate data exception with both the new and old records
+        //first check if the new and old data is the same, if it is, then do nothing, if its different, then throw noteA duolicate data exception with both the new and old records
         try {
             ArrayList<HashMap<String, Object>> oldMap = SQLUtil.exec("SELECT * FROM \"" + tableName + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=? AND " + Constants.SQLColumnName.MATCH_NUM + "=?", new Object[]{teamNum, matchNum}, true );
             if (newRecord != null) {
                 //record should not be null if called by method storing data
                 DatabaseManager.QRRecord oldRecord = DatabaseManager.getRecord(oldMap.get(0));
                 if (!newRecord.equals(oldRecord)) {
-                    //if they are not the same then we need to throw a duplicate data exception
+                    //if they are not the same then we need to throw noteA duplicate data exception
                     throw new DuplicateDataException("Duplicate Data Detected", new SQLException(statement), oldRecord, newRecord);
                 }
             }
