@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 
@@ -57,6 +58,7 @@ public class MenuController extends VBox {
 
             ScoutingServer.setCurrentScene(ScoutingServer.dataScene);
             ScoutingServer.currentScene = ScoutingServer.SCENES.DATA_SCENE;
+            DataController.refreshTabs();
         }
     }
 
