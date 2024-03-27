@@ -3,13 +3,13 @@ package org.tahomarobotics.scouting.scoutingserver;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.chart.StackedBarChart;
 import javafx.scene.control.*;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import org.tahomarobotics.scouting.scoutingserver.controller.MenuController;
 import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
@@ -23,15 +23,9 @@ import static org.tahomarobotics.scouting.scoutingserver.Constants.UIValues.*;
 
 public class ScoutingServer extends Application {
 
-    public enum SCENES {
-        MAIN_MENU,
-        QR_SCANNER,
-        DATA_CORRECTION,
-        DATA_SCENE,
-        CHARTS
-    }
 
-    public static SCENES currentScene;
+
+    public static MenuController.SCENES currentScene;
     public static Scene mainScene;
 
     public static AnchorPane mainHamburgerMenu;
@@ -40,6 +34,8 @@ public class ScoutingServer extends Application {
     public static AnchorPane dataHamburgerMenu;
 
     public static AnchorPane chartHamburgerMenu;
+
+    public static AnchorPane miscHamburgerMenu;
 
     public static Scene dataCorrectionScene;
 
@@ -50,22 +46,26 @@ public class ScoutingServer extends Application {
     public static Stage mainStage;
 
     public static Scene chartsScene;
+
+    public static Scene miscScene;
     static VBox mainRoot;
     static VBox dataCollectionRoot;
     static VBox dataRoot;
 
+    static VBox miscRoot;
     static VBox chartsRoot;
 
 
 
     public static QRScannerController qrScannerController = new QRScannerController();
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void start(Stage stage) {
         mainStage = stage;
         mainStage.setTitle("Scouting Server");
         mainStage.setScene(dataCollectionScene);
-        currentScene = SCENES.QR_SCANNER;
+        currentScene = MenuController.SCENES.DATA_COLLECTION;
         mainStage.getIcons().add(new Image(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Logo.png"));
         mainStage.setOnCloseRequest(event -> {
             ServerUtil.setServerStatus(false);
@@ -73,31 +73,35 @@ public class ScoutingServer extends Application {
         mainStage.show();
 
 
-        //set up resources folder if not already created
-        File databseFilepath = new File(Constants.DATABASE_FILEPATH);
-        if (!databseFilepath.exists()) {
-            databseFilepath.mkdirs();
-        }
-        File imageDataFilepath = new File(Constants.IMAGE_DATA_FILEPATH);
-        if (!imageDataFilepath.exists()) {
-            imageDataFilepath.mkdirs();
-        }
-        File testImageFilepath = new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/testImages");
-        if (!testImageFilepath.exists()) {
-            testImageFilepath.mkdirs();
-        }
-
-        File duplicateDataFilepath = new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/duplicateDataBackups");
-        if (!duplicateDataFilepath.exists()) {
-            duplicateDataFilepath.mkdirs();
-        }
-
-        //set up database
         try {
+            //set up resources folder if not already created
+            File databseFilepath = new File(Constants.DATABASE_FILEPATH);
+            if (!databseFilepath.exists()) {
+                databseFilepath.mkdirs();
+            }
+            File imageDataFilepath = new File(Constants.IMAGE_DATA_FILEPATH);
+            if (!imageDataFilepath.exists()) {
+                imageDataFilepath.mkdirs();
+            }
+            File testImageFilepath = new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/testImages");
+            if (!testImageFilepath.exists()) {
+                testImageFilepath.mkdirs();
+            }
+
+            File duplicateDataFilepath = new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/duplicateDataBackups");
+            if (!duplicateDataFilepath.exists()) {
+                duplicateDataFilepath.mkdirs();
+            }
+            //set up database
             SQLUtil.initialize(Constants.DATABASE_FILEPATH + Constants.SQL_DATABASE_NAME);
+        }catch (SecurityException e) {
+            Logging.logError(e, "Unable to initialize internal folders, click ok to exit app. Try running as administrator");
+            System.exit(1);
         } catch (SQLException e) {
-            Logging.logError(e);
+            Logging.logError(e, "Failed to create sql database, app cannot function without it click ok to exit");
+            System.exit(1);
         }
+
 
         mainStage.widthProperty().addListener((observable, oldValue, newValue) -> {setAppWidthProperty(newValue.doubleValue()); resize(); });
         mainStage.heightProperty().addListener((observable, oldValue, newValue) -> {setAppHeight(newValue.doubleValue());resize(); });
@@ -142,12 +146,23 @@ public class ScoutingServer extends Application {
         FXMLLoader chartsHamburgerMenuLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
         chartHamburgerMenu = new AnchorPane((AnchorPane) chartsHamburgerMenuLoader.load());
 
+        FXMLLoader miscLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/misc-scene.fxml").toURI().toURL());
+        miscScene = new Scene(miscLoader.load());
+
+
+        FXMLLoader miscHamburgerMenuLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
+        miscHamburgerMenu = new AnchorPane((AnchorPane) miscHamburgerMenuLoader.load());
+
+
         setUpMainScene();
-        setUpQRScannerScene();
+        setUpDataCollectionScene();
 
         setUpDataScene();
 
         setUpChartsScene();
+
+
+        setUpMiscScene();
 
         resize();
 
@@ -286,7 +301,7 @@ public class ScoutingServer extends Application {
     }
 
 
-    private void setUpQRScannerScene() {
+    private void setUpDataCollectionScene() {
         double appWidth = getAppWidth();
         double appHeight = getAppHeight();
 
@@ -325,6 +340,37 @@ public class ScoutingServer extends Application {
         lowerHBox.setMinHeight(MIN_MAIN_BUTTON_BAR_HEIGHT);
         lowerHBox.setMaxHeight(MIN_MAIN_BUTTON_BAR_HEIGHT);
 
+    }
+
+    private void setUpMiscScene() {
+        double appWidth = getAppWidth();
+        double appHeight = getAppHeight();
+
+        //add hamburger menu to qr scanner scene
+        VBox parent = (VBox) miscScene.getRoot();
+        miscRoot = parent;
+        SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
+        AnchorPane menuPane = (AnchorPane) splitPane.getItems().get(0);
+        menuPane.getChildren().add(miscHamburgerMenu);
+
+        parent.setPrefSize(appWidth, appHeight);
+        splitPane.prefHeightProperty().bind(miscRoot.heightProperty());
+        splitPane.prefWidthProperty().bind(miscRoot.widthProperty());
+        menuPane.prefHeightProperty().bind(miscRoot.heightProperty());
+        miscHamburgerMenu.prefHeightProperty().bind(miscRoot.heightProperty());
+        miscHamburgerMenu.setMinWidth(MIN_HAMBURGER_MENU_SIZE);
+        miscHamburgerMenu.setMaxWidth(miscHamburgerMenu.getMinWidth());
+        menuPane.prefWidthProperty().bind(miscHamburgerMenu.widthProperty());
+        menuPane.setMinWidth(miscHamburgerMenu.getMinWidth());
+        menuPane.setMaxWidth(miscHamburgerMenu.getMaxWidth());
+        VBox mainVbox = (VBox) splitPane.getItems().get(1);
+        mainVbox.prefHeightProperty().bind(miscRoot.heightProperty());
+        mainVbox.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
+
+        HBox topHbox = (HBox) mainVbox.getChildren().get(0);
+        topHbox.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
+        topHbox.setMaxHeight(MIN_MAIN_BUTTON_BAR_HEIGHT);
+        topHbox.setMinHeight(MIN_MAIN_BUTTON_BAR_HEIGHT);
     }
 
 
