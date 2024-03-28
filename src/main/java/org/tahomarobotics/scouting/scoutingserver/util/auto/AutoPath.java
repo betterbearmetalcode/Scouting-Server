@@ -54,7 +54,7 @@ public class AutoPath {
             builder.append("NO AUTO");
         }else {
             for (Note note : path) {
-                builder.append(note.toString()).append(",");
+                builder.append(getDisplayStringFromNote(note));
             }
         }
 
@@ -65,12 +65,12 @@ public class AutoPath {
         String[] tokens = str.split(":");
         DatabaseManager.RobotPosition pos = DatabaseManager.RobotPosition.valueOf(tokens[0]);
         String teamNum = tokens[1];
-        String[] notes = tokens[3].split(",");
-        boolean hasAuto = !(Objects.equals(notes[0], "NO AUTO"));
+        String[] notes = tokens[3].split("");
+        boolean hasAuto = !(Objects.equals(tokens[3], "NO AUTO"));
         ArrayList<Note> thePath = new ArrayList<>();
         if (hasAuto) {
             for (String note : notes) {
-                thePath.add(Note.valueOf(note));
+                thePath.add(getNoteFromDisplayString(note, pos.ordinal() < 3));
             }
         }
         return new AutoPath(teamNum, thePath, pos);
@@ -152,6 +152,66 @@ public class AutoPath {
             }
             default -> throw new IllegalArgumentException("Argument is not a note");
 
+
+        }
+    }
+
+    public static String getDisplayStringFromNote(Note note) {
+        switch (note) {
+
+            case RED_A,BLUE_A -> {
+                return "a";
+            }
+            case RED_B,BLUE_B -> {
+                return "b";
+            }
+            case RED_C,BLUE_C -> {
+                return "c";
+            }
+            case ONE -> {
+                return "1";
+            }
+            case TWO -> {
+                return "2";
+            }
+            case THREE -> {
+                return "3";
+            }
+            case FOUR -> {
+                return "4";
+            }
+            case FIVE -> {
+                return "5";
+            }default -> throw new IllegalArgumentException(":LKASEFJKSDN:SLNE: idk what to say here whatever");
+        }
+    }
+
+    public static Note getNoteFromDisplayString(String str, boolean red) {
+        switch (str) {
+            case "a" -> {
+                return red?Note.RED_A:Note.BLUE_A;
+            }
+            case "b" -> {
+                return red?Note.RED_B:Note.BLUE_B;
+            }
+            case "c" -> {
+                return red?Note.RED_C:Note.BLUE_C;
+            }
+            case "1" -> {
+                return Note.ONE;
+            }
+            case "2" -> {
+                return Note.TWO;
+            }
+            case "3" -> {
+                return Note.THREE;
+            }
+            case "4" -> {
+                return Note.FOUR;
+            }
+            case "5" -> {
+                return Note.FIVE;
+            }default -> throw new IllegalArgumentException("this should never happed");
 
         }
     }

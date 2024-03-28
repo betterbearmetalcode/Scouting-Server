@@ -1,5 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.util.auto;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -9,6 +11,7 @@ import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Pair;
 import org.controlsfx.control.CheckTreeView;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
@@ -24,6 +27,7 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class AutoHeatmap {
 
@@ -34,9 +38,7 @@ public class AutoHeatmap {
     private final HashMap<DatabaseManager.RobotPosition, TeamAutoHistory> heatmap;
     private final CheckTreeView<String> redAllianceView = new CheckTreeView<>();
     private final CheckTreeView<String> blueAllianceView = new CheckTreeView<>();
-
     private final VBox displayBox;
-
     public AutoHeatmap(HeatmapCreationInformation input) throws SQLException, IOException {
         heatmap = new HashMap<>();
         displayBox = new VBox();
@@ -121,6 +123,93 @@ public class AutoHeatmap {
 
 
 
+    private void setUpGUI() throws IOException {
+
+        redAllianceView.setRoot(new CheckBoxTreeItem<>("root"));
+        redAllianceView.setShowRoot(false);
+        redAllianceView.getRoot().setExpanded(true);
+        blueAllianceView.setRoot(new CheckBoxTreeItem<>("root"));
+        blueAllianceView.setShowRoot(false);
+        blueAllianceView.getRoot().setExpanded(true);
+        for (DatabaseManager.RobotPosition value : DatabaseManager.RobotPosition.values()) {
+            TeamAutoHistory history = heatmap.get(value);
+            CheckBoxTreeItem<String> item = new CheckBoxTreeItem<>(value.name() + ": " + history.teamNumber());
+            ((value.ordinal() < 3)?redAllianceView:blueAllianceView).getRoot().getChildren().add(item);
+
+            //if we have no data for this team, skip adding the autos
+            if (history.paths() == null) {
+                item.setValue(item.getValue() + " NO DATA");
+                continue;
+            }
+
+            ArrayList<Pair<AutoPath, Integer>> pathsToSort = new ArrayList<>();
+            //loop through all the autos we have and add them to the list
+            history.paths().keySet().forEach(path -> {
+               pathsToSort.add(new Pair<>(path, history.paths().get(path)));
+            });
+            pathsToSort.sort(Comparator.comparingInt(Pair::getValue));
+            Collections.reverse(pathsToSort);
+            pathsToSort.forEach(pair -> {
+                CheckBoxTreeItem<String> leafItem = new CheckBoxTreeItem<>(pair.getKey().toString() +":Frequency: " +  pair.getValue());
+                leafItem.setSelected(pair.getKey().isVisible());
+                item.getChildren().add(leafItem);
+                leafItem.selectedProperty().addListener((observable, oldValue, newValue) -> udpateImage());
+            });
+            item.selectedProperty().addListener((observable, oldValue, newValue) -> udpateImage());
+
+
+        }
+
+        blueAllianceView.prefWidthProperty().bind(Constants.UIValues.halfSplitWidthProperty());
+        redAllianceView.prefWidthProperty().bind(Constants.UIValues.halfSplitWidthProperty());
+        HBox treeBox = new HBox(new VBox(new Label("Blue alliance Autos:"), blueAllianceView), new Separator(Orientation.VERTICAL), new VBox(new Label("Red alliance autos: "), redAllianceView));
+        treeBox.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
+        treeBox.setSpacing(10);
+        treeBox.setAlignment(Pos.CENTER);
+        redAllianceView.getCheckModel().checkAll();
+        blueAllianceView.getCheckModel().checkAll();
+        udpateImage();
+        displayBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+        displayBox.getChildren().add(treeBox);
+        displayBox.setAlignment(Pos.CENTER);
+
+    }
+
+    private void udpateImage() {
+        Logging.logInfo("updating image");
+        //first update the visibility field for all the autos based on the tree views,
+        //then replace the current image with a new one by calling get rendered image again.
+        //this method should be hooked to the change listeneres for the tree views
+        try {
+            for (DatabaseManager.RobotPosition robotPosition : heatmap.keySet()) {
+                //for each robot in the heatmap and for each branch item in both tree views
+                CheckTreeView<String> view = robotPosition.ordinal() < 3?redAllianceView:blueAllianceView;
+                CheckBoxTreeItem<String> robotItem = (CheckBoxTreeItem<String>) view.getRoot().getChildren().get((robotPosition.ordinal()%3));
+                TeamAutoHistory history = heatmap.get(robotPosition);
+                if (history.paths() != null) {
+
+                    ArrayList<TreeItem<String>> checkItems = new ArrayList<>(view.getCheckModel().getCheckedItems().stream().toList());
+
+                    history.paths().keySet().forEach(path -> {
+                        //if the correspodning child of robotItem is checket, set visible true
+                        robotItem.getChildren().forEach(stringTreeItem -> {
+                            if (AutoPath.fromString(stringTreeItem.getValue()).hashCode() == path.hashCode()) {
+                                path.setVisible(checkItems.contains(stringTreeItem));
+                            }
+                        });
+                    });
+                }
+            }
+            displayBox.getChildren().removeIf(node -> node.getClass() == ImageView.class);
+            displayBox.getChildren().add(0, new ImageView(getRenderedImage()));
+
+
+        }catch (NullPointerException | IOException e) {
+            //ignored becuase it doesn't matter
+            Logging.logError(e);
+        }
+
+    }
 
     public VBox getDisplayBox() throws IOException{
         return displayBox;
@@ -139,7 +228,7 @@ public class AutoHeatmap {
                 //on the graph, stroke will indicate frequency
                 //opacity and color will vary to differentiate autos drawn on top of eachother.
                 if (autoPath.isVisible()) {
-                    drawAuto(autoPath, history.paths().get(autoPath) + 2, 255, g);
+                    drawAuto(autoPath, (int) Math.round(history.paths().get(autoPath) * 1.5) , 255, g);
                 }
 
 
@@ -296,83 +385,4 @@ public class AutoHeatmap {
         return new Color(color.getRed(),color.getGreen(),  color.getBlue(), alpha);
     }
 
-    private void setUpGUI() throws IOException {
-
-        redAllianceView.setRoot(new CheckBoxTreeItem<>("root"));
-        redAllianceView.setShowRoot(false);
-        redAllianceView.getRoot().setExpanded(true);
-        blueAllianceView.setRoot(new CheckBoxTreeItem<>("root"));
-        blueAllianceView.setShowRoot(false);
-        blueAllianceView.getRoot().setExpanded(true);
-        for (DatabaseManager.RobotPosition value : DatabaseManager.RobotPosition.values()) {
-            TeamAutoHistory history = heatmap.get(value);
-            CheckBoxTreeItem<String> item = new CheckBoxTreeItem<>(value.name() + ": " + history.teamNumber());
-            ((value.ordinal() < 3)?redAllianceView:blueAllianceView).getRoot().getChildren().add(item);
-
-            //if we have no data for this team, skip adding the autos
-            if (history.paths() == null) {
-                item.setValue(item.getValue() + " NO DATA");
-                continue;
-            }
-            //loop through all the autos we have and add them to the list
-            history.paths().keySet().forEach(path -> {
-                CheckBoxTreeItem<String> leafItem = new CheckBoxTreeItem<>(path.toString());
-                leafItem.setSelected(path.isVisible());
-                item.getChildren().add(leafItem);
-            });
-
-        }
-
-        blueAllianceView.prefWidthProperty().bind(Constants.UIValues.halfSplitWidthProperty());
-        redAllianceView.prefWidthProperty().bind(Constants.UIValues.halfSplitWidthProperty());
-        blueAllianceView.getCheckModel().getCheckedItems().addListener((ListChangeListener<TreeItem<String>>) c -> udpateImage());
-        redAllianceView.getCheckModel().getCheckedItems().addListener((ListChangeListener<TreeItem<String>>) c -> udpateImage());
-        HBox treeBox = new HBox(new VBox(new Label("Blue alliance Autos:"), blueAllianceView), new Separator(Orientation.VERTICAL), new VBox(new Label("Red alliance autos: "), redAllianceView));
-        treeBox.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
-        treeBox.setSpacing(10);
-        treeBox.setAlignment(Pos.CENTER);
-        redAllianceView.getCheckModel().checkAll();
-        blueAllianceView.getCheckModel().checkAll();
-        udpateImage();
-        displayBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
-        displayBox.getChildren().add(treeBox);
-        displayBox.setAlignment(Pos.CENTER);
-
-    }
-
-    private void udpateImage() {
-        Logging.logInfo("updating image");
-        //first update the visibility field for all the autos based on the tree views,
-        //then replace the current image with a new one by calling get rendered image again.
-        //this method should be hooked to the change listeneres for the tree views
-        try {
-            for (DatabaseManager.RobotPosition robotPosition : heatmap.keySet()) {
-                //for each robot in the heatmap and for each branch item in both tree views
-                CheckTreeView<String> view = robotPosition.ordinal() < 3?redAllianceView:blueAllianceView;
-                CheckBoxTreeItem<String> robotItem = (CheckBoxTreeItem<String>) view.getRoot().getChildren().get((robotPosition.ordinal()%3));
-                TeamAutoHistory history = heatmap.get(robotPosition);
-                if (history.paths() != null) {
-
-                    ArrayList<TreeItem<String>> checkItems = new ArrayList<>(view.getCheckModel().getCheckedItems().stream().toList());
-
-                    history.paths().keySet().forEach(path -> {
-                        //if the correspodning child of robotItem is checket, set visible true
-                        robotItem.getChildren().forEach(stringTreeItem -> {
-                            if (AutoPath.fromString(stringTreeItem.getValue()).hashCode() == path.hashCode()) {
-                                path.setVisible(checkItems.contains(stringTreeItem));
-                            }
-                        });
-                    });
-                }
-            }
-            displayBox.getChildren().removeIf(node -> node.getClass() == ImageView.class);
-            displayBox.getChildren().add(0, new ImageView(getRenderedImage()));
-
-
-        }catch (NullPointerException | IOException e) {
-            //ignored becuase it doesn't matter
-            Logging.logError(e);
-        }
-
-    }
 }
