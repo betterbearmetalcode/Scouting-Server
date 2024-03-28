@@ -24,4 +24,6 @@ module org.tahomarobotics.scouting.scoutingserver {
     opens org.tahomarobotics.scouting.scoutingserver.util.UI to javafx.fxml;
     exports org.tahomarobotics.scouting.scoutingserver.util.exceptions;
     opens org.tahomarobotics.scouting.scoutingserver.util.exceptions to javafx.fxml;
+    exports org.tahomarobotics.scouting.scoutingserver.util.auto;
+    opens org.tahomarobotics.scouting.scoutingserver.util.auto to javafx.fxml;
 }

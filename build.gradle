@@ -77,8 +77,6 @@ dependencies {
   implementation group: 'org.openjfx', name: 'javafx-web', version: '16'
 
 
-
-
 }
 
 test {
