@@ -34,11 +34,6 @@
                         <Button mnemonicParsing="false" onAction="#findTraps" text="Find Matches With Trap" />
                      </children>
                   </HBox>
-                  <HBox prefHeight="39.0" prefWidth="494.0">
-                     <children>
-                        <Button mnemonicParsing="false" onAction="#generateHeatmaps" text="Generate Heatmaps" />
-                     </children>
-                  </HBox>
                </children>
             </VBox>
         </items>

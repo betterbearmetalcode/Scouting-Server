@@ -11,10 +11,11 @@ public record HeatmapCreationInformation(
                                         HashMap<DatabaseManager.RobotPosition, String> teams,
 
                                          //all the tables that data will be pulled from
-                                         ArrayList<String> dataTables) {
+                                         ArrayList<String> dataTables,
+                                         String name){
     @Override
     public String toString() {
-        return "Teams: " + teams.toString() +", Data tables: " +  dataTables.toString();
+        return "Name: " + name + "Teams: " + teams.toString() +", Data tables: " +  dataTables.toString();
     }
 
 }

@@ -28,6 +28,8 @@ public class AutoHeatMapCreatorDialog extends Dialog<HeatmapCreationInformation>
 
     private HashMap<DatabaseManager.RobotPosition, TextField> teamFields = new HashMap<>();
 
+    private TextField nameField = new TextField();
+
     private CheckListView<String> databaseView;
     public AutoHeatMapCreatorDialog() throws SQLException {
        setUpGUI();
@@ -37,7 +39,7 @@ public class AutoHeatMapCreatorDialog extends Dialog<HeatmapCreationInformation>
            }else {
                HashMap<DatabaseManager.RobotPosition, String> teams = new HashMap<>();
                teamFields.keySet().forEach(robotPosition -> teams.put(robotPosition, teamFields.get(robotPosition).getText()));
-                return new HeatmapCreationInformation(teams, new ArrayList<>(databaseView.getCheckModel().getCheckedItems().stream().toList()));
+                return new HeatmapCreationInformation(teams, new ArrayList<>(databaseView.getCheckModel().getCheckedItems().stream().toList()), nameField.getText());
            }
        });
 
@@ -61,7 +63,11 @@ public class AutoHeatMapCreatorDialog extends Dialog<HeatmapCreationInformation>
 
         HBox allianceBox = new HBox(redAllianceBox, new Separator(Orientation.VERTICAL), blueAllianceBox);
         allianceBox.setSpacing(spacing);
-        VBox settingsBox = new VBox(allianceBox,new Separator());
+
+
+        nameField.setPromptText("Enter Name:");
+        nameField.setText("Auto Heatmap");
+        VBox settingsBox = new VBox(allianceBox,new Separator(), new HBox(new Label("Name: "), nameField));
         settingsBox.setSpacing(spacing);
         HBox rootNode = new HBox(new VBox(new Label("Select Databases to pull data from: "), databaseView), new Separator(Orientation.VERTICAL), settingsBox);
         rootNode.setSpacing(spacing);
@@ -78,12 +84,6 @@ public class AutoHeatMapCreatorDialog extends Dialog<HeatmapCreationInformation>
                         Logging.logInfo("Select as least one data source", true);
                         event.consume();
                     }
-                    //dont check for this, its not nessacary
-                    /*else if (teamFields.keySet().stream().anyMatch(robotPosition -> Objects.equals(teamFields.get(robotPosition).getText(), ""))) {
-                        //if there is at least one field with  no team number
-                        Logging.logInfo("Please fill out all team number fields",true);
-                        event.consume();
-                    }*/
                 }
         );
     }

@@ -3,7 +3,9 @@ package org.tahomarobotics.scouting.scoutingserver.util.auto;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class AutoPath {
 
@@ -13,12 +15,19 @@ public class AutoPath {
         this.path = path;
         isNoAuto = path.isEmpty();
         this.startingPosition = startingPosition;
+        this.color = AutoHeatmap.getNextColor();
     }
 
     private final String teamNumber;
     private final ArrayList<Note> path;
     private final boolean isNoAuto;
     private final DatabaseManager.RobotPosition startingPosition;
+
+    private final Color color;
+
+    private boolean isVisible = true;
+
+
 
     public boolean isNoAuto() {
         return isNoAuto;
@@ -38,16 +47,33 @@ public class AutoPath {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Auto for team: ").append(teamNumber).append(" Notes: ");
+        builder.append(startingPosition).append(":");
+        builder.append(teamNumber).append(":");
+        builder.append(" Auto:");
         if (isNoAuto) {
             builder.append("NO AUTO");
         }else {
             for (Note note : path) {
-                builder.append(note.toString()).append(", ");
+                builder.append(note.toString()).append(",");
             }
         }
 
         return builder.toString();
+    }
+
+    public static AutoPath fromString(String str) {
+        String[] tokens = str.split(":");
+        DatabaseManager.RobotPosition pos = DatabaseManager.RobotPosition.valueOf(tokens[0]);
+        String teamNum = tokens[1];
+        String[] notes = tokens[3].split(",");
+        boolean hasAuto = !(Objects.equals(notes[0], "NO AUTO"));
+        ArrayList<Note> thePath = new ArrayList<>();
+        if (hasAuto) {
+            for (String note : notes) {
+                thePath.add(Note.valueOf(note));
+            }
+        }
+        return new AutoPath(teamNum, thePath, pos);
     }
 
     @Override
@@ -70,6 +96,18 @@ public class AutoPath {
 
     public DatabaseManager.RobotPosition getStartingPosition() {
         return startingPosition;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
     }
 
     public enum Note {
