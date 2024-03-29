@@ -46,13 +46,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="vbox" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.FormEditorController">
-    <children>
-        <MenuBar fx:id="formEditor" VBox.vgrow="NEVER">
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.FormEditorController">
+   <children>
+        <MenuBar fx:id="formEditor">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
@@ -85,7 +86,7 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <SplitPane dividerPositions="0.17386464826357967, 0.7504452359750667" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+        <SplitPane dividerPositions="0.17386464826357967, 0.7504452359750667" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0">
             <items>
                 <AnchorPane>
                     <children>
@@ -109,7 +110,8 @@
                                     </font>
                                     <textFill>
                                         <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
-                                    </textFill></Label>
+                                    </textFill>
+                        </Label>
                                 <ImageView fx:id="cursorImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
                             </children>
                         </AnchorPane>
@@ -122,7 +124,7 @@
                 </AnchorPane>
             </items>
         </SplitPane>
-        <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+        <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0">
             <children>
                 <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Left status" HBox.hgrow="ALWAYS">
                     <font>
@@ -139,5 +141,5 @@
                 <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
             </padding>
         </HBox>
-    </children>
-</VBox>
+   </children>
+</StackPane>

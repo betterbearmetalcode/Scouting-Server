@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
@@ -52,23 +53,8 @@ public class DataController {
 
 
             //construct a new tab
-            VBox pane = new VBox((VBox) tabLoader.load());
-            Tab tab = new Tab();
-            tab.setText(selectedTable);
-            tab.setId(selectedTable);
-            tab.setContent(pane);
-            tab.setClosable(true);
-            tab.setOnClosed(new EventHandler<Event>() {
-                @Override
-                public void handle(Event event) {
-                    for (TabController c : controllers) {
-                        if (Objects.equals(tab.getId(), c.tableName)) {
-                            controllers.remove(c);
-                            break;
-                        }
-                    }
-                }
-            });
+            GridPane pane = tabLoader.load();
+            Tab tab = getTab(selectedTable, pane);
 
             double appWidth = getAppWidth();
             double appHeight = getAppHeight();
@@ -76,12 +62,11 @@ public class DataController {
             pane.prefHeightProperty().bind(appHeightProperty());
             pane.prefWidthProperty().bind(tabPane.tabMaxWidthProperty());
             pane.setMaxHeight(appHeight);
-            VBox box = (VBox) pane.getChildren().get(0);
-            box.prefWidthProperty().bind(tabPane.tabMaxWidthProperty());
+            pane.prefWidthProperty().bind(tabPane.tabMaxWidthProperty());
 
 
-            box.prefHeightProperty().bind(appHeightProperty());
-            TreeView<Label> treeView = (TreeView<Label>) box.getChildren().get(0);
+            pane.prefHeightProperty().bind(appHeightProperty());
+            TreeView<Label> treeView = (TreeView<Label>) pane.getChildren().get(0);
             treeView.prefHeightProperty().bind(Constants.UIValues.databaseHeightProperty());
             treeView.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
             //pass the tree view to the controller class
@@ -98,6 +83,23 @@ public class DataController {
             Logging.logError(e);
         }
 
+    }
+
+    private static Tab getTab(String selectedTable, GridPane pane) {
+        Tab tab = new Tab();
+        tab.setText(selectedTable);
+        tab.setId(selectedTable);
+        tab.setContent(pane);
+        tab.setClosable(true);
+        tab.setOnClosed(event -> {
+            for (TabController c : controllers) {
+                if (Objects.equals(tab.getId(), c.tableName)) {
+                    controllers.remove(c);
+                    break;
+                }
+            }
+        });
+        return tab;
     }
 
     private String getSelectedTableFromUser() {

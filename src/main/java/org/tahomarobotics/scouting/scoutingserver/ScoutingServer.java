@@ -34,12 +34,12 @@ public class ScoutingServer extends Application {
     public static SCENES currentScene;
     public static Scene mainScene;
 
-    public static AnchorPane mainHamburgerMenu;
-    public static AnchorPane qrHamburgerMenu;
+    public static GridPane mainHamburgerMenu;
+    public static GridPane qrHamburgerMenu;
 
-    public static AnchorPane dataHamburgerMenu;
+    public static GridPane dataHamburgerMenu;
 
-    public static AnchorPane chartHamburgerMenu;
+    public static GridPane chartHamburgerMenu;
 
     public static Scene dataCorrectionScene;
 
@@ -50,13 +50,13 @@ public class ScoutingServer extends Application {
     public static Stage mainStage;
 
     public static Scene chartsScene;
-    static VBox mainRoot;
-    static VBox dataCollectionRoot;
-    static VBox dataRoot;
+    static StackPane mainRoot;
+    static StackPane dataCollectionRoot;
+    static StackPane dataRoot;
 
-    static VBox chartsRoot;
+    static StackPane chartsRoot;
 
-
+    private static final StackPane actualRoot = new StackPane();
 
     public static QRScannerController qrScannerController = new QRScannerController();
 
@@ -64,7 +64,8 @@ public class ScoutingServer extends Application {
     public void start(Stage stage) {
         mainStage = stage;
         mainStage.setTitle("Scouting Server");
-        mainStage.setScene(dataCollectionScene);
+        actualRoot.getChildren().add(dataCollectionScene.getRoot());
+        mainStage.setScene(new Scene(actualRoot));
         currentScene = SCENES.QR_SCANNER;
         mainStage.getIcons().add(new Image(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Logo.png"));
         mainStage.setOnCloseRequest(event -> {
@@ -99,19 +100,12 @@ public class ScoutingServer extends Application {
             Logging.logError(e);
         }
 
-        mainStage.widthProperty().addListener((observable, oldValue, newValue) -> {setAppWidthProperty(newValue.doubleValue()); resize(); });
-        mainStage.heightProperty().addListener((observable, oldValue, newValue) -> {setAppHeight(newValue.doubleValue());resize(); });
 
     }
 
     public static void setCurrentScene(Scene scene) {
-        double oldWidth = getAppWidth();
-        double oldHeight = getAppHeight();
-        mainStage.setScene(scene);
-        mainStage.setWidth(oldWidth);
-        mainStage.setHeight(oldHeight);
-        resize();
-
+        actualRoot.getChildren().clear();
+        actualRoot.getChildren().add(scene.getRoot());
     }
 
     @Override
@@ -122,10 +116,10 @@ public class ScoutingServer extends Application {
         mainScene = new Scene(mainLoader.load());
 
         FXMLLoader hamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
-        mainHamburgerMenu = new AnchorPane((AnchorPane) hamburgerLoader.load());
+        mainHamburgerMenu = hamburgerLoader.load();
 
         FXMLLoader dataCollectionHamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
-        qrHamburgerMenu = new AnchorPane((AnchorPane) dataCollectionHamburgerLoader.load());
+        qrHamburgerMenu = dataCollectionHamburgerLoader.load();
         FXMLLoader dataCollectionLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/data-collection.fxml").toURI().toURL());
         dataCollectionScene = new Scene(dataCollectionLoader.load());
 
@@ -133,14 +127,13 @@ public class ScoutingServer extends Application {
         dataScene = new Scene(dataLoader.load());
 
         FXMLLoader dataHamburgerLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
-        dataHamburgerMenu = new AnchorPane((AnchorPane) dataHamburgerLoader.load());
-
+        dataHamburgerMenu = dataHamburgerLoader.load();
 
         FXMLLoader chartLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/chart-scene.fxml").toURI().toURL());
         chartsScene = new Scene(chartLoader.load());
 
         FXMLLoader chartsHamburgerMenuLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
-        chartHamburgerMenu = new AnchorPane((AnchorPane) chartsHamburgerMenuLoader.load());
+        chartHamburgerMenu = chartsHamburgerMenuLoader.load();
 
         setUpMainScene();
         setUpQRScannerScene();
@@ -189,8 +182,9 @@ public class ScoutingServer extends Application {
         double appWidth = getAppWidth();
         double appHeight = getAppHeight();
 
-        VBox parent = (VBox) dataScene.getRoot();
+        StackPane parent = (StackPane) dataScene.getRoot();
         dataRoot = parent;
+
         SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
         AnchorPane menuPane = (AnchorPane) splitPane.getItems().get(0);
         menuPane.getChildren().add(dataHamburgerMenu);
@@ -220,8 +214,9 @@ public class ScoutingServer extends Application {
 
         double appWidth = getAppWidth();
         double appHeight = getAppHeight();
-        VBox parent = (VBox) mainScene.getRoot();
+        StackPane parent = (StackPane) mainScene.getRoot();
         mainRoot = parent;
+
         SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
         AnchorPane anchorPane = (AnchorPane) splitPane.getItems().get(0);
         anchorPane.getChildren().add(mainHamburgerMenu);
@@ -260,8 +255,9 @@ public class ScoutingServer extends Application {
         double appWidth = getAppWidth();
         double appHeight = getAppHeight();
 
-        VBox parent = (VBox) chartsScene.getRoot();
+        StackPane parent = (StackPane) chartsScene.getRoot();
         chartsRoot = parent;
+
         SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
         AnchorPane menuPane = (AnchorPane) splitPane.getItems().get(0);
         menuPane.getChildren().add(chartHamburgerMenu);
@@ -291,8 +287,9 @@ public class ScoutingServer extends Application {
         double appHeight = getAppHeight();
 
         //add hamburger menu to qr scanner scene
-        VBox parent = (VBox) dataCollectionScene.getRoot();
+        StackPane parent = (StackPane) dataCollectionScene.getRoot();
         dataCollectionRoot = parent;
+
         SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
         AnchorPane menuPane = (AnchorPane) splitPane.getItems().get(0);
         menuPane.getChildren().add(qrHamburgerMenu);
