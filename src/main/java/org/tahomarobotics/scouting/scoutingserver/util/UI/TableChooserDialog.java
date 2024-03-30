@@ -73,7 +73,25 @@ public class TableChooserDialog extends Dialog<String> {
 
         newCompetitionButton.setOnAction(event -> {
             try {
+                int counter = 0;
                 String name = "New Database";
+                //this loop is to prevent the list from having multiple databases with the same name in the while in reality there
+                //is only one in database with that name
+                while (true) {
+                    if (listView.getItems().contains(name)) {
+                        name = name + " -copy";
+                    }else {
+                        break;
+                    }
+                    counter++;
+                    if (counter > 100) {
+                        //I don't want the app to ever get stuck here, i only expect this to happen if the user clicks new database 100 times
+                        Logging.logInfo("You are a ding dong, delete or rename some databases", true);
+                        return;
+                    }
+                }
+
+
                 SQLUtil.addTableIfNotExists(name, SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
                 listView.getItems().add(name);
 
