@@ -10,12 +10,12 @@ import java.util.Objects;
 public class AutoPath {
 
 
-    public AutoPath(String teamNumber, ArrayList<Note> path, DatabaseManager.RobotPosition startingPosition) {
+    public AutoPath(String teamNumber, ArrayList<Note> path, DatabaseManager.RobotPosition startingPosition, Color theColor) {
         this.teamNumber = teamNumber;
         this.path = path;
         isNoAuto = path.isEmpty();
         this.startingPosition = startingPosition;
-        this.color = AutoHeatmap.getNextColor();
+        this.color = theColor;
     }
 
     private final String teamNumber;
@@ -73,7 +73,7 @@ public class AutoPath {
                 thePath.add(getNoteFromDisplayString(note, pos.ordinal() < 3));
             }
         }
-        return new AutoPath(teamNum, thePath, pos);
+        return new AutoPath(teamNum, thePath, pos, Color.GRAY);//this path is used for comparison purposers and its color does not matter
     }
 
     @Override
