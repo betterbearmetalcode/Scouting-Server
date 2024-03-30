@@ -291,16 +291,7 @@ public class TabController {
         Optional<String> result = chooser.showAndWait();
         AtomicReference<String> selectedEvent = new AtomicReference<>("");
         result.ifPresent(selectedEvent::set);
-        String temp = selectedEvent.get();
-        if (!Objects.equals(temp, "")) {
-            Optional<Pair<String, String>> event = chooser.getOtherEvents().stream().filter(s -> s.getValue().equals(temp)).findFirst();
-            AtomicReference<Pair<String,String>> selectedEventCode = new AtomicReference<>(new Pair<>("",""));
-            event.ifPresent(selectedEventCode::set);
-            currentEventCode = selectedEventCode.get().getKey();
-
-        }else {
-            currentEventCode =  "";
-        }
+        currentEventCode = selectedEvent.get();
         return Objects.equals(currentEventCode, "");
 
     }
