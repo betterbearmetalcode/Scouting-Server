@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 
@@ -20,7 +21,8 @@ public class MenuController extends VBox {
         DATA_CORRECTION,
         DATA_SCENE,
         CHARTS,
-        MISC
+        MISC,
+        AUTO_HEATMAPS
     }
 
     @FXML
@@ -54,6 +56,7 @@ public class MenuController extends VBox {
 
             ScoutingServer.setCurrentScene(ScoutingServer.dataScene);
             ScoutingServer.currentScene = SCENES.DATA_SCENE;
+            DataController.refreshTabs();
         }
     }
 
@@ -116,6 +119,15 @@ public class MenuController extends VBox {
 
             ScoutingServer.setCurrentScene(ScoutingServer.miscScene);
             ScoutingServer.currentScene = SCENES.MISC;
+        }
+    }
+
+    public void openHeatMapScene(ActionEvent event) {
+        if (ScoutingServer.currentScene != SCENES.AUTO_HEATMAPS) {
+
+
+            ScoutingServer.setCurrentScene(ScoutingServer.autoHeatmapScene);
+            ScoutingServer.currentScene = SCENES.AUTO_HEATMAPS;
         }
     }
 

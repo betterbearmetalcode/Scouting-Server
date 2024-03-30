@@ -36,6 +36,7 @@ public class ScoutingServer extends Application {
     public static AnchorPane chartHamburgerMenu;
 
     public static AnchorPane miscHamburgerMenu;
+    public static AnchorPane autoHeatmapHamburgerMenu;
 
     public static Scene dataCorrectionScene;
 
@@ -48,12 +49,15 @@ public class ScoutingServer extends Application {
     public static Scene chartsScene;
 
     public static Scene miscScene;
+
+    public static Scene autoHeatmapScene;
     static VBox mainRoot;
     static VBox dataCollectionRoot;
     static VBox dataRoot;
 
     static VBox miscRoot;
     static VBox chartsRoot;
+    static VBox autoHeatmapRoot;
 
 
 
@@ -153,6 +157,12 @@ public class ScoutingServer extends Application {
         FXMLLoader miscHamburgerMenuLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
         miscHamburgerMenu = new AnchorPane((AnchorPane) miscHamburgerMenuLoader.load());
 
+        FXMLLoader autoHeatMapLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/auto-heatmap-scene.fxml").toURI().toURL());
+        autoHeatmapScene = new Scene(autoHeatMapLoader.load());
+
+
+        FXMLLoader autoHeatMapMenuLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/hamburger-menu.fxml").toURI().toURL());
+        autoHeatmapHamburgerMenu = new AnchorPane((AnchorPane) autoHeatMapMenuLoader.load());
 
         setUpMainScene();
         setUpDataCollectionScene();
@@ -163,6 +173,8 @@ public class ScoutingServer extends Application {
 
 
         setUpMiscScene();
+
+        setUpAutoHeatMapScene();
 
         resize();
 
@@ -187,6 +199,7 @@ public class ScoutingServer extends Application {
         dataCollectionRoot.setPrefSize(appWidth, appHeight);
         dataRoot.setPrefSize(appWidth, appHeight);
         Constants.UIValues.setSplitWidthProperty(appWidth - MIN_HAMBURGER_MENU_SIZE);
+        Constants.UIValues.setHalfsplitWidthProperty((appWidth - MIN_HAMBURGER_MENU_SIZE)/2);
         Constants.UIValues.setMainScrollPaneHeightProperty(appHeight - MIN_MAIN_BUTTON_BAR_HEIGHT);
         Constants.UIValues.setCollectionScrollPaneHeightProperty(appHeight - MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT);
         Constants.UIValues.setDatabaseHeightProperty(appHeight- MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT);
@@ -373,5 +386,30 @@ public class ScoutingServer extends Application {
         topHbox.setMinHeight(MIN_MAIN_BUTTON_BAR_HEIGHT);
     }
 
+    private void setUpAutoHeatMapScene() {
+        double appWidth = getAppWidth();
+        double appHeight = getAppHeight();
 
+        VBox parent = (VBox) autoHeatmapScene.getRoot();
+        autoHeatmapRoot = parent;
+        SplitPane splitPane = (SplitPane) parent.getChildren().get(0);
+        AnchorPane menuPane = (AnchorPane) splitPane.getItems().get(0);
+        menuPane.getChildren().add(autoHeatmapHamburgerMenu);
+
+        parent.setPrefSize(appWidth, appHeight);
+        splitPane.prefHeightProperty().bind(autoHeatmapRoot.heightProperty());
+        splitPane.prefWidthProperty().bind(autoHeatmapRoot.widthProperty());
+        menuPane.prefHeightProperty().bind(autoHeatmapRoot.heightProperty());
+        autoHeatmapHamburgerMenu.prefHeightProperty().bind(autoHeatmapRoot.heightProperty());
+        autoHeatmapHamburgerMenu.setMinWidth(MIN_HAMBURGER_MENU_SIZE);
+        autoHeatmapHamburgerMenu.setMaxWidth(autoHeatmapHamburgerMenu.getMinWidth());
+        menuPane.prefWidthProperty().bind(autoHeatmapHamburgerMenu.widthProperty());
+        menuPane.setMinWidth(autoHeatmapHamburgerMenu.getMinWidth());
+        menuPane.setMaxWidth(autoHeatmapHamburgerMenu.getMaxWidth());
+
+        VBox mainVbox = (VBox) splitPane.getItems().get(1);
+        mainVbox.prefHeightProperty().bind(autoHeatmapRoot.heightProperty());
+        mainVbox.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
+
+    }
 }

@@ -4,14 +4,23 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
 import org.dhatim.fastexcel.Color;
+import javafx.fxml.Initializable;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DataValidationCompetitionChooser;
+import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.Logging;
+import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.AutoHeatMapCreatorDialog;
+import org.tahomarobotics.scouting.scoutingserver.util.auto.AutoHeatmap;
+import org.tahomarobotics.scouting.scoutingserver.util.auto.AutoPath;
+import org.tahomarobotics.scouting.scoutingserver.util.auto.HeatmapCreationInformation;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,6 +28,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.*;
 
 public class MiscController {
 
@@ -175,4 +187,5 @@ public class MiscController {
             throw new RuntimeException(e);
         }
     }
+
 }
