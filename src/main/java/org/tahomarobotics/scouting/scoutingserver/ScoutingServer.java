@@ -17,6 +17,7 @@ import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 
 import java.awt.*;
 import java.io.File;
+import java.io.PipedReader;
 import java.sql.SQLException;
 
 import static org.tahomarobotics.scouting.scoutingserver.Constants.UIValues.*;
@@ -100,6 +101,9 @@ public class ScoutingServer extends Application {
             Logging.logError(e);
         }
 
+        mainStage.widthProperty().addListener((observable, oldValue, newValue) -> {setAppWidthProperty(newValue.doubleValue()); resize(); });//added becuase it makes the stuff actually resize and does  not cause problems
+        mainStage.heightProperty().addListener((observable, oldValue, newValue) -> {setAppHeight(newValue.doubleValue());resize(); });
+
 
     }
 
@@ -143,7 +147,6 @@ public class ScoutingServer extends Application {
         setUpChartsScene();
 
         resize();
-
 
     }
 

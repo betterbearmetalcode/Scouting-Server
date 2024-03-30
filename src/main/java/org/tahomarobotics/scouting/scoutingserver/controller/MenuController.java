@@ -26,6 +26,7 @@ public class MenuController extends VBox {
     @FXML
     public void enterDataCollectionScene(ActionEvent event) {
         if (ScoutingServer.currentScene != ScoutingServer.SCENES.QR_SCANNER) {
+            Logging.logInfo("Switching to data collection scene");//tells anyone reading the logs what is happening so we can analyze the circumstances leading up to errors
             ScoutingServer.setCurrentScene(ScoutingServer.dataCollectionScene);
             ScoutingServer.currentScene = ScoutingServer.SCENES.QR_SCANNER;
         }
@@ -33,13 +34,7 @@ public class MenuController extends VBox {
 
     @FXML
     public void backToMainMenu(ActionEvent event) {
-        //no main menu, just a help button
-/*        if (ScoutingServer.currentScene != ScoutingServer.SCENES.MAIN_MENU) {
-
-
-            ScoutingServer.setCurrentScene(ScoutingServer.mainScene);
-            ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
-        }*/
+        Logging.logInfo("Opening Help menu");
         //open tutorial
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
@@ -53,7 +48,7 @@ public class MenuController extends VBox {
     @FXML
     public void openDataScene(ActionEvent event) {
         if (ScoutingServer.currentScene != ScoutingServer.SCENES.DATA_SCENE) {
-
+            Logging.logInfo("Opening data scene");
 
             ScoutingServer.setCurrentScene(ScoutingServer.dataScene);
             ScoutingServer.currentScene = ScoutingServer.SCENES.DATA_SCENE;
@@ -64,13 +59,14 @@ public class MenuController extends VBox {
     public void enterDataCorrectionScene(ActionEvent event) {
         if (ScoutingServer.currentScene != ScoutingServer.SCENES.DATA_CORRECTION) {
 
-
+            Logging.logInfo("Opening data correction scene");
             ScoutingServer.setCurrentScene(ScoutingServer.dataCorrectionScene);
             ScoutingServer.currentScene = ScoutingServer.SCENES.DATA_CORRECTION;
         }
     }
 
-    @FXML
+    //unused now, maybe in the future
+    /*@FXML
     public void developerToolsButton(ActionEvent event) {
         AtomicReference<Boolean> selectedEvent = new AtomicReference<>(false);
         if (!Constants.devUnlocked) {
@@ -102,11 +98,11 @@ public class MenuController extends VBox {
                 ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
             }
         }
-    }
+    }*/
     @FXML
     public void openCharts(ActionEvent event) {
         if (ScoutingServer.currentScene != ScoutingServer.SCENES.CHARTS) {
-
+            Logging.logInfo("Opening Charts");
 
             ScoutingServer.setCurrentScene(ScoutingServer.chartsScene);
             ScoutingServer.currentScene = ScoutingServer.SCENES.CHARTS;
