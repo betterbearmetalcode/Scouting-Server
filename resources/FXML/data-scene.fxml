@@ -10,8 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.DataController">
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tahomarobotics.scouting.scoutingserver.controller.DataController">
    <children>
       <SplitPane dividerPositions="0.22240802675585283" prefHeight="606.0" prefWidth="826.0">
         <items>

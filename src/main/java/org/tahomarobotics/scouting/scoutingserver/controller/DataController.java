@@ -46,7 +46,6 @@ public class DataController {
             if (Objects.equals(selectedTable, "")) {
                 return;
             }
-            //check if this tab is already open
 
             TabController controller = new TabController(DatabaseManager.getUnCorrectedDataFromDatabase(selectedTable), selectedTable, tabPane);
             tabLoader.setController(controller);
@@ -65,7 +64,6 @@ public class DataController {
             pane.prefWidthProperty().bind(tabPane.tabMaxWidthProperty());
 
 
-            pane.prefHeightProperty().bind(appHeightProperty());
             TreeView<Label> treeView = (TreeView<Label>) pane.getChildren().get(0);
             treeView.prefHeightProperty().bind(Constants.UIValues.databaseHeightProperty());
             treeView.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
@@ -73,7 +71,6 @@ public class DataController {
 
             controller.initialize(treeView);
 
-            //remove controllers from the list when the tab is closed
             tabPane.getTabs().add(tabPane.getTabs().size() - 1, tab);
             tabPane.getSelectionModel().select(tab);
             controllers.add(controller);
@@ -85,7 +82,7 @@ public class DataController {
 
     }
 
-    private static Tab getTab(String selectedTable, GridPane pane) {
+    private Tab getTab(String selectedTable, GridPane pane) {
         Tab tab = new Tab();
         tab.setText(selectedTable);
         tab.setId(selectedTable);
@@ -99,6 +96,7 @@ public class DataController {
                 }
             }
         });
+        tabPane.setTabMaxHeight(9999);
         return tab;
     }
 

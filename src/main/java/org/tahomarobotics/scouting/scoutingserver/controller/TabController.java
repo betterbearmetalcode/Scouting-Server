@@ -8,6 +8,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
@@ -28,6 +31,8 @@ import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static org.tahomarobotics.scouting.scoutingserver.Constants.UIValues.MIN_MAIN_BUTTON_BAR_HEIGHT;
 
 public class TabController {
 
@@ -71,16 +76,18 @@ public class TabController {
         setEditMode(false);
         treeView.setShowRoot(false);
         treeView.setRoot(rootItem);
-        treeView.setOnEditStart(new EventHandler<TreeView.EditEvent<Label>>() {
-            @Override
-            public void handle(TreeView.EditEvent<Label> event) {
-                if (!editmode) {
-                    setEditMode(true);
-                    event.consume();
-                }
-
+        treeView.setOnEditStart(event -> {
+            if (!editmode) {
+                setEditMode(true);
+                event.consume();
             }
+
         });
+        GridPane root = (GridPane) treeView.getParent();
+        root.prefHeightProperty().bind(Constants.UIValues.databaseHeightProperty());
+        FlowPane bottomPane = (FlowPane) root.getChildren().get(1);
+        bottomPane.prefHeightProperty().bind(Constants.UIValues.buttonBarHeightProperty);
+        bottomPane.setMaxHeight(MIN_MAIN_BUTTON_BAR_HEIGHT);
 
         //init list of events
         try {

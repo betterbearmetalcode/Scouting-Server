@@ -65,8 +65,8 @@ public class ScoutingServer extends Application {
     public void start(Stage stage) {
         mainStage = stage;
         mainStage.setTitle("Scouting Server");
-        actualRoot.getChildren().add(dataCollectionScene.getRoot());
-        mainStage.setScene(new Scene(actualRoot));
+        //actualRoot.getChildren().add(dataCollectionScene.getRoot());
+        mainStage.setScene(dataCollectionScene);
         currentScene = SCENES.QR_SCANNER;
         mainStage.getIcons().add(new Image(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Logo.png"));
         mainStage.setOnCloseRequest(event -> {
@@ -108,8 +108,15 @@ public class ScoutingServer extends Application {
     }
 
     public static void setCurrentScene(Scene scene) {
-        actualRoot.getChildren().clear();
-        actualRoot.getChildren().add(scene.getRoot());
+        double oldWidth = getAppWidth();
+        double oldHeight = getAppHeight();
+        mainStage.setScene(scene);
+        //mainStage.setWidth(oldWidth);
+        //mainStage.setHeight(oldHeight);
+        //actualRoot.getChildren().clear();
+       // actualRoot.getChildren().add(scene.getRoot());
+        resize();
+
     }
 
     @Override
@@ -169,13 +176,14 @@ public class ScoutingServer extends Application {
         dataRoot.setPrefSize(appWidth, appHeight);
         Constants.UIValues.setSplitWidthProperty(appWidth - MIN_HAMBURGER_MENU_SIZE);
         Constants.UIValues.setMainScrollPaneHeightProperty(appHeight - MIN_MAIN_BUTTON_BAR_HEIGHT);
-        Constants.UIValues.setCollectionScrollPaneHeightProperty(appHeight - MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT);
-        Constants.UIValues.setDatabaseHeightProperty(appHeight- MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT);
+        Constants.UIValues.setCollectionScrollPaneHeightProperty(appHeight - MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT);
+        Constants.UIValues.setDatabaseHeightProperty(appHeight- MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT);
         SplitPane mainSplitPane = (SplitPane) mainRoot.getChildren().get(0);
         mainSplitPane.setDividerPosition(0, MIN_HAMBURGER_MENU_SIZE/appWidth);
         mainRoot.resize(appWidth, appHeight);
         dataCollectionRoot.resize(appWidth, appHeight);
         dataRoot.resize(appWidth, appHeight);
+        chartsRoot.resize(appWidth, appHeight);
     }
 
     private void setUpDataScene() {
@@ -255,8 +263,10 @@ public class ScoutingServer extends Application {
     }
 
     private void setUpChartsScene() {
+
         double appWidth = getAppWidth();
         double appHeight = getAppHeight();
+
 
         StackPane parent = (StackPane) chartsScene.getRoot();
         chartsRoot = parent;
@@ -281,11 +291,15 @@ public class ScoutingServer extends Application {
         mainVbox.prefHeightProperty().bind(chartsRoot.heightProperty());
         mainVbox.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
 
+        TabPane tabPane = (TabPane) mainVbox.getChildren().get(0);
+        tabPane.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
+        tabPane.prefHeightProperty().bind(Constants.UIValues.appHeightProperty());
+
 
     }
 
 
-    private void setUpQRScannerScene() {
+    private static  void setUpQRScannerScene() {
         double appWidth = getAppWidth();
         double appHeight = getAppHeight();
 
