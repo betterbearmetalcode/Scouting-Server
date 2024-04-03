@@ -202,6 +202,12 @@ public class QRScannerController {
 
     }
 
+    @FXML
+    public void clearConsole(ActionEvent event) {
+        Logging.logInfo("Clearing data collection console");
+        imageViewBox.getChildren().clear();
+
+    }
     public void writeToDataCollectionConsole(String str, Color color) {
         Platform.runLater(() -> {
             Label l = new Label(str);

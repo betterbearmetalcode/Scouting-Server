@@ -52,6 +52,11 @@
                            </HBox.margin>
                         </Button>
                         <Button fx:id="serverButton" disable="true" mnemonicParsing="false" onAction="#toggleServerStatus" text="Start Wireless Data Colleciton Server" />
+                        <Button mnemonicParsing="false" onAction="#clearConsole" text="Clear Console">
+                           <HBox.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </HBox.margin>
+                        </Button>
                      </children>
                   </HBox>
                </children>
