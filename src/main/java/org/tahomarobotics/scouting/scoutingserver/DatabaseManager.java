@@ -33,6 +33,21 @@ public class DatabaseManager {
     public static void storeRawQRData(String dataRaw, String tablename) throws IOException, DuplicateDataException {
         try {
             String[] data = dataRaw.split(Constants.QR_DATA_DELIMITER);
+            if (data.length == 22) {
+                //then its an old version of the data and we need to add a default A stop value
+                String[] newData = new String[23];
+                for (int i = 0; i < data.length + 1; i++) {
+                    if (i < 15) {
+                        newData[i] = data[i];
+                    }else if (i == 15) {
+                        newData[i] = "0";
+                    }else {
+                        newData[i] = data[i-1];
+                    }
+
+                }
+                data = newData;
+            }
             QRRecord m = new QRRecord(Integer.parseInt(data[0]),//match num
                     Integer.parseInt(data[1]),//team num
                     getRobotPositionFromNum(Integer.parseInt(data[2])),//allinace pos
