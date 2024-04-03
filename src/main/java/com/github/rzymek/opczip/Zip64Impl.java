@@ -121,7 +121,7 @@ class Zip64Impl {
     }
 
     /**
-     * Writes a 16-bit short to the output stream in little-endian byte order.
+     * Writes noteA 16-bit short to the output stream in little-endian byte order.
      */
     private void writeShort(int v) throws IOException {
         OutputStream out = this.out;
@@ -131,7 +131,7 @@ class Zip64Impl {
     }
 
     /**
-     * Writes a 32-bit int to the output stream in little-endian byte order.
+     * Writes noteA 32-bit int to the output stream in little-endian byte order.
      */
     private void writeInt(long v) throws IOException {
         OutputStream out = this.out;
@@ -143,7 +143,7 @@ class Zip64Impl {
     }
 
     /**
-     * Writes a 64-bit int to the output stream in little-endian byte order.
+     * Writes noteA 64-bit int to the output stream in little-endian byte order.
      */
     private void writeLong(long v) throws IOException {
         OutputStream out = this.out;

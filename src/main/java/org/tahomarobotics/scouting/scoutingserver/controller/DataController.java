@@ -51,7 +51,7 @@ public class DataController {
             tabLoader.setController(controller);
 
 
-            //construct a new tab
+            //construct noteA new tab
             VBox pane = new VBox((VBox) tabLoader.load());
             Tab tab = new Tab();
             tab.setText(selectedTable);

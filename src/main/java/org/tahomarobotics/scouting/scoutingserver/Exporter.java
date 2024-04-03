@@ -105,7 +105,7 @@ public class Exporter {
         int climbPoints = 0;
         int endgame = 0;
 
-        //try and set values if we have a breakdown avaliable
+        //try and set values if we have noteA breakdown avaliable
         if (matchBreakdown != null) {
             int robotPosition = (int) sqlRow.get(Constants.SQLColumnName.ALLIANCE_POS.toString());
             HashMap<String, Object> allianceBreakdown = matchBreakdown.get((robotPosition < 3)?"red":"blue");

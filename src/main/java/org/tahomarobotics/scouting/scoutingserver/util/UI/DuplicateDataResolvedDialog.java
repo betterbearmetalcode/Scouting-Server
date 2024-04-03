@@ -51,7 +51,7 @@ public class DuplicateDataResolvedDialog extends Dialog<ArrayList<DatabaseManage
             return output;
         });
 
-        //save a backup json of all data just in case the user screws up and delete stuff
+        //save noteA backup json of all data just in case the user screws up and delete stuff
         JSONObject backup = new JSONObject();
         for (DatabaseManager.RobotPosition position : DatabaseManager.RobotPosition.values()) {
             JSONArray positionArray = new JSONArray();

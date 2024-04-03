@@ -35,7 +35,7 @@ public class DataValidationCompetitionChooser extends Dialog<String> {
             eventList = new JSONArray(new String(stream.readAllBytes()));
             stream.close();
         }catch (IOException e) {
-            Logging.logError(e, "Whooop de doo, another IO exception, I guess your just screwed now,-C.H, try closing things and dont delete the resources folder and maybe restart the app and/or your computer if competitons aren't showing up this is probably why, this will probably never show up, but I kind of hope it does because it would be funny and I sat here typing a unessacarily long error message for no good reason");
+            Logging.logError(e, "Whooop de doo, another IO exception, I guess your just screwed now,-C.H, try closing things and dont delete the resources folder and maybe restart the app and/or your computer if competitons aren't showing up this is probably why, this will probably never show up, but I kind of hope it does because it would be funny and I sat here typing noteA unessacarily long error message for no good reason");
         }
 
 
