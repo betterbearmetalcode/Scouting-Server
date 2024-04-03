@@ -126,28 +126,28 @@ public class AutoPath {
 
     public static Note getNoteFromSQLColumn(Constants.SQLColumnName column, boolean red) {
         switch (column) {
-            case F1 -> {
+            case NOTE_A -> {
                 return red?Note.RED_A:Note.BLUE_A;
             }
-            case F2 -> {
+            case NOTE_B -> {
                 return red?Note.RED_B:Note.BLUE_B;
             }
-            case F3 -> {
+            case NOTE_C -> {
                 return red?Note.RED_C:Note.BLUE_C;
             }
-            case M1 -> {
+            case NOTE_1 -> {
                 return Note.ONE;
             }
-            case M2 -> {
+            case NOTE_2 -> {
                 return Note.TWO;
             }
-            case M3 -> {
+            case NOTE_3 -> {
                 return Note.THREE;
             }
-            case M4 -> {
+            case NOTE_4 -> {
                 return Note.FOUR;
             }
-            case M5 -> {
+            case NOTE_5 -> {
                 return Note.FIVE;
             }
             default -> throw new IllegalArgumentException("Argument is not a note");
