@@ -9,20 +9,26 @@ import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DataValidator {
 
 
     public static  ArrayList<Match> validateData(String eventCode, ArrayList<Match> databaseData) {
-        try {
-            JSONArray eventMatches = APIUtil.get("/event/" + eventCode + "/matches");//returns array of json objects each representing noteA match
-            if (eventMatches.get(0).equals("NoInternet")) {
-                Logging.logInfo("Cannot validate data, returning unmodified data");
+
+            ArrayList<Match> output = new ArrayList<>();
+            Optional<JSONArray> eventMatchesOptional = APIUtil.getEventMatches(eventCode);
+            if (eventMatchesOptional.isEmpty()) {
+                Logging.logInfo("Failed to validate data, likely causes: No Internet, No matches on TBA", true);
                 return databaseData;
             }
-            ArrayList<Match> output = new ArrayList<>();
-            ArrayList<Object> rawList =  new ArrayList<>(eventMatches.toList());
+            //this only happens if there is actually data we can use in the optional
+            ArrayList<Object> rawList =  new ArrayList<>(eventMatchesOptional.get().toList());
 
+            boolean checkTeamNumbers = true;
             for (Match matchData : databaseData) {
                 ArrayList<RobotPositon> corectedRobotPositons = new ArrayList<>();
                 Optional<Object> matchTBAData =  getTBAMatchObject(rawList, eventCode, matchData.matchNumber());
@@ -31,21 +37,94 @@ public class DataValidator {
                     output.add(matchData);
                     continue;
                 }
+                HashMap<String, Object> matchDatum = (HashMap<String, Object>) matchTBAData.get();
                 if (!matchData.robotPositons().isEmpty()) {
+                    //if we actually have data for this match then validate it
+                    //otherwise forget about it because its just showing up as an empty match
+
+                    if (checkTeamNumbers) {
+                        //check if the teams we have for this match line up with what tba says to look for scouting mistakes
+                        //get a list of team numbers correlated with the robot positions.
+                        //doing these with seperate try catch blocks because some parts of TBA data can be updated at different times
+                        try {
+                            //get team objects
+                            HashMap<String, Object> allianceMap =  (HashMap<String, Object>) matchDatum.getOrDefault("alliances", null);
+                            HashMap<String, Object> blueAllianceTeams = (HashMap<String, Object>) allianceMap.getOrDefault("blue", null);
+                            HashMap<String, Object> redAllianceTeams = (HashMap<String, Object>) allianceMap.getOrDefault("red", null);
+
+                            //get array of teams
+                            ArrayList<String> blueTeams = (ArrayList<String>) blueAllianceTeams.getOrDefault("team_keys", null);
+                            ArrayList<String> teamKeys = ((ArrayList<String>) redAllianceTeams.getOrDefault("team_keys", null));
+                            teamKeys.addAll(blueTeams);
+                            ArrayList<String> teamNums =new ArrayList<>();
+                            teamKeys.forEach(s -> teamNums.add(s.split("frc")[1]));
+                            //get map of correct team numbers and robot positions
+                            HashMap<Integer, DatabaseManager.RobotPosition> correctMatchConfiguration = new HashMap<>();
+                            if (teamNums.size() != 6) {
+                                Logging.logInfo("Aborting team validation for this match because TBA data is corrupt", true);
+                                break;
+                            }
+                            for (DatabaseManager.RobotPosition robotPosition : DatabaseManager.RobotPosition.values()) {
+                                correctMatchConfiguration.put(Integer.parseInt(teamNums.get(robotPosition.ordinal())), robotPosition);
+                            }
+
+                            //check the scouting data against this data
+                            for (int teamNum : correctMatchConfiguration.keySet()) {
+                                DatabaseManager.RobotPosition correctRobotPosition = correctMatchConfiguration.get(teamNum);
+                                List<RobotPositon> scoutingDataForThisPosition = matchData.robotPositons().stream().filter(robotPositon -> robotPositon.robotPosition() == correctRobotPosition).collect(Collectors.toList());
+                                if (scoutingDataForThisPosition.size() == 1) {
+                                    //then there is only one robot entered for this position
+                                    if (scoutingDataForThisPosition.get(0).teamNumber() != teamNum) {
+                                        //then the scouting data has the incorrect team number
+                                        //notify user and if they want to stop checking team numbers
+                                        if (!Constants.askQuestion("Match: " + matchData.matchNumber() + " Position: " + correctRobotPosition.name() + " has the incorrect team entered, continue checking team numbers?")) {
+                                            checkTeamNumbers = false;
+                                            break;
+                                        }
+                                    }
+                                }else if (scoutingDataForThisPosition.size() > 1) {
+                                    //then there are multiple teams entered for the position
+                                    Logging.logInfo("Multiple teams are entered for Match: " + matchData.matchNumber() + " Position: " + correctRobotPosition, true);
+                                }else {
+                                    //there is no scouting data for this team on TBA
+                                    if (!Constants.askQuestion("Match: " + matchData.matchNumber() + " Position: " + correctRobotPosition.name() + " has no data, continue checking team numbers?")) {
+                                        checkTeamNumbers = false;
+                                        break;
+                                    }
+                                }
+                            }//end for each team in this match
+
+                        }catch (NullPointerException | ClassCastException e) {
+                            //there is no breakdown or something went wrong so skip validation
+                            Logging.logError(e, " skipping team validation for this match becuase TBA is not updated");
+                        }
+                    }
+
+
+
+
                     try {
+
+
+                        //get scouting data for red and blue alliances sepratly
                         List<RobotPositon> redRobotPositons = matchData.robotPositons().stream().filter(robot -> robot.robotPosition().ordinal() < 3).toList();
                         List<RobotPositon> blueRobotPositons = matchData.robotPositons().stream().filter(robot -> robot.robotPosition().ordinal() > 2).toList();
-                        HashMap<String, Object> matchDatum = (HashMap<String, Object>) matchTBAData.get();
+
+                        //get TBA match score breakdowns for each alliance
                         HashMap<String, Object> matchScoreBreakdown = (HashMap<String, Object>) matchDatum.get("score_breakdown");
                         HashMap<String, Object> redAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("red");
                         HashMap<String, Object> blueAllianceScoreBreakdown  = (HashMap<String, Object>) matchScoreBreakdown.get("blue");
 
+
+                        //use alliance score breakdown to generate corrected datapoint objects and add them to a match object
                         corectedRobotPositons.addAll(correctAlliance(redRobotPositons.size() == 3, redRobotPositons, redAllianceScoreBreakdown));
                         corectedRobotPositons.addAll(correctAlliance(blueRobotPositons.size() == 3, blueRobotPositons, blueAllianceScoreBreakdown));
                         output.add(new Match(matchData.matchNumber(), new ArrayList<>(corectedRobotPositons)));
                     }catch (NullPointerException e) {
                         //null pointer menas that there is no breakdown yet so skip validation
                         Logging.logInfo(e.getMessage() + " skipping validation of this match because TBA not updated");
+                        //add old match so it doesn't disappear
+                        output.add(matchData);
                     }
 
                 }
@@ -54,13 +133,8 @@ public class DataValidator {
 
             return output;
 
-
-        } catch (IOException | InterruptedException e) {
-            Logging.logError(e, "failed to validate data");
-            return databaseData;
-        }
-
     }
+
 
     private static ArrayList<RobotPositon> correctAlliance(boolean allianceComplete, List<RobotPositon> robotPositons, HashMap<String, Object> breakdown) {
         ArrayList<RobotPositon> correctedAlliance = new ArrayList<>();

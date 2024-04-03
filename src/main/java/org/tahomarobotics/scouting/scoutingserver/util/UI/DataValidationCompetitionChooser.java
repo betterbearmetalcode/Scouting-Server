@@ -13,6 +13,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class DataValidationCompetitionChooser extends Dialog<String> {
     private final TextField autoCompletionField = new TextField();
@@ -56,10 +59,17 @@ public class DataValidationCompetitionChooser extends Dialog<String> {
         this.setResultConverter(dialogButton -> {
             if (dialogButton == okButton) {
                 Constants.LOW_ERROR_THRESHOLD = dataValidationThresholdSpinner.getValue();
-                return autoCompletionField.getText();
-            }else {
-                return "";
+                String result = autoCompletionField.getText();
+                if (!Objects.equals(result, "")) {
+                    //if they actuall selected something
+                    Optional<Pair<String, String>> event = getOtherEvents().stream().filter(s -> s.getValue().equals(result)).findFirst();
+                    AtomicReference<Pair<String,String>> selectedEventCode = new AtomicReference<>(new Pair<>("",""));
+                    event.ifPresent(selectedEventCode::set);
+                    return selectedEventCode.get().getKey();
+
+                }
             }
+            return "";
         });
     }
 }

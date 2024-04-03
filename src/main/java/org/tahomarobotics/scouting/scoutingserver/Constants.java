@@ -149,13 +149,20 @@ public class Constants {
 
         private static final DoubleProperty splitWidthProperty = new SimpleDoubleProperty();
 
+        private static final DoubleProperty halfsplitWidthProperty = new SimpleDoubleProperty();
+
+        public static DoubleProperty halfSplitWidthProperty() {
+            return halfsplitWidthProperty;
+        }
+
+        public static void setHalfsplitWidthProperty(double value) {
+            halfsplitWidthProperty.set(value);
+        }
+
         public static DoubleProperty splitWidthPropertyProperty() {
             return splitWidthProperty;
         }
 
-        public  static double getSplitWidthProperty() {
-            return splitWidthProperty.get();
-        }
 
         public static void setSplitWidthProperty(double splitWidthProperty) {
             Constants.UIValues.splitWidthProperty.set(splitWidthProperty);

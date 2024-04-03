@@ -200,11 +200,12 @@ public class TabController {
         Logging.logInfo("Validating Data");
         refresh();
 
-        if (Objects.equals(currentEventCode, "")) {
-            if (selectCompetition()) {
-                Logging.logInfo("Data Validation Aborted");
-                return false;
-            }
+        //always force user to select competiton, even if we already have one, this discision is made after
+        //three competitions of closing and reopening databases just so I can be able to go through the competion selector dialog again
+
+        if (selectCompetition()) {
+            Logging.logInfo("Data Validation Aborted");
+            return false;
         }
         databaseData = DataValidator.validateData(currentEventCode, databaseData);
         constructTree(databaseData, false);
@@ -290,16 +291,7 @@ public class TabController {
         Optional<String> result = chooser.showAndWait();
         AtomicReference<String> selectedEvent = new AtomicReference<>("");
         result.ifPresent(selectedEvent::set);
-        String temp = selectedEvent.get();
-        if (!Objects.equals(temp, "")) {
-            Optional<Pair<String, String>> event = chooser.getOtherEvents().stream().filter(s -> s.getValue().equals(temp)).findFirst();
-            AtomicReference<Pair<String,String>> selectedEventCode = new AtomicReference<>(new Pair<>("",""));
-            event.ifPresent(selectedEventCode::set);
-            currentEventCode = selectedEventCode.get().getKey();
-
-        }else {
-            currentEventCode =  "";
-        }
+        currentEventCode = selectedEvent.get();
         return Objects.equals(currentEventCode, "");
 
     }
