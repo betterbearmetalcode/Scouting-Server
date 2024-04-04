@@ -125,7 +125,11 @@ public class AutoHeatmap {
     }
 
     private void addTeamWithNoData(DatabaseManager.RobotPosition position, String teamNumber) {
-        heatmap.put(position, new TeamAutoHistory(teamNumber, null, colors.get(position)));
+        //if there is already data there from different databases, then it could get overwritten by this
+        if (!heatmap.containsKey(position)) {
+            heatmap.put(position, new TeamAutoHistory(teamNumber, null, colors.get(position)));
+        }
+
     }
 
 
