@@ -88,6 +88,9 @@ public class DatabaseManager {
                     Integer.parseInt(data[21]),//tele amp missed
                     Integer.parseInt(data[22]),//lost comms
                     data[23]);//tele notes*/
+            //scouting app is not coorrectly trasmitting which notes are where in qr string, this is to read them correctly
+            //for future years  migrate to a new type of data transfer which has the column name attached to each data point
+            //this will make compatibility and extension of what is colleted simpler
             QRRecord m = new QRRecord(Integer.parseInt(data[0]),//match num
                     Integer.parseInt(data[1]),//team num
                     getRobotPositionFromNum(Integer.parseInt(data[2])),//allinace pos
@@ -104,7 +107,7 @@ public class DatabaseManager {
                     Integer.parseInt(data[11]),//M4
                     Integer.parseInt(data[10]),//M5
                     Integer.parseInt(data[15]),//a stop
-                    Integer.parseInt(data[16]),
+                    Integer.parseInt(data[16]),//shuttled
                     Integer.parseInt(data[17]),//tele speaker
                     Integer.parseInt(data[18]),//tele amp
                     Integer.parseInt(data[19]),//tele trap

@@ -1,7 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
@@ -10,6 +9,9 @@ import org.tahomarobotics.scouting.scoutingserver.util.exceptions.OperationAbort
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Exporter {
 
@@ -56,6 +58,7 @@ public class Exporter {
         //add raw and exported data
         ArrayList<HashMap<String, Object>> matchNums = SQLUtil.exec("SELECT DISTINCT " + Constants.SQLColumnName.MATCH_NUM + " FROM \"" + tableName + "\"", false);
         for (HashMap<String, Object> matchNumMap : matchNums) {
+            //for each match
             int matchNum =(int) matchNumMap.get(Constants.SQLColumnName.MATCH_NUM.toString());
             HashMap<String, HashMap<String, Object>> tbaMatchBreakdown = null;
             if (haveMatches) {
@@ -69,12 +72,17 @@ public class Exporter {
                 }
             }
             ArrayList<HashMap<String, Object>> matchScoutData = SQLUtil.exec("SELECT * FROM \"" + tableName + "\"" + " WHERE " + Constants.SQLColumnName.MATCH_NUM + "=?", new Object[]{matchNum}, false);
-            for (HashMap<String, Object> matchScoutDatum : matchScoutData) {
-                output.add(getRow(matchScoutDatum, tbaMatchBreakdown));
-            }
+            //we have all the data for a match
+            //do the smae thing to both the red and blue alliances
+
+            ArrayList<HashMap<String, Object>> redDataForThisMatch = matchScoutData.stream().filter(map -> (int) map.getOrDefault(Constants.SQLColumnName.ALLIANCE_POS.toString(), 0) < 3).collect(Collectors.toCollection(ArrayList::new));
+            exportAlliance(redDataForThisMatch, output, tbaMatchBreakdown);
+            ArrayList<HashMap<String, Object>> blueDataForThisMatch = matchScoutData.stream().filter(map -> (int) map.getOrDefault(Constants.SQLColumnName.ALLIANCE_POS.toString(), 0) > 2).collect(Collectors.toCollection(ArrayList::new));
+            exportAlliance(blueDataForThisMatch, output, tbaMatchBreakdown);
+
+
         }//end for ecah match
         //export notes if appropriate
-
         if (exportNotes) {
             for (HashMap<String, Object> map : teamsScouted) {
                 int teamNum = (int) map.get(Constants.SQLColumnName.TEAM_NUM.toString());
@@ -94,7 +102,48 @@ public class Exporter {
 
     }
 
-    private ArrayList<String> getRow(HashMap<String, Object> sqlRow, HashMap<String, HashMap<String, Object>> matchBreakdown) {
+    private void exportAlliance(ArrayList<HashMap<String, Object>> dataForThisAlliance, ArrayList<ArrayList<String>> output, HashMap<String, HashMap<String, Object>> tbaMatchBreakdown) {
+        ArrayList<HashMap<String, Object>> teamsWhoRecievedShuttledNotes = new ArrayList<>();
+        ArrayList<HashMap<String, Object>> teamsWhoDidNotParticipateInShutteling = new ArrayList<>();
+        ArrayList<HashMap<String, Object>> teamsWhoShuttled = new ArrayList<>();
+        dataForThisAlliance.forEach(map -> {
+            if (map.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().toLowerCase().contains(Constants.SHUTTLED_NOTE_IDENTIFIER)) {
+                teamsWhoRecievedShuttledNotes.add(map);
+            }else if ((int) map.get(Constants.SQLColumnName.SHUTTLED.toString()) <= Constants.SHUTTLED_NOTE_THRESHOLD) {
+                teamsWhoDidNotParticipateInShutteling.add(map);
+            }else {
+                teamsWhoShuttled.add(map);
+            }
+        });
+        final int[] maxShuttleing = {0};
+        dataForThisAlliance.forEach(map -> maxShuttleing[0] = Math.max((int) map.get(Constants.SQLColumnName.SHUTTLED.toString()), maxShuttleing[0]));
+        if (!teamsWhoRecievedShuttledNotes.isEmpty() && !teamsWhoShuttled.isEmpty()) {
+            //so we have to adjust the notes for all the teams who shuttled
+            //take the amount of notes scored according to tba and subtract notes scored by teams who are not recieving from it
+
+            //for speaker
+            //subtract notes scored by teams who did not participate
+            final int[] notesToDistribute = {0};
+            dataForThisAlliance.forEach(map -> notesToDistribute[0] = (int) map.get(Constants.SQLColumnName.TELE_SPEAKER.toString()) + notesToDistribute[0]);
+            teamsWhoDidNotParticipateInShutteling.forEach(map -> notesToDistribute[0] = notesToDistribute[0] -  (int) map.get(Constants.SQLColumnName.TELE_SPEAKER.toString()));//subtract other teams contribtution
+            double teleSpeakerAdjusted = (double) notesToDistribute[0] /(teamsWhoShuttled.size() + teamsWhoRecievedShuttledNotes.size());
+
+
+            //add the data
+            teamsWhoRecievedShuttledNotes.forEach(map -> output.add(getStandardRow(map, tbaMatchBreakdown, true, teleSpeakerAdjusted)));
+            teamsWhoShuttled.forEach(map -> output.add(getStandardRow(map, tbaMatchBreakdown, true, teleSpeakerAdjusted)));
+            teamsWhoDidNotParticipateInShutteling.forEach(map -> output.add(getStandardRow(map, tbaMatchBreakdown, false, 0)));
+
+        }else {
+            //then nobody was recieving shuttled notes according to scouts
+            for (HashMap<String, Object> matchScoutDatum : dataForThisAlliance) {
+                output.add(getStandardRow(matchScoutDatum, tbaMatchBreakdown, false, 0.0));
+            }
+        }
+    }
+
+    private ArrayList<String> getStandardRow(HashMap<String, Object> sqlRow, HashMap<String, HashMap<String, Object>> matchBreakdown, boolean isShuttlingMatch, double
+            teleSpeakerAdjusted) {
         ArrayList<String> output = new ArrayList<>();
         //add all the raw data
         for (Constants.SQLColumnName sqlColumnName : Constants.SQLColumnName.values()) {
@@ -150,6 +199,8 @@ public class Exporter {
         output.add(String.valueOf(autoAmp + autoSpeaker + teleAmp + teleSpeaker));//total notes scored
         output.add(String.valueOf(toalNotesMissed));//total notes missed
         output.add(String.valueOf(toalNotesMissed + autoAmp + autoSpeaker + teleAmp + teleSpeaker));//total notes
+        output.add(isShuttlingMatch?String.valueOf(teleSpeakerAdjusted):String.valueOf(teleSpeaker));
+        output.add(isShuttlingMatch?"1":"0");//boolean which indicated whethere there was a significant amount of shuttling done by this team
         return output;
 
     }
