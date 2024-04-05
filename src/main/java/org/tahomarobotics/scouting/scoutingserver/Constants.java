@@ -63,6 +63,7 @@ public class Constants {
         NOTE_4,
         NOTE_5,
         A_STOP,
+        SHUTTLED,
 
         TELE_SPEAKER,
         TELE_AMP,
@@ -106,6 +107,7 @@ public class Constants {
             new ColumnType(SQLColumnName.NOTE_4, SQLDatatype.INTEGER),
             new ColumnType(SQLColumnName.NOTE_5, SQLDatatype.INTEGER),
             new ColumnType(SQLColumnName.A_STOP, SQLDatatype.INTEGER),
+            new ColumnType(SQLColumnName.SHUTTLED, SQLDatatype.INTEGER),
             new ColumnType(SQLColumnName.TELE_SPEAKER, SQLDatatype.INTEGER),
             new ColumnType(SQLColumnName.TELE_AMP, SQLDatatype.INTEGER),
             new ColumnType(SQLColumnName.TELE_TRAP, SQLDatatype.INTEGER),

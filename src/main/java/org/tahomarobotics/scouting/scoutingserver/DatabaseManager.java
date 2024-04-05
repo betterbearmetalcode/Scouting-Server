@@ -35,11 +35,27 @@ public class DatabaseManager {
             String[] data = dataRaw.split(Constants.QR_DATA_DELIMITER);
             if (data.length == 22) {
                 //then its an old version of the data and we need to add a default A stop value
-                String[] newData = new String[23];
-                for (int i = 0; i < data.length + 1; i++) {
+                String[] newData = new String[24];
+                for (int i = 0; i < data.length + 2; i++) {
                     if (i < 15) {
                         newData[i] = data[i];
                     }else if (i == 15) {
+                        newData[i] = "0";
+                    }else if (i == 16){
+                        newData[i] = "0";
+                    }else {
+                        newData[i] = data[i-2];
+                    }
+
+                }
+                data = newData;
+            }else if (data.length == 23) {
+                //then its an old version of the data and we need to add a default A stop value
+                String[] newData = new String[24];
+                for (int i = 0; i < data.length + 1; i++) {
+                    if (i < 15) {
+                        newData[i] = data[i];
+                    }else if (i == 16) {
                         newData[i] = "0";
                     }else {
                         newData[i] = data[i-1];
@@ -48,7 +64,7 @@ public class DatabaseManager {
                 }
                 data = newData;
             }
-            QRRecord m = new QRRecord(Integer.parseInt(data[0]),//match num
+           /* QRRecord m = new QRRecord(Integer.parseInt(data[0]),//match num
                     Integer.parseInt(data[1]),//team num
                     getRobotPositionFromNum(Integer.parseInt(data[2])),//allinace pos
                     Integer.parseInt(data[3]),//auto speaker
@@ -64,14 +80,38 @@ public class DatabaseManager {
                     Integer.parseInt(data[13]),//M4
                     Integer.parseInt(data[14]),//M5
                     Integer.parseInt(data[15]),//a stop
-                    Integer.parseInt(data[16]),//tele speaker
-                    Integer.parseInt(data[17]),//tele amp
-                    Integer.parseInt(data[18]),//tele trap
-                    Integer.parseInt(data[19]),//tele speakermissed
-                    Integer.parseInt(data[20]),//tele amp missed
-                    Integer.parseInt(data[21]),//lost comms
-                    data[22]);//tele notes
-
+                    Integer.parseInt(data[16]),
+                    Integer.parseInt(data[17]),//tele speaker
+                    Integer.parseInt(data[18]),//tele amp
+                    Integer.parseInt(data[19]),//tele trap
+                    Integer.parseInt(data[20]),//tele speakermissed
+                    Integer.parseInt(data[21]),//tele amp missed
+                    Integer.parseInt(data[22]),//lost comms
+                    data[23]);//tele notes*/
+            QRRecord m = new QRRecord(Integer.parseInt(data[0]),//match num
+                    Integer.parseInt(data[1]),//team num
+                    getRobotPositionFromNum(Integer.parseInt(data[2])),//allinace pos
+                    Integer.parseInt(data[3]),//auto speaker
+                    Integer.parseInt(data[4]),//auto amp
+                    Integer.parseInt(data[5]),//auto speaker missed
+                    Integer.parseInt(data[6]),//auto amp missed
+                    Integer.parseInt(data[9]),//F1
+                    Integer.parseInt(data[8]),//F2
+                    Integer.parseInt(data[7]),//F3
+                    Integer.parseInt(data[14]),//M1
+                    Integer.parseInt(data[13]),//M2
+                    Integer.parseInt(data[12]),//M3
+                    Integer.parseInt(data[11]),//M4
+                    Integer.parseInt(data[10]),//M5
+                    Integer.parseInt(data[15]),//a stop
+                    Integer.parseInt(data[16]),
+                    Integer.parseInt(data[17]),//tele speaker
+                    Integer.parseInt(data[18]),//tele amp
+                    Integer.parseInt(data[19]),//tele trap
+                    Integer.parseInt(data[20]),//tele speakermissed
+                    Integer.parseInt(data[21]),//tele amp missed
+                    Integer.parseInt(data[22]),//lost comms
+                    data[23]);
             storeQrRecord(m, tablename);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IllegalStateException e) {
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed to construct QrRecord, likly corrupted data", Color.RED);
@@ -120,6 +160,8 @@ public class DatabaseManager {
     }
 
     public static QRRecord getRecord(HashMap<String, Object> rawData) {
+        rawData.putIfAbsent(Constants.SQLColumnName.SHUTTLED.toString(), 0);
+        rawData.putIfAbsent(Constants.SQLColumnName.A_STOP.toString(), 0);
         return new QRRecord(
                 (int) rawData.get(Constants.SQLColumnName.MATCH_NUM.toString()),
                 (int) rawData.get(Constants.SQLColumnName.TEAM_NUM.toString()),
@@ -137,7 +179,7 @@ public class DatabaseManager {
                 (int) rawData.get(Constants.SQLColumnName.NOTE_4.toString()),
                 (int) rawData.get(Constants.SQLColumnName.NOTE_5.toString()),
                 (int) rawData.get(Constants.SQLColumnName.A_STOP.toString()),
-
+                (int)rawData.get(Constants.SQLColumnName.SHUTTLED.toString()),
                 (int) rawData.get(Constants.SQLColumnName.TELE_SPEAKER.toString()),
                 (int) rawData.get(Constants.SQLColumnName.TELE_AMP.toString()),
                 (int) rawData.get(Constants.SQLColumnName.TELE_TRAP.toString()),
@@ -215,6 +257,7 @@ public class DatabaseManager {
                            int note4,
                            int note5,
                            int aStop,
+                           int shuttled,
                            int teleSpeaker,
                            int teleAmp,
                            int teleTrap,
@@ -244,6 +287,7 @@ public class DatabaseManager {
             output.add(new DataPoint(Constants.SQLColumnName.NOTE_4.toString(), String.valueOf(note4)));
             output.add(new DataPoint(Constants.SQLColumnName.NOTE_5.toString(), String.valueOf(note5)));
             output.add(new DataPoint(Constants.SQLColumnName.A_STOP.toString(), String.valueOf(aStop)));
+            output.add(new DataPoint(Constants.SQLColumnName.SHUTTLED.toString(), String.valueOf(shuttled)));
 
             output.add(new DataPoint(Constants.SQLColumnName.TELE_SPEAKER.toString(), String.valueOf(teleSpeaker)));
             output.add(new DataPoint(Constants.SQLColumnName.TELE_AMP.toString(), String.valueOf(teleAmp)));
@@ -274,6 +318,7 @@ public class DatabaseManager {
                     note4 + ", " +
                     note5 + ", " +
                     aStop + ", " +
+                    shuttled + ", " +
                     teleSpeaker + ", " +
                     teleAmp + ", " +
                     teleTrap + ", " +

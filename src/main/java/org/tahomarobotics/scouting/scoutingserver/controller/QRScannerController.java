@@ -137,6 +137,7 @@ public class QRScannerController {
                         data.optInt("4", 0),//M4
                         data.optInt("5", 0),//M5
                         data.optInt("A-Stop", 0),
+                        data.optInt("Shuttled", 0),//shuttled notes
                         data.optInt("Tele Speaker", 0),//tele speaker
                         data.optInt("Tele Amp", 0),//tele amp
                         data.optInt("Tele Trap", 0),//tele trap
