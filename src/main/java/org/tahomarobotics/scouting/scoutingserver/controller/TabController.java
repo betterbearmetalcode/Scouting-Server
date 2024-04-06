@@ -347,6 +347,9 @@ public class TabController {
     }
 
     public void clearDatabase() {
+        if (!Constants.askQuestion("Are you sure?")) {
+            return;
+        }
         Logging.logInfo("Clearing databse: " + tableName);
         try {
             SQLUtil.execNoReturn("DELETE FROM \"" + tableName + "\"");

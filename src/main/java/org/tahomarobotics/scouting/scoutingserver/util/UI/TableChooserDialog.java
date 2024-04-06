@@ -102,6 +102,9 @@ public class TableChooserDialog extends Dialog<String> {
         Button deleteButton = new Button("Delete");
         deleteButton.setOnAction(event -> {
             try {
+                if (!Constants.askQuestion("Are you sure?")) {
+                    return;
+                }
                 SQLUtil.execNoReturn("DROP TABLE IF EXISTS '" + listView.getSelectionModel().getSelectedItem() + "'");
                 listView.getItems().remove(listView.getSelectionModel().getSelectedItem());
             } catch (SQLException | DuplicateDataException e) {
