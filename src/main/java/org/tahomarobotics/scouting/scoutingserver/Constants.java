@@ -86,8 +86,13 @@ public class Constants {
         TOTAL_POINTS_ADDED,
         TOTAL_NOTES_SCORED,
         TOTAL_NOTES_MISSED,
-        TOTAL_NOTES
+        TOTAL_NOTES,
+        TELE_SPEAKER_ADJUSTED,
+        IS_SHUTTELING_MATCH
     }
+
+    public static final String SHUTTLED_NOTE_IDENTIFIER = "poodle";//identifier which scouts put in comments to indicate that a team is reciving shuttled notes
+    public static final int SHUTTLED_NOTE_THRESHOLD = 2;//threshold which determines if the amount of shuttled notes in this match ought to be accounted for
 
 
     public static final ArrayList<ColumnType> RAW_TABLE_SCHEMA = new ArrayList<>(List.of(
