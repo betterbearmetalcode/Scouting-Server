@@ -7,8 +7,6 @@ import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -46,7 +44,7 @@ public class DataTransferClient extends Thread {
                 }
             }
             Logging.logInfo("storing data, time elapsed: " + (System.currentTimeMillis() - start));
-            ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONObject(new JSONObject(builder.toString()), QRScannerController.activeTable);
+            ArrayList<DuplicateDataException> duplicates = DatabaseManager.saveJSONToSQLDatabase(new JSONObject(builder.toString()), QRScannerController.activeTable);
             QRScannerController.handleDuplicates(duplicates);
 
             Logging.logInfo("data is" + builder);

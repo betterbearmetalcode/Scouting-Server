@@ -85,7 +85,7 @@ public class QRScannerController {
                 if (file.exists()) {
                     FileInputStream inputStream = new FileInputStream(file);
                     JSONObject object = new JSONObject(new String(inputStream.readAllBytes()));
-                    ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONObject(object, activeTable);
+                    ArrayList<DuplicateDataException> duplicates = DatabaseManager.saveJSONToSQLDatabase(object, activeTable);
                     handleDuplicates(duplicates);
                     inputStream.close();
                 }

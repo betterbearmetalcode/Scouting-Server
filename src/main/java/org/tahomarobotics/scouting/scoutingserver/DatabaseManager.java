@@ -122,15 +122,31 @@ public class DatabaseManager {
         }
     }
 
-    public static ArrayList<DuplicateDataException> importJSONObject(JSONObject object, String activeTable) {
-        ArrayList<DuplicateDataException> duplicates = new ArrayList<>();
-        for (String s : object.keySet()) {
-            JSONArray arr = object.getJSONArray(s);
 
-            for (Object o : arr.toList()) {
+    //this method will insert a json file into a sql table
+    //if the table does not exist, one will be created, otherwise, it will be added
+    //and duplicate data will be handled accordingly
+    public static ArrayList<DuplicateDataException> saveJSONToSQLDatabase(JSONObject data, String tableName) {
+        ArrayList<DuplicateDataException> duplicates = new ArrayList<>();
+        JSONArray columnNames = data.getJSONArray(Constants.SCHEMA_DEFINTION_OBJECT_NAME);
+        StringBuilder builder = new StringBuilder();
+        builder.append("CREATE TABLE IF NOT EXISTS \"").append(tableName).append("\"(");
+        for (String key : data.keySet()) {
+            //we only care about the robot positions
+            if (Objects.equals(key, Constants.SCHEMA_DEFINTION_OBJECT_NAME)) {
+                continue;
+            }
+            //each element of this array represents a scout's data for a match as defined by the column names array
+            JSONArray robotPositionArray = data.getJSONArray(key);
+            for (Object o : robotPositionArray) {
+                JSONArray matchDatum = (JSONArray) o;//each of these arrays represpents a scout's data for one robot of each match in the order defined above
+
+            }
+
+            for (Object o : robotPositionArray.toList()) {
                 String string = o.toString();
                 try {
-                    DatabaseManager.storeRawQRData(string, activeTable);
+                    DatabaseManager.storeRawQRData(string, tableName);
                 } catch (IOException e) {
                     Logging.logError(e, "failed to import qr string");
                 } catch (DuplicateDataException e) {

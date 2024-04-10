@@ -6,7 +6,12 @@ import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataE
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 public class SQLUtil {
 
     private static Connection connection;
@@ -152,6 +157,25 @@ public class SQLUtil {
         return output;
     }
 
+    public static ArrayList<String> getGameSpecificColumnNames(String tableName) throws SQLException {
+        ArrayList<HashMap<String, Object>> tablesAndColumnNames = SQLUtil.exec("SELECT m.name as tableName, \n" +
+                "       p.name as columnName\n" +
+                "FROM sqlite_master m\n" +
+                "left outer join pragma_table_info((m.name)) p\n" +
+                "     on m.name <> p.name\n" +
+                "order by tableName, columnName\n", true);
+        ArrayList<HashMap<String, Object>> tablesColumns = tablesAndColumnNames.stream().filter(map -> {
+            if (map == null) {
+                return false;
+            }
+            boolean isUniversalColumn = Arrays.stream(Constants.UniversalColumns.values()).anyMatch(universalColumns -> Objects.equals(universalColumns.toString(), map.get("columnName").toString()));
+            return Objects.equals(map.get("tableName").toString(), tableName) && (!isUniversalColumn);
+        }).collect(Collectors.toCollection(ArrayList::new));
+
+        ArrayList<String> output = new ArrayList<>();
+        tablesColumns.forEach(map -> output.add(map.get("columnName").toString()));
+        return output;
+    }
 
     private static void handleDuplicateData(String statement, DatabaseManager.QRRecord newRecord) throws DuplicateDataException {
         String[] tokens = statement.split("\\(")[1].replaceAll(" ", "").split(",");

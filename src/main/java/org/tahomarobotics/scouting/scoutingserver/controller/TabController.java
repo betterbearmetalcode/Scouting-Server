@@ -315,35 +315,54 @@ public class TabController {
     @FXML
     public void saveJSONBackup(ActionEvent event) {
         Logging.logInfo("Making JSON Backup of " + tableName);
-        JSONObject output = new JSONObject();
-        for (DatabaseManager.RobotPosition robotPosition : DatabaseManager.RobotPosition.values()) {
-            //get all the data for each of the positions
-            LinkedList<DatabaseManager.QRRecord> data = DatabaseManager.readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"" + " WHERE "  + Constants.SQLColumnName.ALLIANCE_POS + "=?", new Object[]{robotPosition.ordinal()}, false);
-            JSONArray positionArray = new JSONArray();
-            for (DatabaseManager.QRRecord record : data) {
-                positionArray.put(record.getQRString());
-            }
-            output.put(robotPosition.name(), positionArray);
-        }
+            try {
+                //do this first in case the users cancels for preformace reasons
+                FileChooser chooser = new FileChooser();
+                chooser.setTitle("Save Backup");
+                chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+                chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + ".json");
+                chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
+                File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+                if (selectedFile == null) {
+                    return;
+                }
+                JSONObject output = new JSONObject();
+                ArrayList<String> columnNames = SQLUtil.getGameSpecificColumnNames(tableName);
+                JSONArray schemaDefinitionArray = new JSONArray();
+                for (Constants.UniversalColumns value : Constants.UniversalColumns.values()) {
+                    schemaDefinitionArray.put(value.toString());
+                }
+                for (String columnName : columnNames) {
+                    schemaDefinitionArray.put(columnName);
+                }
+                output.put(Constants.SCHEMA_DEFINTION_OBJECT_NAME, schemaDefinitionArray);
+                for (DatabaseManager.RobotPosition robotPosition : DatabaseManager.RobotPosition.values()) {
+                    ArrayList<HashMap<String, Object>> data = SQLUtil.exec("SELECT * FROM \"" + tableName + "\"" + " WHERE "  + Constants.SQLColumnName.ALLIANCE_POS + "=?", new Object[]{robotPosition.ordinal()}, false);
+                    JSONArray positionArray = new JSONArray();
+                    for (HashMap<String, Object> datum : data) {
+                        JSONArray dataArray = new JSONArray();
+                        for (String columnName : columnNames) {
+                            dataArray.put(datum.get(columnName));
+                        }
+                        positionArray.put(dataArray);
+                    }
+                    output.put(robotPosition.name(), positionArray);
+                }
 
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Save Backup");
-        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + ".json");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
-        File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
-        try {
-            if (!selectedFile.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                selectedFile.createNewFile();
+
+                if (!selectedFile.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    selectedFile.createNewFile();
+                }
+                FileOutputStream os = new FileOutputStream(selectedFile);
+                os.write(output.toString().getBytes());
+                os.flush();
+                os.close();
+            } catch (SQLException | IOException e) {
+                Logging.logError(e);
             }
-            FileOutputStream os = new FileOutputStream(selectedFile);
-            os.write(output.toString().getBytes());
-            os.flush();
-            os.close();
-        } catch (IOException e) {
-            Logging.logError(e, "Failed to save backup");
-        }
+
+
     }
 
     public void clearDatabase() {

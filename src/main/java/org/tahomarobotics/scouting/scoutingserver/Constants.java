@@ -19,6 +19,7 @@ public class Constants {
 
     public static String QR_IAMGE_QUERY_LOCATION = IMAGE_DATA_FILEPATH;//default to iamges directory in app data, but user wants to change, i'm not stopping them!
 
+    public static final String SCHEMA_DEFINTION_OBJECT_NAME = "schemaDefinition";
 
     public static final String SQL_DATABASE_NAME = "database.db";
 
@@ -26,26 +27,12 @@ public class Constants {
 
     public static final int WIRED_DATA_TRANSFER_PORT = 45482;
 
-    public static final String TEST_QR_STRING_1 = "1/2046/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest1/teleNotes";
-    public static final String TEST_QR_STRING_2 = "1/4414/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest2/teleNotes";
-
-    public static final String TEST_QR_STRING_3 = "1/1323/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest3/teleNotes";
-    public static final String TEST_QR_STRING_4 = "2/2046/1/3/0/4/5/0/0/0/0/0/0/0/0/9/2/0/9/0/autoNotesTest4/teleNotes";
-    public static final String TEST_QR_STRING_5 = "2/4414/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest5/teleNotes";
-    public static final String TEST_QR_STRING_6 = "2/1323/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest6/teleNotes";
-    public static final String TEST_QR_STRING_7 = "2/2540/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest7/teleNotes";
-    public static final String TEST_QR_STRING_8 = "2/1678/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest8/teleNotes";
-    public static final String TEST_QR_STRING_9 = "2/2056/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest9/teleNotes";
-    public static ArrayList<String> oneMatchOfDebufStrings = new ArrayList<>();
-     static {
-
-        oneMatchOfDebufStrings.add("1/4338/0/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest1/teleNotes");
-        oneMatchOfDebufStrings.add("1/4320/1/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest2/teleNotes");
-        oneMatchOfDebufStrings.add("1/5990/2/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest3/teleNotes");
-        oneMatchOfDebufStrings.add("1/4319/3/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest4/teleNotes");
-        oneMatchOfDebufStrings.add("1/1690/4/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest5/teleNotes");
-        oneMatchOfDebufStrings.add("1/9303/5/2/3/4/5/0/0/0/0/0/0/0/0/6/7/8/9/0/autoNotesTest6/teleNotes");
+    public enum UniversalColumns {
+        MATCH_NUM,
+        TEAM_NUM,
+        ALLIANCE_POS
     }
+
     public enum SQLColumnName {
         MATCH_NUM,
         TEAM_NUM,
@@ -123,7 +110,6 @@ public class Constants {
 
     ));
 
-    public static final String TEST_SQL_TABLE_NAME = "debug_table";
 
     public record ColumnType(SQLColumnName name, SQLDatatype datatype) {
     }
