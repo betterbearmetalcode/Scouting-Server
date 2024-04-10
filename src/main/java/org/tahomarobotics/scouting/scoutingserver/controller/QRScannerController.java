@@ -128,14 +128,15 @@ public class QRScannerController {
                         data.optInt("Auto Amp", 0),//auto amp
                         data.optInt("Auto Speaker Missed", 0),//auto speaker missed
                         data.optInt("Auto Amp Missed", 0),//auto amp missed
-                        data.optInt("noteA", 0),//F1
-                        data.optInt("noteB", 0),//F2
-                        data.optInt("noteC", 0),//F3
-                        data.optInt("1", 0),//M1
-                        data.optInt("2", 0),//M2
-                        data.optInt("3", 0),//M3
-                        data.optInt("4", 0),//M4
-                        data.optInt("5", 0),//M5
+                        data.optString("1", "None"),//M1
+                        data.optString("2", "None"),//M2
+                        data.optString("3", "None"),//M3
+                        data.optString("4", "None"),//M4
+                        data.optString("5", "None"),//M5
+                        data.optString("6", "None"),//M2
+                        data.optString("7", "None"),//M3
+                        data.optString("8", "None"),//M4
+                        data.optString("9", "None"),//M5
                         data.optInt("A-Stop", 0),
                         data.optInt("Shuttled", 0),//shuttled notes
                         data.optInt("Tele Speaker", 0),//tele speaker
@@ -143,6 +144,8 @@ public class QRScannerController {
                         data.optInt("Tele Trap", 0),//tele trap
                         data.optInt("Tele Speaker Missed", 0),//tele speakermissed
                         data.optInt("Tele Amp missed", 0),//tele amp missed
+                        data.optInt("Tele Speaker Recieved", 0),//tele speakermissed
+                        data.optInt("Tele Amp Recieved", 0),//tele amp missed
                         data.optInt("Lost Comms", 0),//auto notes
                         data.optString("Tele Comments", "No Comments"));//tele notes
                 try {

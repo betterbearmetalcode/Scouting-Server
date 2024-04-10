@@ -65,7 +65,25 @@ public class ChartCreatorDialog extends Dialog<Chart> {
         VBox chartSettings = new VBox();
         chartSettings.getChildren().add(new Label("Select Metrics to track"));
         for (Constants.SQLColumnName value : Constants.SQLColumnName.values()) {
-            if (!(value.equals(AUTO_SPEAKER) || value.equals(AUTO_AMP) || value.equals(AUTO_SPEAKER_MISSED) || value.equals(AUTO_AMP_MISSED) || value.equals(TELE_SPEAKER) || value.equals(TELE_AMP) || value.equals(TELE_TRAP) || value.equals(TELE_SPEAKER_MISSED) || value.equals(TELE_AMP_MISSED) || value.equals(NOTE_A)|| value.equals(NOTE_B)|| value.equals(NOTE_C)|| value.equals(NOTE_1)|| value.equals(NOTE_2)|| value.equals(NOTE_3)|| value.equals(NOTE_4)|| value.equals(NOTE_5) )) {
+            //allow user to select these columns
+            if (!(value.equals(AUTO_SPEAKER) ||
+                    value.equals(AUTO_AMP) ||
+                    value.equals(AUTO_SPEAKER_MISSED) ||
+                    value.equals(AUTO_AMP_MISSED) ||
+                    value.equals(TELE_SPEAKER) ||
+                    value.equals(TELE_AMP) ||
+                    value.equals(TELE_TRAP) ||
+                    value.equals(TELE_SPEAKER_MISSED) ||
+                    value.equals(TELE_AMP_MISSED) ||
+                    value.equals(NOTE_1)||
+                    value.equals(NOTE_2)||
+                    value.equals(NOTE_3)||
+                    value.equals(NOTE_4)||
+                    value.equals(NOTE_5)||
+                    value.equals(NOTE_6)||
+                    value.equals(NOTE_7)||
+                    value.equals(NOTE_8)||
+                    value.equals(NOTE_9))) {
                 continue;
             }
             CheckBox box = new CheckBox(value.name());

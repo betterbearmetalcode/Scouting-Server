@@ -188,18 +188,8 @@ public class DataValidator {
                             case TELE_AMP -> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), teleAmpMeasured - teleAmpTrue));
                                 break;
-                            }/*
-                            case TELE_TRAP -> {
-                                int robotPositonNum = (robotPositon.record().position().ordinal() % 3)+1;
-                                String climb = (String) breakdown.get("endGameRobot" + robotPositonNum);
-                                boolean trap = false;
-                                if (!Objects.equals(climb, "None") && !Objects.equals(climb, "Parked")) {
-                                    trap = (boolean) breakdown.get("trap" + climb);
-                                }
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (trap == (robotPositon.record().teleTrap() > 0))?(0):(3)));
-                                break;
-                            }*/
-                            case TELE_SPEAKER_MISSED, TELE_AMP_MISSED, AUTO_SPEAKER_MISSED, AUTO_AMP_MISSED, NOTE_A, NOTE_B, NOTE_C, NOTE_1, NOTE_2, NOTE_3, NOTE_4, NOTE_5, A_STOP , LOST_COMMS-> {
+                            }
+                            case TELE_SPEAKER_MISSED, TELE_AMP_MISSED, AUTO_SPEAKER_MISSED, AUTO_AMP_MISSED, NOTE_1, NOTE_2, NOTE_3, NOTE_4, NOTE_5, NOTE_6, NOTE_7, NOTE_8, NOTE_9, A_STOP , AMP_RECEIVED, SPEAKER_RECEIVED , LOST_COMMS-> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
                                 break;
                             }

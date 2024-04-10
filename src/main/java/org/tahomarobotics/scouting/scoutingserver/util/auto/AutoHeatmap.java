@@ -48,14 +48,15 @@ public class AutoHeatmap {
                     //get all the auto data for this team in each cable in a loop but dont get duplicate autos
                     ArrayList<HashMap<String, Object>> teamAutoData = SQLUtil.exec("SELECT " +
                             Constants.SQLColumnName.TEAM_NUM + ", " +
-                            Constants.SQLColumnName.NOTE_A + ", " +
-                            Constants.SQLColumnName.NOTE_B + ", " +
-                            Constants.SQLColumnName.NOTE_C + ", " +
                             Constants.SQLColumnName.NOTE_1 + ", " +
                             Constants.SQLColumnName.NOTE_2 + ", " +
                             Constants.SQLColumnName.NOTE_3 + ", " +
                             Constants.SQLColumnName.NOTE_4 + ", " +
-                            Constants.SQLColumnName.NOTE_5 + " FROM \"" + tableName + "\" WHERE TEAM_NUM=?", new Object[]{teamNumber}, true);
+                            Constants.SQLColumnName.NOTE_5 + ", " +
+                            Constants.SQLColumnName.NOTE_6 + ", " +
+                            Constants.SQLColumnName.NOTE_7 + ", " +
+                            Constants.SQLColumnName.NOTE_8 + ", " +
+                            Constants.SQLColumnName.NOTE_9 + " FROM \"" + tableName + "\" WHERE TEAM_NUM=?", new Object[]{teamNumber}, true);
 
                     if (teamAutoData.isEmpty()) {
                         addTeamWithNoData(robotPosition, teamNumber);

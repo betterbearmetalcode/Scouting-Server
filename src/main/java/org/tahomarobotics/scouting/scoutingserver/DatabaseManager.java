@@ -14,6 +14,8 @@ import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DatabaseManager {
 
@@ -33,7 +35,7 @@ public class DatabaseManager {
     public static void storeRawQRData(String dataRaw, String tablename) throws IOException, DuplicateDataException {
         try {
             String[] data = dataRaw.split(Constants.QR_DATA_DELIMITER);
-            if (data.length == 22) {
+            /*if (data.length == 22) {
                 //then its an old version of the data and we need to add a default A stop value
                 String[] newData = new String[24];
                 for (int i = 0; i < data.length + 2; i++) {
@@ -63,34 +65,21 @@ public class DatabaseManager {
 
                 }
                 data = newData;
-            }
-           /* QRRecord m = new QRRecord(Integer.parseInt(data[0]),//match num
-                    Integer.parseInt(data[1]),//team num
-                    getRobotPositionFromNum(Integer.parseInt(data[2])),//allinace pos
-                    Integer.parseInt(data[3]),//auto speaker
-                    Integer.parseInt(data[4]),//auto amp
-                    Integer.parseInt(data[5]),//auto speaker missed
-                    Integer.parseInt(data[6]),//auto amp missed
-                    Integer.parseInt(data[7]),//F1
-                    Integer.parseInt(data[8]),//F2
-                    Integer.parseInt(data[9]),//F3
-                    Integer.parseInt(data[10]),//M1
-                    Integer.parseInt(data[11]),//M2
-                    Integer.parseInt(data[12]),//M3
-                    Integer.parseInt(data[13]),//M4
-                    Integer.parseInt(data[14]),//M5
-                    Integer.parseInt(data[15]),//a stop
-                    Integer.parseInt(data[16]),
-                    Integer.parseInt(data[17]),//tele speaker
-                    Integer.parseInt(data[18]),//tele amp
-                    Integer.parseInt(data[19]),//tele trap
-                    Integer.parseInt(data[20]),//tele speakermissed
-                    Integer.parseInt(data[21]),//tele amp missed
-                    Integer.parseInt(data[22]),//lost comms
-                    data[23]);//tele notes*/
+            }*/
             //scouting app is not coorrectly trasmitting which notes are where in qr string, this is to read them correctly
             //for future years  migrate to a new type of data transfer which has the column name attached to each data point
             //this will make compatibility and extension of what is colleted simpler
+
+            //figure out the auto note values from tele comments
+            //String[] autodata = getAutoData(data[17].split(":")[0]);
+            ArrayList<String> auto;
+            if (data[25].contains(":")) {
+                 auto = getAutoData(data[25].split(":")[0]);
+            }else {
+                auto = getAutoData("");
+            }
+
+            //ArrayList<String> auto = getAutoData(data[17].split(":")[0]);//should be this, but have to use old data
             QRRecord m = new QRRecord(Integer.parseInt(data[0]),//match num
                     Integer.parseInt(data[1]),//team num
                     getRobotPositionFromNum(Integer.parseInt(data[2])),//allinace pos
@@ -98,23 +87,26 @@ public class DatabaseManager {
                     Integer.parseInt(data[4]),//auto amp
                     Integer.parseInt(data[5]),//auto speaker missed
                     Integer.parseInt(data[6]),//auto amp missed
-                    Integer.parseInt(data[9]),//F1
-                    Integer.parseInt(data[8]),//F2
-                    Integer.parseInt(data[7]),//F3
-                    Integer.parseInt(data[14]),//M1
-                    Integer.parseInt(data[13]),//M2
-                    Integer.parseInt(data[12]),//M3
-                    Integer.parseInt(data[11]),//M4
-                    Integer.parseInt(data[10]),//M5
-                    Integer.parseInt(data[15]),//a stop
-                    Integer.parseInt(data[16]),//shuttled
-                    Integer.parseInt(data[17]),//tele speaker
-                    Integer.parseInt(data[18]),//tele amp
-                    Integer.parseInt(data[19]),//tele trap
-                    Integer.parseInt(data[20]),//tele speakermissed
-                    Integer.parseInt(data[21]),//tele amp missed
-                    Integer.parseInt(data[22]),//lost comms
-                    data[23]);
+                    auto.get(0),
+                    auto.get(1),
+                    auto.get(2),
+                    auto.get(3),
+                    auto.get(4),
+                    auto.get(5),
+                    auto.get(6),
+                    auto.get(7),
+                    auto.get(8),
+                    Integer.parseInt(data[7]),//a stop
+                    Integer.parseInt(data[8]),//shuttled
+                    Integer.parseInt(data[9]),//tele speaker
+                    Integer.parseInt(data[10]),//tele amp
+                    Integer.parseInt(data[11]),//tele trap
+                    Integer.parseInt(data[12]),//tele speakermissed
+                    Integer.parseInt(data[13]),//tele amp missed
+                    Integer.parseInt(data[14]),//speaker received
+                    Integer.parseInt(data[15]),//amp recievied
+                    Integer.parseInt(data[16]),//lost comms
+                    data[17]);//tele comments
             storeQrRecord(m, tablename);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IllegalStateException e) {
             ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed to construct QrRecord, likly corrupted data", Color.RED);
@@ -122,6 +114,31 @@ public class DatabaseManager {
         }
     }
 
+    private static ArrayList<String> getAutoData(String scoutInput) {
+        ArrayList<String> output = new ArrayList<>();
+        //standardize characters
+        scoutInput = scoutInput.toLowerCase();
+        //if there are any commas, only look at stuff before the comma, this is so the scout can write stuff with out messing up the
+        //scouting server
+        if (scoutInput.contains(",")) {
+            scoutInput = scoutInput.split(",")[0];
+        }
+        //get rid of all characters we dont care about
+        scoutInput = scoutInput.replaceAll("[^abc12345m]+", "");
+        //check if each note was collected and add the data accordingly
+        Matcher m = Pattern.compile("[abc12345]m?").matcher(scoutInput);
+        while (m.find()) {
+            if (output.size() < 9) {
+                output.add(m.group());
+            }
+
+        }
+        for (int i = output.size(); i < 9; i++) {
+            output.add("None");
+        }
+
+        return output;
+    }
     public static ArrayList<DuplicateDataException> importJSONObject(JSONObject object, String activeTable) {
         ArrayList<DuplicateDataException> duplicates = new ArrayList<>();
         for (String s : object.keySet()) {
@@ -173,14 +190,15 @@ public class DatabaseManager {
                 (int) rawData.get(Constants.SQLColumnName.AUTO_AMP.toString()),
                 (int) rawData.get(Constants.SQLColumnName.AUTO_SPEAKER_MISSED.toString()),
                 (int) rawData.get(Constants.SQLColumnName.AUTO_AMP_MISSED.toString()),
-                (int) rawData.get(Constants.SQLColumnName.NOTE_A.toString()),
-                (int) rawData.get(Constants.SQLColumnName.NOTE_B.toString()),
-                (int) rawData.get(Constants.SQLColumnName.NOTE_C.toString()),
-                (int) rawData.get(Constants.SQLColumnName.NOTE_1.toString()),
-                (int) rawData.get(Constants.SQLColumnName.NOTE_2.toString()),
-                (int) rawData.get(Constants.SQLColumnName.NOTE_3.toString()),
-                (int) rawData.get(Constants.SQLColumnName.NOTE_4.toString()),
-                (int) rawData.get(Constants.SQLColumnName.NOTE_5.toString()),
+                rawData.get(Constants.SQLColumnName.NOTE_1.toString()).toString(),
+                rawData.get(Constants.SQLColumnName.NOTE_2.toString()).toString(),
+                rawData.get(Constants.SQLColumnName.NOTE_3.toString()).toString(),
+                rawData.get(Constants.SQLColumnName.NOTE_4.toString()).toString(),
+                rawData.get(Constants.SQLColumnName.NOTE_5.toString()).toString(),
+                rawData.get(Constants.SQLColumnName.NOTE_6.toString()).toString(),
+                rawData.get(Constants.SQLColumnName.NOTE_7.toString()).toString(),
+                rawData.get(Constants.SQLColumnName.NOTE_8.toString()).toString(),
+                rawData.get(Constants.SQLColumnName.NOTE_9.toString()).toString(),
                 (int) rawData.get(Constants.SQLColumnName.A_STOP.toString()),
                 (int)rawData.get(Constants.SQLColumnName.SHUTTLED.toString()),
                 (int) rawData.get(Constants.SQLColumnName.TELE_SPEAKER.toString()),
@@ -188,6 +206,8 @@ public class DatabaseManager {
                 (int) rawData.get(Constants.SQLColumnName.TELE_TRAP.toString()),
                 (int) rawData.get(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString()),
                 (int) rawData.get(Constants.SQLColumnName.TELE_AMP_MISSED.toString()),
+                (int) rawData.getOrDefault(Constants.SQLColumnName.SPEAKER_RECEIVED.toString(), 0),
+                (int) rawData.getOrDefault(Constants.SQLColumnName.AMP_RECEIVED.toString(), 0),
                 (int) rawData.get(Constants.SQLColumnName.LOST_COMMS.toString()),
                 (String) rawData.get(Constants.SQLColumnName.TELE_COMMENTS.toString()));
     }
@@ -250,15 +270,15 @@ public class DatabaseManager {
                            int autoAmp,
                            int autoSpeakerMissed,
                            int autoAmpMissed,
-
-                           int noteA,//i have no idea what these are but they are being added anyway
-                           int noteB,
-                           int noteC,
-                           int note1,
-                           int note2,
-                           int note3,
-                           int note4,
-                           int note5,
+                           String note1,
+                           String note2,
+                           String note3,
+                           String note4,
+                           String note5,
+                           String note6,
+                           String note7,
+                           String note8,
+                           String note9,
                            int aStop,
                            int shuttled,
                            int teleSpeaker,
@@ -266,6 +286,8 @@ public class DatabaseManager {
                            int teleTrap,
                            int teleSpeakerMissed,
                            int teleAmpMissed,
+                           int speakerReceived,
+                           int ampReceived,
                            int lostComms,
                            String teleNotes
     ) {
@@ -281,14 +303,15 @@ public class DatabaseManager {
             output.add(new DataPoint(Constants.SQLColumnName.AUTO_SPEAKER_MISSED.toString(), String.valueOf(autoSpeakerMissed)));
             output.add(new DataPoint(Constants.SQLColumnName.AUTO_AMP_MISSED.toString(), String.valueOf(autoAmpMissed)));
 
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_A.toString(), String.valueOf(noteA)));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_B.toString(), String.valueOf(noteB)));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_C.toString(), String.valueOf(noteC)));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_1.toString(), String.valueOf(note1)));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_2.toString(), String.valueOf(note2)));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_3.toString(), String.valueOf(note3)));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_4.toString(), String.valueOf(note4)));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_5.toString(), String.valueOf(note5)));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_1.toString(), note1));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_2.toString(), note2));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_3.toString(), note3));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_4.toString(), note4));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_5.toString(), note5));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_6.toString(), note2));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_7.toString(), note3));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_8.toString(), note4));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_9.toString(), note5));
             output.add(new DataPoint(Constants.SQLColumnName.A_STOP.toString(), String.valueOf(aStop)));
             output.add(new DataPoint(Constants.SQLColumnName.SHUTTLED.toString(), String.valueOf(shuttled)));
 
@@ -297,6 +320,8 @@ public class DatabaseManager {
             output.add(new DataPoint(Constants.SQLColumnName.TELE_TRAP.toString(), String.valueOf(teleTrap)));
             output.add(new DataPoint(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString(), String.valueOf(teleSpeakerMissed)));
             output.add(new DataPoint(Constants.SQLColumnName.TELE_AMP_MISSED.toString(), String.valueOf(teleAmpMissed)));
+            output.add(new DataPoint(Constants.SQLColumnName.SPEAKER_RECEIVED.toString(), String.valueOf(speakerReceived)));
+            output.add(new DataPoint(Constants.SQLColumnName.AMP_RECEIVED.toString(), String.valueOf(ampReceived)));
             output.add(new DataPoint(Constants.SQLColumnName.LOST_COMMS.toString(), String.valueOf(lostComms)));
             output.add(new DataPoint(Constants.SQLColumnName.TELE_COMMENTS.toString(), String.valueOf("\"" + teleNotes + "\"")));
 
@@ -312,14 +337,15 @@ public class DatabaseManager {
                     autoAmp + ", " +
                     autoSpeakerMissed + ", " +
                     autoAmpMissed + ", " +
-                    noteA + ", " +
-                    noteB + ", " +
-                    noteC + ", " +
                     note1 + ", " +
                     note2 + ", " +
                     note3 + ", " +
                     note4 + ", " +
                     note5 + ", " +
+                    note6 + ", " +
+                    note7 + ", " +
+                    note8 + ", " +
+                    note9 + ", " +
                     aStop + ", " +
                     shuttled + ", " +
                     teleSpeaker + ", " +
@@ -327,6 +353,8 @@ public class DatabaseManager {
                     teleTrap + ", " +
                     teleSpeakerMissed + ", " +
                     teleAmpMissed + ", " +
+                    speakerReceived + ", " +
+                    ampReceived + ", " +
                     lostComms + ", " +
                     "\"" + teleNotes + "\"";
         }
@@ -336,10 +364,11 @@ public class DatabaseManager {
             for (DataPoint dataPoint : this.getDataAsList()) {
                 qrBuilder.append(dataPoint.getValue().replaceAll("\"", "")).append(Constants.QR_DATA_DELIMITER);
             }
-            if (qrBuilder.toString().split(Constants.QR_DATA_DELIMITER).length == 21) {
+            String[] split = qrBuilder.toString().split(Constants.QR_DATA_DELIMITER);
+/*            if (qrBuilder.toString().split(Constants.QR_DATA_DELIMITER).length == 25) {
                 //this happens when there are no notes
                 qrBuilder.replace(qrBuilder.length() - 1, qrBuilder.length(), "No Comments/");
-            }
+            }*/
             return  qrBuilder.substring(0, qrBuilder.toString().length() - 1);
         }
 
