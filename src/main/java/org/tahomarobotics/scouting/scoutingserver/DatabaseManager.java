@@ -37,8 +37,8 @@ public class DatabaseManager {
             //figure out the auto note values from tele comments
             //String[] autodata = getAutoData(data[17].split(":")[0]);
             ArrayList<String> auto;
-            if (data[25].contains(":")) {
-                 auto = getAutoData(data[25].split(":")[0]);
+            if (data[26].contains(":")) {
+                 auto = getAutoData(data[26].split(":")[1]);
             }else {
                 auto = getAutoData("");
             }
@@ -52,25 +52,25 @@ public class DatabaseManager {
                     Integer.parseInt(data[5]),//auto speaker missed
                     Integer.parseInt(data[6]),//auto amp missed
                     auto.get(0),//note 1
-                    auto.get(1),//note 2 7
-                    auto.get(2),//note 3 8
-                    auto.get(3),//note 4 9
-                    auto.get(4),//note 5 10
-                    auto.get(5),//note 6 11
-                    auto.get(6),//note 7 12
-                    auto.get(7),//note 8 12
-                    auto.get(8),//note 9 14
-                    Integer.parseInt(data[15]),//a stop
-                    Integer.parseInt(data[16]),//shuttled
-                    Integer.parseInt(data[17]),//tele speaker
-                    Integer.parseInt(data[18]),//tele amp
-                    Integer.parseInt(data[19]),//tele trap
-                    Integer.parseInt(data[20]),//tele speakermissed
-                    Integer.parseInt(data[21]),//tele amp missed
-                    Integer.parseInt(data[22]),//speaker received
-                    Integer.parseInt(data[23]),//amp recievied
-                    Integer.parseInt(data[24]),//lost comms
-                    data[25]);//tele comments
+                    auto.get(1),//note 2
+                    auto.get(2),//note 3
+                    auto.get(3),//note 4
+                    auto.get(4),//note 5
+                    auto.get(5),//note 6
+                    auto.get(6),//note 7
+                    auto.get(7),//note 8
+                    auto.get(8),//note 9
+                    Integer.parseInt(data[16]),//a stop
+                    Integer.parseInt(data[17]),//shuttled
+                    Integer.parseInt(data[18]),//tele speaker
+                    Integer.parseInt(data[19]),//tele amp
+                    Integer.parseInt(data[20]),//tele trap
+                    Integer.parseInt(data[21]),//tele speakermissed
+                    Integer.parseInt(data[22]),//tele amp missed
+                    Integer.parseInt(data[23]),//speaker received
+                    Integer.parseInt(data[24]),//amp recievied
+                    Integer.parseInt(data[25]),//lost comms
+                    data[26]);//tele comments
             storeQrRecord(m, tablename);
     }
 
@@ -279,10 +279,10 @@ public class DatabaseManager {
             output.add(new DataPoint(Constants.SQLColumnName.NOTE_3.toString(), note3));
             output.add(new DataPoint(Constants.SQLColumnName.NOTE_4.toString(), note4));
             output.add(new DataPoint(Constants.SQLColumnName.NOTE_5.toString(), note5));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_6.toString(), note2));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_7.toString(), note3));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_8.toString(), note4));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_9.toString(), note5));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_6.toString(), note6));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_7.toString(), note7));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_8.toString(), note8));
+            output.add(new DataPoint(Constants.SQLColumnName.NOTE_9.toString(), note9));
             output.add(new DataPoint(Constants.SQLColumnName.A_STOP.toString(), String.valueOf(aStop)));
             output.add(new DataPoint(Constants.SQLColumnName.SHUTTLED.toString(), String.valueOf(shuttled)));
 
@@ -294,7 +294,7 @@ public class DatabaseManager {
             output.add(new DataPoint(Constants.SQLColumnName.SPEAKER_RECEIVED.toString(), String.valueOf(speakerReceived)));
             output.add(new DataPoint(Constants.SQLColumnName.AMP_RECEIVED.toString(), String.valueOf(ampReceived)));
             output.add(new DataPoint(Constants.SQLColumnName.LOST_COMMS.toString(), String.valueOf(lostComms)));
-            output.add(new DataPoint(Constants.SQLColumnName.TELE_COMMENTS.toString(), String.valueOf("\"" + teleNotes + "\"")));
+            output.add(new DataPoint(Constants.SQLColumnName.TELE_COMMENTS.toString(), "\"autopath::" + teleNotes + "\""));
 
 
             return output;

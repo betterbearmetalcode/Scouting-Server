@@ -67,7 +67,8 @@ public class Constants {
         TOTAL_NOTES_MISSED,
         TOTAL_NOTES,
         TELE_SPEAKER_ADJUSTED,
-        IS_SHUTTELING_MATCH
+        IS_SHUTTELING_MATCH,
+        RAW_AUTO_DESCRIPTION
     }
 
     public static final String SHUTTLED_NOTE_IDENTIFIER = "poodle";//identifier which scouts put in comments to indicate that a team is reciving shuttled notes

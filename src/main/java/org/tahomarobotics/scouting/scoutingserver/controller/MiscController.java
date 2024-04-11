@@ -160,6 +160,9 @@ public class MiscController {
             eventKeys = new ArrayList<>(events.toList());
             for (Object eventKey : eventKeys) {
                 System.out.println("Event: " + eventKey);
+                if (eventKey == "2024marea") {
+                        System.out.println();
+                }
                 JSONArray eventData = APIUtil.get("/event/" + eventKey.toString() + "/matches");
                 for (Object match : eventData) {
                     JSONObject matchMap = (JSONObject) match;

@@ -201,6 +201,7 @@ public class Exporter {
         output.add(String.valueOf(toalNotesMissed + autoAmp + autoSpeaker + teleAmp + teleSpeaker));//total notes
         output.add(isShuttlingMatch?String.valueOf(teleSpeakerAdjusted):String.valueOf(teleSpeaker));
         output.add(isShuttlingMatch?"1":"0");//boolean which indicated whethere there was a significant amount of shuttling done by this team
+        output.add(sqlRow.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().split(":")[1]);
         return output;
 
     }
