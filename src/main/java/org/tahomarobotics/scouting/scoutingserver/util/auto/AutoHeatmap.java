@@ -40,7 +40,6 @@ public class AutoHeatmap {
         heatmap = new HashMap<>();
         displayBox = new VBox();
         //for all the data add autos to the heatmap as appropriate;
-        //TODO add AI to recognize autos and correct scouting mistakes
             for (DatabaseManager.RobotPosition robotPosition : input.teams().keySet()) {
                 Color teamColor = colors.get(robotPosition);
                 for (String tableName : input.dataTables()) {

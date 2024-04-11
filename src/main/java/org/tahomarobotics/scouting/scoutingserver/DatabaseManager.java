@@ -20,52 +20,16 @@ import java.util.regex.Pattern;
 public class DatabaseManager {
 
     //the king of storage methods, all the data storage methods eventually call this one, it is the final leg of the chain
-    public static void storeQrRecord(QRRecord record, String tablename) throws DuplicateDataException {
-        try {
-            SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + record.getDataForSQL() + ")",new Object[]{}, false, record);
-            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ record, Color.GREEN);
-        } catch (SQLException e) {
-            Logging.logError(e);
-        }
+    public static void storeQrRecord(QRRecord record, String tablename) throws DuplicateDataException, SQLException {
+        SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + record.getDataForSQL() + ")",new Object[]{}, false, record);
+        ScoutingServer.qrScannerController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ record, Color.GREEN);
 
     }
 
 
 
-    public static void storeRawQRData(String dataRaw, String tablename) throws IOException, DuplicateDataException {
-        try {
+    public static void storeRawQRData(String dataRaw, String tablename) throws IOException, DuplicateDataException, SQLException {
             String[] data = dataRaw.split(Constants.QR_DATA_DELIMITER);
-            /*if (data.length == 22) {
-                //then its an old version of the data and we need to add a default A stop value
-                String[] newData = new String[24];
-                for (int i = 0; i < data.length + 2; i++) {
-                    if (i < 15) {
-                        newData[i] = data[i];
-                    }else if (i == 15) {
-                        newData[i] = "0";
-                    }else if (i == 16){
-                        newData[i] = "0";
-                    }else {
-                        newData[i] = data[i-2];
-                    }
-
-                }
-                data = newData;
-            }else if (data.length == 23) {
-                //then its an old version of the data and we need to add a default A stop value
-                String[] newData = new String[24];
-                for (int i = 0; i < data.length + 1; i++) {
-                    if (i < 15) {
-                        newData[i] = data[i];
-                    }else if (i == 16) {
-                        newData[i] = "0";
-                    }else {
-                        newData[i] = data[i-1];
-                    }
-
-                }
-                data = newData;
-            }*/
             //scouting app is not coorrectly trasmitting which notes are where in qr string, this is to read them correctly
             //for future years  migrate to a new type of data transfer which has the column name attached to each data point
             //this will make compatibility and extension of what is colleted simpler
@@ -87,31 +51,27 @@ public class DatabaseManager {
                     Integer.parseInt(data[4]),//auto amp
                     Integer.parseInt(data[5]),//auto speaker missed
                     Integer.parseInt(data[6]),//auto amp missed
-                    auto.get(0),
-                    auto.get(1),
-                    auto.get(2),
-                    auto.get(3),
-                    auto.get(4),
-                    auto.get(5),
-                    auto.get(6),
-                    auto.get(7),
-                    auto.get(8),
-                    Integer.parseInt(data[7]),//a stop
-                    Integer.parseInt(data[8]),//shuttled
-                    Integer.parseInt(data[9]),//tele speaker
-                    Integer.parseInt(data[10]),//tele amp
-                    Integer.parseInt(data[11]),//tele trap
-                    Integer.parseInt(data[12]),//tele speakermissed
-                    Integer.parseInt(data[13]),//tele amp missed
-                    Integer.parseInt(data[14]),//speaker received
-                    Integer.parseInt(data[15]),//amp recievied
-                    Integer.parseInt(data[16]),//lost comms
-                    data[17]);//tele comments
+                    auto.get(0),//note 1
+                    auto.get(1),//note 2 7
+                    auto.get(2),//note 3 8
+                    auto.get(3),//note 4 9
+                    auto.get(4),//note 5 10
+                    auto.get(5),//note 6 11
+                    auto.get(6),//note 7 12
+                    auto.get(7),//note 8 12
+                    auto.get(8),//note 9 14
+                    Integer.parseInt(data[15]),//a stop
+                    Integer.parseInt(data[16]),//shuttled
+                    Integer.parseInt(data[17]),//tele speaker
+                    Integer.parseInt(data[18]),//tele amp
+                    Integer.parseInt(data[19]),//tele trap
+                    Integer.parseInt(data[20]),//tele speakermissed
+                    Integer.parseInt(data[21]),//tele amp missed
+                    Integer.parseInt(data[22]),//speaker received
+                    Integer.parseInt(data[23]),//amp recievied
+                    Integer.parseInt(data[24]),//lost comms
+                    data[25]);//tele comments
             storeQrRecord(m, tablename);
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IllegalStateException e) {
-            ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed to construct QrRecord, likly corrupted data", Color.RED);
-            Logging.logError(e, "Failed to construct match record, most likly corrupted data");
-        }
     }
 
     private static ArrayList<String> getAutoData(String scoutInput) {
@@ -124,9 +84,9 @@ public class DatabaseManager {
             scoutInput = scoutInput.split(",")[0];
         }
         //get rid of all characters we dont care about
-        scoutInput = scoutInput.replaceAll("[^abc12345m]+", "");
+        scoutInput = scoutInput.replaceAll("[^pabc12345m]+", "");
         //check if each note was collected and add the data accordingly
-        Matcher m = Pattern.compile("[abc12345]m?").matcher(scoutInput);
+        Matcher m = Pattern.compile("[pabc12345]m?").matcher(scoutInput);
         while (m.find()) {
             if (output.size() < 9) {
                 output.add(m.group());
@@ -141,6 +101,8 @@ public class DatabaseManager {
     }
     public static ArrayList<DuplicateDataException> importJSONObject(JSONObject object, String activeTable) {
         ArrayList<DuplicateDataException> duplicates = new ArrayList<>();
+        int numErrors = 0;
+        boolean showErrors = true;
         for (String s : object.keySet()) {
             JSONArray arr = object.getJSONArray(s);
 
@@ -148,10 +110,19 @@ public class DatabaseManager {
                 String string = o.toString();
                 try {
                     DatabaseManager.storeRawQRData(string, activeTable);
-                } catch (IOException e) {
-                    Logging.logError(e, "failed to import qr string");
                 } catch (DuplicateDataException e) {
                     duplicates.add(e);
+                } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IllegalStateException | IOException |
+                         SQLException e) {
+                    numErrors++;
+                    if (numErrors >= 3 && showErrors) {
+                        showErrors = Constants.askQuestion("There have been " + numErrors + " errors so far in this import, continue showing alerts?");
+                    }
+                    ScoutingServer.qrScannerController.writeToDataCollectionConsole("Failed to construct QrRecord, likly corrupted data", Color.RED);
+                    if (showErrors) {
+                        Logging.logError(e, "Failed to construct match record, most likly corrupted data");
+                    }
+
                 }
             }
         }
@@ -337,15 +308,15 @@ public class DatabaseManager {
                     autoAmp + ", " +
                     autoSpeakerMissed + ", " +
                     autoAmpMissed + ", " +
-                    note1 + ", " +
-                    note2 + ", " +
-                    note3 + ", " +
-                    note4 + ", " +
-                    note5 + ", " +
-                    note6 + ", " +
-                    note7 + ", " +
-                    note8 + ", " +
-                    note9 + ", " +
+                    "\"" + note1 + "\", " +
+                    "\"" + note2 + "\", " +
+                    "\"" + note3 + "\", " +
+                    "\"" + note4 + "\", " +
+                    "\"" + note5 + "\", " +
+                    "\"" + note6 + "\", " +
+                    "\"" + note7 + "\", " +
+                    "\"" + note8 + "\", " +
+                    "\"" + note9 + "\", " +
                     aStop + ", " +
                     shuttled + ", " +
                     teleSpeaker + ", " +
@@ -365,10 +336,6 @@ public class DatabaseManager {
                 qrBuilder.append(dataPoint.getValue().replaceAll("\"", "")).append(Constants.QR_DATA_DELIMITER);
             }
             String[] split = qrBuilder.toString().split(Constants.QR_DATA_DELIMITER);
-/*            if (qrBuilder.toString().split(Constants.QR_DATA_DELIMITER).length == 25) {
-                //this happens when there are no notes
-                qrBuilder.replace(qrBuilder.length() - 1, qrBuilder.length(), "No Comments/");
-            }*/
             return  qrBuilder.substring(0, qrBuilder.toString().length() - 1);
         }
 

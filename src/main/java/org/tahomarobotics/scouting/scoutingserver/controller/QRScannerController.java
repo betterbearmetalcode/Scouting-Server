@@ -95,9 +95,6 @@ public class QRScannerController {
     }
 
 
-
-
-    //consider this https://www.tutorialspoint.com/java_mysql/java_mysql_quick_guide.html
     @FXML
     public void loadCSV(ActionEvent event) {
         FileChooser chooser = new FileChooser();
@@ -152,6 +149,8 @@ public class QRScannerController {
                     DatabaseManager.storeQrRecord(m, activeTable);
                 } catch (DuplicateDataException e) {
                     duplicates.add(e);
+                } catch (SQLException e) {
+                    Logging.logError(e, "SQL Exception: ");
                 }
             }
             handleDuplicates(duplicates);
@@ -242,6 +241,8 @@ public class QRScannerController {
                         DatabaseManager.storeQrRecord(qrRecord, activeTable);
                     } catch (DuplicateDataException e) {
                         Logging.logInfo("Gosh dang it, got duplicate data again after trying to resolve duplicate data, just giving up now", true);
+                    } catch (SQLException e) {
+                        Logging.logError(e);
                     }
 
                 }

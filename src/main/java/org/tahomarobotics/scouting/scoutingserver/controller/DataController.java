@@ -51,21 +51,18 @@ public class DataController {
             tabLoader.setController(controller);
 
 
-            //construct noteA new tab
+            //construct a new tab
             VBox pane = new VBox((VBox) tabLoader.load());
             Tab tab = new Tab();
             tab.setText(selectedTable);
             tab.setId(selectedTable);
             tab.setContent(pane);
             tab.setClosable(true);
-            tab.setOnClosed(new EventHandler<Event>() {
-                @Override
-                public void handle(Event event) {
-                    for (TabController c : controllers) {
-                        if (Objects.equals(tab.getId(), c.tableName)) {
-                            controllers.remove(c);
-                            break;
-                        }
+            tab.setOnClosed(event1 -> {
+                for (TabController c : controllers) {
+                    if (Objects.equals(tab.getId(), c.tableName)) {
+                        controllers.remove(c);
+                        break;
                     }
                 }
             });
