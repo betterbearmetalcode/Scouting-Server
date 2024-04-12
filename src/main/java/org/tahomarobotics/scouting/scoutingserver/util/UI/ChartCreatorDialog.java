@@ -74,16 +74,7 @@ public class ChartCreatorDialog extends Dialog<Chart> {
                     value.equals(TELE_AMP) ||
                     value.equals(TELE_TRAP) ||
                     value.equals(TELE_SPEAKER_MISSED) ||
-                    value.equals(TELE_AMP_MISSED) ||
-                    value.equals(NOTE_1)||
-                    value.equals(NOTE_2)||
-                    value.equals(NOTE_3)||
-                    value.equals(NOTE_4)||
-                    value.equals(NOTE_5)||
-                    value.equals(NOTE_6)||
-                    value.equals(NOTE_7)||
-                    value.equals(NOTE_8)||
-                    value.equals(NOTE_9))) {
+                    value.equals(TELE_AMP_MISSED))) {
                 continue;
             }
             CheckBox box = new CheckBox(value.name());

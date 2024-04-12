@@ -1,6 +1,6 @@
 [
   {
-    "address": null,
+    "address": "700 Monroe St SW, Huntsville, AL 35801, USA",
     "city": "Huntsville",
     "country": "USA",
     "district": null,
@@ -11,24 +11,66 @@
     "event_type_string": "Regional",
     "first_event_code": "alhu",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJBwUw_FdrYogRMsP0V0W5Zqk",
+    "gmaps_url": "https://maps.google.com/?q=700+Monroe+St+SW,+Huntsville,+AL+35801,+USA&ftid=0x88626b57fc300507:0xa966b94557f4c332",
     "key": "2024alhu",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 34.72671,
+    "lng": -86.5903795,
+    "location_name": "700 Monroe St SW",
     "name": "Rocket City Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "35801",
     "short_name": "Rocket City",
     "start_date": "2024-04-03",
     "state_prov": "AL",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires5",
+        "type": "twitch"
+      }
+    ],
     "website": "http://firstinalabama.org/events/frc-events/",
     "week": 5,
+    "year": 2024
+  },
+  {
+    "address": "1001 Avenida De Las Americas, Houston, TX 77010, USA",
+    "city": "Houston",
+    "country": "USA",
+    "district": null,
+    "division_keys": [],
+    "end_date": "2024-04-20",
+    "event_code": "arc",
+    "event_type": 3,
+    "event_type_string": "Championship Division",
+    "first_event_code": "archimedes",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJgw3vTiK_QIYRsMwBp668_Lo",
+    "gmaps_url": "https://maps.google.com/?q=1001+Avenida+De+Las+Americas,+Houston,+TX+77010,+USA&ftid=0x8640bf224eef0d83:0xbafcbcaea701ccb0",
+    "key": "2024arc",
+    "lat": 29.7520006,
+    "lng": -95.3576434,
+    "location_name": "1001 Avenida De Las Americas",
+    "name": "Archimedes Division",
+    "parent_event_key": "2024cmptx",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "77010",
+    "short_name": "Archimedes",
+    "start_date": "2024-04-17",
+    "state_prov": "TX",
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires_archimedes",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://www.firstchampionship.org",
+    "week": null,
     "year": 2024
   },
   {
@@ -58,9 +100,46 @@
     "start_date": "2024-03-06",
     "state_prov": "AR",
     "timezone": "America/Chicago",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires8",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinspires.org",
     "week": 1,
+    "year": 2024
+  },
+  {
+    "address": "14 Sir Christopher Ondaatje Ave, Macquarie Park NSW 2109, Australia",
+    "city": "Macquarie Park",
+    "country": "Australia",
+    "district": null,
+    "division_keys": [],
+    "end_date": "2024-06-23",
+    "event_code": "audd",
+    "event_type": 99,
+    "event_type_string": "Offseason",
+    "first_event_code": null,
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJedbwTfunEmsRcgIH3h9fwuM",
+    "gmaps_url": "https://maps.google.com/?cid=16411784582565134962",
+    "key": "2024audd",
+    "lat": -33.7741083,
+    "lng": 151.1152284,
+    "location_name": "Macquarie University",
+    "name": "Duel Down Under",
+    "parent_event_key": null,
+    "playoff_type": null,
+    "playoff_type_string": null,
+    "postal_code": "2109",
+    "short_name": "",
+    "start_date": "2024-06-22",
+    "state_prov": "NSW",
+    "timezone": "Australia/Sydney",
+    "webcasts": [],
+    "website": "https://www.firstaustralia.org/all-events",
+    "week": null,
     "year": 2024
   },
   {
@@ -90,7 +169,12 @@
     "start_date": "2024-03-15",
     "state_prov": "NSW",
     "timezone": "Australia/Sydney",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires13",
+        "type": "twitch"
+      }
+    ],
     "website": "https://firstaustralia.org/",
     "week": 2,
     "year": 2024
@@ -122,13 +206,18 @@
     "start_date": "2024-02-24",
     "state_prov": "AZ",
     "timezone": "America/Phoenix",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "arizonaroboticsleague",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.498robotics.org/arizona-robotics-league",
     "week": null,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1001 E Knox Rd, Tempe, AZ 85284, USA",
     "city": "Tempe",
     "country": "USA",
     "district": null,
@@ -139,28 +228,33 @@
     "event_type_string": "Regional",
     "first_event_code": "azgl",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJR0g0eesGK4cR3PCoeFTawUg",
+    "gmaps_url": "https://maps.google.com/?q=1001+E+Knox+Rd,+Tempe,+AZ+85284,+USA&ftid=0x872b06eb79344847:0x48c1da5478a8f0dc",
     "key": "2024azgl",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 33.3256842,
+    "lng": -111.9263523,
+    "location_name": "1001 E Knox Rd",
     "name": "Arizona East Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "85284",
     "short_name": "Arizona East",
     "start_date": "2024-03-20",
     "state_prov": "AZ",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Phoenix",
+    "webcasts": [
+      {
+        "channel": "firstinspires3",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.azfirst.info/",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "6935 E Gold Dust Ave, Scottsdale, AZ 85253, USA",
     "city": "Scottsdale",
     "country": "USA",
     "district": null,
@@ -171,28 +265,33 @@
     "event_type_string": "Regional",
     "first_event_code": "azva",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJO1C9IL50K4cRRyF73ovK87c",
+    "gmaps_url": "https://maps.google.com/?cid=13255160830363377991",
     "key": "2024azva",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 33.576638,
+    "lng": -111.932348,
+    "location_name": "Chaparral High School",
     "name": "Arizona Valley Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "85253",
     "short_name": "Arizona Valley",
     "start_date": "2024-03-13",
     "state_prov": "AZ",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Phoenix",
+    "webcasts": [
+      {
+        "channel": "firstinspires3",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.azfirst.info/",
     "week": 2,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1925 Blanshard St, Victoria, BC V8T 4J2, Canada",
     "city": "Victoria",
     "country": "Canada",
     "district": null,
@@ -203,22 +302,27 @@
     "event_type_string": "Regional",
     "first_event_code": "bcvi",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJHeSUMoF0j1QRH6fYHVSdDEQ",
+    "gmaps_url": "https://maps.google.com/?q=1925+Blanshard+St,+Victoria,+BC+V8T+4J2,+Canada&ftid=0x548f74813294e41d:0x440c9d541dd8a71f",
     "key": "2024bcvi",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 48.4316374,
+    "lng": -123.3607382,
+    "location_name": "1925 Blanshard St",
     "name": "Canadian Pacific Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "V8T 4J2",
     "short_name": "Canadian Pacific",
     "start_date": "2024-02-28",
     "state_prov": "BC",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Vancouver",
+    "webcasts": [
+      {
+        "channel": "firstinspires1",
+        "type": "twitch"
+      }
+    ],
     "website": "https://firstroboticsbc.org/frc/",
     "week": 0,
     "year": 2024
@@ -250,13 +354,38 @@
     "start_date": "2024-02-28",
     "state_prov": "DF",
     "timezone": "America/Sao_Paulo",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires13",
+        "type": "twitch"
+      },
+      {
+        "channel": "Q7v7hD8Eipc",
+        "date": "2024-02-29",
+        "type": "youtube"
+      },
+      {
+        "channel": "dBBdQEHbOgI",
+        "date": "2024-03-01",
+        "type": "youtube"
+      },
+      {
+        "channel": "xv0TXd0olGg",
+        "date": "2024-02-28",
+        "type": "youtube"
+      },
+      {
+        "channel": "zlsjfxyQIqc",
+        "date": "2024-03-02",
+        "type": "youtube"
+      }
+    ],
     "website": null,
     "week": 0,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "3200 E Ave J 8, Lancaster, CA 93535, USA",
     "city": "Lancaster",
     "country": "USA",
     "district": null,
@@ -267,22 +396,27 @@
     "event_type_string": "Regional",
     "first_event_code": "caav",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJO46bMf9QwoAREu-kYkFiNzw",
+    "gmaps_url": "https://maps.google.com/?q=3200+E+Ave+J+8,+Lancaster,+CA+93535,+USA&ftid=0x80c250ff319b8e3b:0x3c37624162a4ef12",
     "key": "2024caav",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 34.6814866,
+    "lng": -118.0710237,
+    "location_name": "3200 E Ave J 8",
     "name": "Aerospace Valley Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "93535",
     "short_name": "Aerospace Valley",
     "start_date": "2024-04-03",
     "state_prov": "CA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Los_Angeles",
+    "webcasts": [
+      {
+        "channel": "firstinspires1",
+        "type": "twitch"
+      }
+    ],
     "website": "https://cafirst.org/frc/aerospacevalley/",
     "week": 5,
     "year": 2024
@@ -314,7 +448,12 @@
     "start_date": "2024-04-04",
     "state_prov": "CA",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires2",
+        "type": "twitch"
+      }
+    ],
     "website": null,
     "week": 5,
     "year": 2024
@@ -346,13 +485,23 @@
     "start_date": "2024-03-13",
     "state_prov": "CA",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires2",
+        "type": "twitch"
+      },
+      {
+        "channel": "As4dUCaqfM8",
+        "date": "2024-03-15",
+        "type": "youtube"
+      }
+    ],
     "website": "https://cafirst.org/frc/sacramento/",
     "week": 2,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1121 S Chance Ave, Fresno, CA 93702, USA",
     "city": "Fresno",
     "country": "USA",
     "district": null,
@@ -363,28 +512,33 @@
     "event_type_string": "Regional",
     "first_event_code": "cafr",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJCczwzxlflIARSXjm5Li0Tbs",
+    "gmaps_url": "https://maps.google.com/?cid=13496642364506536009",
     "key": "2024cafr",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 36.7356534,
+    "lng": -119.7495697,
+    "location_name": "Fresno Fairgrounds North Entrance",
     "name": "Central Valley Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "93702",
     "short_name": "Central Valley",
     "start_date": "2024-03-21",
     "state_prov": "CA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Los_Angeles",
+    "webcasts": [
+      {
+        "channel": "firstinspires2",
+        "type": "twitch"
+      }
+    ],
     "website": "https://cafirst.org/frc/centralvalley/",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "201 N Douglas St, El Segundo, CA 90245, USA",
     "city": "El Segundo",
     "country": "USA",
     "district": null,
@@ -395,22 +549,27 @@
     "event_type_string": "Regional",
     "first_event_code": "cala",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJtyOEq6-2woAR5zs5AB0tXM4",
+    "gmaps_url": "https://maps.google.com/?q=201+N+Douglas+St,+El+Segundo,+CA+90245,+USA&ftid=0x80c2b6afab8423b7:0xce5c2d1d00393be7",
     "key": "2024cala",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 33.9177514,
+    "lng": -118.3839845,
+    "location_name": "201 N Douglas St",
     "name": "Los Angeles Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "90245",
     "short_name": "Los Angeles",
     "start_date": "2024-03-14",
     "state_prov": "CA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Los_Angeles",
+    "webcasts": [
+      {
+        "channel": "firstinspires1",
+        "type": "twitch"
+      }
+    ],
     "website": "https://cafirst.org/frc/losangeles/",
     "week": 2,
     "year": 2024
@@ -442,7 +601,12 @@
     "start_date": "2024-03-27",
     "state_prov": "CA",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires2",
+        "type": "twitch"
+      }
+    ],
     "website": "https://cafirst.org/frc/montereybay/",
     "week": 4,
     "year": 2024
@@ -474,13 +638,18 @@
     "start_date": "2024-03-27",
     "state_prov": "CA",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires1",
+        "type": "twitch"
+      }
+    ],
     "website": "https://cafirst.org/frc/orangecounty/",
     "week": 4,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "333 Ponoma St, Port Hueneme, CA 93041, USA",
     "city": "Port Hueneme",
     "country": "USA",
     "district": null,
@@ -491,22 +660,27 @@
     "event_type_string": "Regional",
     "first_event_code": "caph",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJF5WfK7NP6IARS5ExMy1EYkU",
+    "gmaps_url": "https://maps.google.com/?q=333+Ponoma+St,+Port+Hueneme,+CA+93041,+USA&ftid=0x80e84fb32b9f9517:0x4562442d3331914b",
     "key": "2024caph",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 34.1510132,
+    "lng": -119.2003837,
+    "location_name": "333 Ponoma St",
     "name": "Hueneme Port Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "93041",
     "short_name": "Hueneme Port",
     "start_date": "2024-02-29",
     "state_prov": "CA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Los_Angeles",
+    "webcasts": [
+      {
+        "channel": "firstinspires3",
+        "type": "twitch"
+      }
+    ],
     "website": "https://cafirst.org/frc/hueneme/",
     "week": 0,
     "year": 2024
@@ -538,13 +712,18 @@
     "start_date": "2024-03-21",
     "state_prov": "CA",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires1",
+        "type": "twitch"
+      }
+    ],
     "website": "https://cafirst.org/frc/sandiego/",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "2001 37th Ave, San Francisco, CA 94116, USA",
     "city": "San Francisco",
     "country": "USA",
     "district": null,
@@ -555,22 +734,27 @@
     "event_type_string": "Regional",
     "first_event_code": "casf",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJw6OmIH59j4ARmZxLOcZz2iw",
+    "gmaps_url": "https://maps.google.com/?q=2001+37th+Ave,+San+Francisco,+CA+94116,+USA&ftid=0x808f7d7e20a6a3c3:0x2cda73c6394b9c99",
     "key": "2024casf",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 37.7485985,
+    "lng": -122.495988,
+    "location_name": "2001 37th Ave",
     "name": "San Francisco Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "94116",
     "short_name": "San Francisco",
     "start_date": "2024-03-07",
     "state_prov": "CA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Los_Angeles",
+    "webcasts": [
+      {
+        "channel": "firstinspires2",
+        "type": "twitch"
+      }
+    ],
     "website": "https://cafirst.org/frc/sanfrancisco/",
     "week": 1,
     "year": 2024
@@ -602,13 +786,18 @@
     "start_date": "2024-02-29",
     "state_prov": "CA",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires2",
+        "type": "twitch"
+      }
+    ],
     "website": "https://cafirst.org/frc/siliconvalley/",
     "week": 0,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "333 Ponoma St, Port Hueneme, CA 93041, USA",
     "city": "Port Hueneme",
     "country": "USA",
     "district": null,
@@ -619,22 +808,27 @@
     "event_type_string": "Regional",
     "first_event_code": "cave",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJF5WfK7NP6IARS5ExMy1EYkU",
+    "gmaps_url": "https://maps.google.com/?q=333+Ponoma+St,+Port+Hueneme,+CA+93041,+USA&ftid=0x80e84fb32b9f9517:0x4562442d3331914b",
     "key": "2024cave",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 34.1510132,
+    "lng": -119.2003837,
+    "location_name": "333 Ponoma St",
     "name": "Ventura County Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "93041",
     "short_name": "Ventura County",
     "start_date": "2024-03-07",
     "state_prov": "CA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Los_Angeles",
+    "webcasts": [
+      {
+        "channel": "firstinspires3",
+        "type": "twitch"
+      }
+    ],
     "website": "https://cafirst.org/frc/ventura/",
     "week": 1,
     "year": 2024
@@ -671,7 +865,23 @@
     "start_date": "2024-04-03",
     "state_prov": "VA",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "ivL5GQfhgZw",
+        "date": "2024-04-05",
+        "type": "youtube"
+      },
+      {
+        "channel": "nrzc9LnfriE",
+        "date": "2024-04-04",
+        "type": "youtube"
+      },
+      {
+        "channel": "wlQMSG0v6So",
+        "date": "2024-04-06",
+        "type": "youtube"
+      }
+    ],
     "website": "https://www.firstchesapeake.org/calendar/first-chesapeake-first-robotics-competition-district-championship/",
     "week": 5,
     "year": 2024
@@ -681,7 +891,16 @@
     "city": "Houston",
     "country": "USA",
     "district": null,
-    "division_keys": [],
+    "division_keys": [
+      "2024arc",
+      "2024cur",
+      "2024dal",
+      "2024gal",
+      "2024hop",
+      "2024joh",
+      "2024mil",
+      "2024new"
+    ],
     "end_date": "2024-04-20",
     "event_code": "cmptx",
     "event_type": 4,
@@ -703,7 +922,12 @@
     "start_date": "2024-04-17",
     "state_prov": "TX",
     "timezone": "America/Chicago",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstchampionship.org",
     "week": null,
     "year": 2024
@@ -767,7 +991,12 @@
     "start_date": "2024-03-20",
     "state_prov": "CO",
     "timezone": "America/Denver",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires4",
+        "type": "twitch"
+      }
+    ],
     "website": "https://coloradofirst.org",
     "week": 3,
     "year": 2024
@@ -804,7 +1033,20 @@
     "start_date": "2024-03-01",
     "state_prov": "CT",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires19",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_green",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_red",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.nefirst.org/",
     "week": 0,
     "year": 2024
@@ -841,13 +1083,100 @@
     "start_date": "2024-03-08",
     "state_prov": "CT",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires19",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_red",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_green",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.nefirst.org/",
     "week": 1,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1001 Avenida De Las Americas, Houston, TX 77010, USA",
+    "city": "Houston",
+    "country": "USA",
+    "district": null,
+    "division_keys": [],
+    "end_date": "2024-04-20",
+    "event_code": "cur",
+    "event_type": 3,
+    "event_type_string": "Championship Division",
+    "first_event_code": "curie",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJgw3vTiK_QIYRsMwBp668_Lo",
+    "gmaps_url": "https://maps.google.com/?q=1001+Avenida+De+Las+Americas,+Houston,+TX+77010,+USA&ftid=0x8640bf224eef0d83:0xbafcbcaea701ccb0",
+    "key": "2024cur",
+    "lat": 29.7520006,
+    "lng": -95.3576434,
+    "location_name": "1001 Avenida De Las Americas",
+    "name": "Curie Division",
+    "parent_event_key": "2024cmptx",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "77010",
+    "short_name": "Curie",
+    "start_date": "2024-04-17",
+    "state_prov": "TX",
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires_curie",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://www.firstchampionship.org",
+    "week": null,
+    "year": 2024
+  },
+  {
+    "address": "1001 Avenida De Las Americas, Houston, TX 77010, USA",
+    "city": "Houston",
+    "country": "USA",
+    "district": null,
+    "division_keys": [],
+    "end_date": "2024-04-20",
+    "event_code": "dal",
+    "event_type": 3,
+    "event_type_string": "Championship Division",
+    "first_event_code": "daly",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJgw3vTiK_QIYRsMwBp668_Lo",
+    "gmaps_url": "https://maps.google.com/?q=1001+Avenida+De+Las+Americas,+Houston,+TX+77010,+USA&ftid=0x8640bf224eef0d83:0xbafcbcaea701ccb0",
+    "key": "2024dal",
+    "lat": 29.7520006,
+    "lng": -95.3576434,
+    "location_name": "1001 Avenida De Las Americas",
+    "name": "Daly Division",
+    "parent_event_key": "2024cmptx",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "77010",
+    "short_name": "Daly",
+    "start_date": "2024-04-17",
+    "state_prov": "TX",
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires_daly",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://www.firstchampionship.org",
+    "week": null,
+    "year": 2024
+  },
+  {
+    "address": "12777 Gemini Blvd N, Orlando, FL 32816, USA",
     "city": "Orlando",
     "country": "USA",
     "district": null,
@@ -858,28 +1187,33 @@
     "event_type_string": "Regional",
     "first_event_code": "flor",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJ30cpsVpo54gRaZF-NLHKIME",
+    "gmaps_url": "https://maps.google.com/?q=12777+Gemini+Blvd+N,+Orlando,+FL+32816,+USA&ftid=0x88e7685ab12947df:0xc120cab1347e9169",
     "key": "2024flor",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 28.607438,
+    "lng": -81.1973124,
+    "location_name": "12777 Gemini Blvd N",
     "name": "Orlando Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "32816",
     "short_name": "Orlando",
     "start_date": "2024-03-20",
     "state_prov": "FL",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "firstinspires5",
+        "type": "twitch"
+      }
+    ],
     "website": "http://orlandofrc.org",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1800 Wahnish Way, Tallahassee, FL 32310, USA",
     "city": "Tallahassee",
     "country": "USA",
     "district": null,
@@ -890,22 +1224,27 @@
     "event_type_string": "Regional",
     "first_event_code": "flta",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJK3ETakD17IgRk_Lp4OTqaTs",
+    "gmaps_url": "https://maps.google.com/?cid=4281211189539238547",
     "key": "2024flta",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 30.4242136,
+    "lng": -84.29055319999999,
+    "location_name": "Alfred Lawson Jr. Multipurpose Center",
     "name": "Tallahassee Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "32310",
     "short_name": "Tallahassee",
     "start_date": "2024-03-13",
     "state_prov": "FL",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "firstinspires5",
+        "type": "twitch"
+      }
+    ],
     "website": "https://tallahasseefrc.org/",
     "week": 2,
     "year": 2024
@@ -937,7 +1276,12 @@
     "start_date": "2024-02-28",
     "state_prov": "FL",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires5",
+        "type": "twitch"
+      }
+    ],
     "website": "http://soflofrc.firstinflorida.org/",
     "week": 0,
     "year": 2024
@@ -974,13 +1318,22 @@
     "start_date": "2024-03-28",
     "state_prov": "GA",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "YTqhAEbRPcs",
+        "type": "youtube"
+      },
+      {
+        "channel": "gafirst2",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.gafirst.org",
     "week": 4,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1601 Maple St, Carrollton, GA 30117, USA",
     "city": "Carrollton",
     "country": "USA",
     "district": {
@@ -996,28 +1349,42 @@
     "event_type_string": "District",
     "first_event_code": "gacar",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJGxpOKHwvi4gRYEj9ZPtfwFg",
+    "gmaps_url": "https://maps.google.com/?q=1601+Maple+St,+Carrollton,+GA+30117,+USA&ftid=0x888b2f7c284e1a1b:0x58c05ffb64fd4860",
     "key": "2024gacar",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 33.5715066,
+    "lng": -85.10335599999999,
+    "location_name": "1601 Maple St",
     "name": "PCH District Carrollton Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "30117",
     "short_name": "Carrollton",
     "start_date": "2024-03-21",
     "state_prov": "GA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "gafirst1",
+        "type": "twitch"
+      },
+      {
+        "channel": "gafirst2",
+        "type": "twitch"
+      },
+      {
+        "channel": "ZJamit6K2Es",
+        "date": "2024-03-23",
+        "type": "youtube"
+      }
+    ],
     "website": "http://gafirst.org/",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "University Center, 1400 Coleman Ave, Macon, GA 31207, USA",
     "city": "Macon",
     "country": "USA",
     "district": {
@@ -1033,28 +1400,37 @@
     "event_type_string": "District Championship",
     "first_event_code": "gacmp",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJixsAPZ7-84gRMKJOn8A2mkE",
+    "gmaps_url": "https://maps.google.com/?cid=4727150959813108272",
     "key": "2024gacmp",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 32.8288941,
+    "lng": -83.6518573,
+    "location_name": "Hawkins Arena",
     "name": "Peachtree District Championship",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "31207",
     "short_name": "Peachtree",
-    "start_date": "2024-04-04",
+    "start_date": "2024-04-03",
     "state_prov": "GA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "6S2MBoThkUE",
+        "type": "youtube"
+      },
+      {
+        "channel": "gafirst2",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.gafirst.org",
     "week": 5,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "2211 Tony Ingle Parkway, Dalton, GA 30720, USA",
     "city": "Dalton",
     "country": "USA",
     "district": {
@@ -1070,22 +1446,31 @@
     "event_type_string": "District",
     "first_event_code": "gadal",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJrUGxJksLYIgRDbZ6E1rb5gc",
+    "gmaps_url": "https://maps.google.com/?cid=569383582829295117",
     "key": "2024gadal",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 34.7592915,
+    "lng": -85.0052108,
+    "location_name": "Dalton Convention Center",
     "name": "PCH District Dalton Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "30720",
     "short_name": "Dalton",
     "start_date": "2024-03-07",
     "state_prov": "GA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "gafirst1",
+        "type": "twitch"
+      },
+      {
+        "channel": "gafirst2",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.gafirst.org",
     "week": 1,
     "year": 2024
@@ -1122,9 +1507,55 @@
     "start_date": "2024-03-15",
     "state_prov": "GA",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "gafirst1",
+        "type": "twitch"
+      },
+      {
+        "channel": "gafirst2",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.gafirst.org",
     "week": 2,
+    "year": 2024
+  },
+  {
+    "address": "1001 Avenida De Las Americas, Houston, TX 77010, USA",
+    "city": "Houston",
+    "country": "USA",
+    "district": null,
+    "division_keys": [],
+    "end_date": "2024-04-20",
+    "event_code": "gal",
+    "event_type": 3,
+    "event_type_string": "Championship Division",
+    "first_event_code": "galileo",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJgw3vTiK_QIYRsMwBp668_Lo",
+    "gmaps_url": "https://maps.google.com/?q=1001+Avenida+De+Las+Americas,+Houston,+TX+77010,+USA&ftid=0x8640bf224eef0d83:0xbafcbcaea701ccb0",
+    "key": "2024gal",
+    "lat": 29.7520006,
+    "lng": -95.3576434,
+    "location_name": "1001 Avenida De Las Americas",
+    "name": "Galileo Division",
+    "parent_event_key": "2024cmptx",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "77010",
+    "short_name": "Galileo",
+    "start_date": "2024-04-17",
+    "state_prov": "TX",
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires_galileo",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://www.firstchampionship.org",
+    "week": null,
     "year": 2024
   },
   {
@@ -1154,13 +1585,55 @@
     "start_date": "2024-04-03",
     "state_prov": "HI",
     "timezone": "Pacific/Honolulu",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires12",
+        "type": "twitch"
+      }
+    ],
     "website": "https://hawaiifirstrobotics.org/",
     "week": 5,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1001 Avenida De Las Americas, Houston, TX 77010, USA",
+    "city": "Houston",
+    "country": "USA",
+    "district": null,
+    "division_keys": [],
+    "end_date": "2024-04-20",
+    "event_code": "hop",
+    "event_type": 3,
+    "event_type_string": "Championship Division",
+    "first_event_code": "hopper",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJgw3vTiK_QIYRsMwBp668_Lo",
+    "gmaps_url": "https://maps.google.com/?q=1001+Avenida+De+Las+Americas,+Houston,+TX+77010,+USA&ftid=0x8640bf224eef0d83:0xbafcbcaea701ccb0",
+    "key": "2024hop",
+    "lat": 29.7520006,
+    "lng": -95.3576434,
+    "location_name": "1001 Avenida De Las Americas",
+    "name": "Hopper Division",
+    "parent_event_key": "2024cmptx",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "77010",
+    "short_name": "Hopper",
+    "start_date": "2024-04-17",
+    "state_prov": "TX",
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires_hopper",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://www.firstchampionship.org",
+    "week": null,
+    "year": 2024
+  },
+  {
+    "address": "2501 Hudson Rd, Cedar Falls, IA 50614, USA",
     "city": "Cedar Falls",
     "country": "USA",
     "district": null,
@@ -1171,28 +1644,33 @@
     "event_type_string": "Regional",
     "first_event_code": "iacf",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJ6ySchPD_74cRjdVvkI1kn-Q",
+    "gmaps_url": "https://maps.google.com/?q=2501+Hudson+Rd,+Cedar+Falls,+IA+50614,+USA&ftid=0x87effff0849c24eb:0xe49f648d906fd58d",
     "key": "2024iacf",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 42.5143658,
+    "lng": -92.4672647,
+    "location_name": "2501 Hudson Rd",
     "name": "Iowa Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "50614",
     "short_name": "Iowa",
     "start_date": "2024-03-20",
     "state_prov": "IA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires7",
+        "type": "twitch"
+      }
+    ],
     "website": "http://iafirst.org/",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "16114 N Idaho Center Blvd, Nampa, ID 83687, USA",
     "city": "Nampa",
     "country": "USA",
     "district": null,
@@ -1203,22 +1681,27 @@
     "event_type_string": "Regional",
     "first_event_code": "idbo",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJ7VhneHdNrlQRS8U-cdGwBws",
+    "gmaps_url": "https://maps.google.com/?cid=794798272848774475",
     "key": "2024idbo",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 43.60808650000001,
+    "lng": -116.5086575,
+    "location_name": "Ford Idaho Center",
     "name": "Idaho Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "83687",
     "short_name": "Idaho",
     "start_date": "2024-03-20",
     "state_prov": "ID",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Boise",
+    "webcasts": [
+      {
+        "channel": "firstinspires10",
+        "type": "twitch"
+      }
+    ],
     "website": "https://idahofrcregional.org/",
     "week": 3,
     "year": 2024
@@ -1250,13 +1733,18 @@
     "start_date": "2024-03-27",
     "state_prov": "IL",
     "timezone": "America/Chicago",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires8",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstillinoisrobotics.org/frc/events/midwest-regional/",
     "week": 4,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "N Maplewood Ave, Peoria, IL 61606, USA",
     "city": "Peoria",
     "country": "USA",
     "district": null,
@@ -1267,22 +1755,27 @@
     "event_type_string": "Regional",
     "first_event_code": "ilpe",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJAQAA3EhZCogRrZeYidLit8M",
+    "gmaps_url": "https://maps.google.com/?cid=14102990152013485997",
     "key": "2024ilpe",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 40.6990649,
+    "lng": -89.61780750000001,
+    "location_name": "Renaissance Coliseum",
     "name": "Central Illinois Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "61606",
     "short_name": "Central Illinois",
     "start_date": "2024-03-13",
     "state_prov": "IL",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires6",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstillinoisrobotics.org/frc/events/central-illinois-regional/",
     "week": 2,
     "year": 2024
@@ -1319,7 +1812,12 @@
     "start_date": "2024-04-05",
     "state_prov": "IN",
     "timezone": "America/Indiana/Indianapolis",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinrobotics",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstindianarobotics.org/",
     "week": 5,
     "year": 2024
@@ -1356,7 +1854,12 @@
     "start_date": "2024-03-15",
     "state_prov": "IN",
     "timezone": "America/Indiana/Indianapolis",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinrobotics",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstindianarobotics.org/",
     "week": 2,
     "year": 2024
@@ -1384,7 +1887,7 @@
     "lat": 38.6558995,
     "lng": -87.172009,
     "location_name": "Washington Community Schools",
-    "name": "FIN District Washington Event presented by Toyota",
+    "name": "FIN District Washington Event presented by Toyota Indiana and Vincennes University",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
@@ -1393,7 +1896,12 @@
     "start_date": "2024-03-28",
     "state_prov": "IN",
     "timezone": "America/Indiana/Vincennes",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinrobotics",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstindianarobotics.org/",
     "week": 4,
     "year": 2024
@@ -1430,7 +1938,16 @@
     "start_date": "2024-03-01",
     "state_prov": "IN",
     "timezone": "America/Indiana/Indianapolis",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires5",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstinrobotics",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstindianarobotics.org/",
     "week": 0,
     "year": 2024
@@ -1467,7 +1984,16 @@
     "start_date": "2024-03-22",
     "state_prov": "IN",
     "timezone": "America/Indiana/Indianapolis",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinrobotics",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstinrobotics2",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstindianarobotics.org/",
     "week": 3,
     "year": 2024
@@ -1507,6 +2033,10 @@
     "webcasts": [
       {
         "channel": "firstisrael",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstisrael1",
         "type": "twitch"
       }
     ],
@@ -1683,7 +2213,44 @@
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1001 Avenida De Las Americas, Houston, TX 77010, USA",
+    "city": "Houston",
+    "country": "USA",
+    "district": null,
+    "division_keys": [],
+    "end_date": "2024-04-20",
+    "event_code": "joh",
+    "event_type": 3,
+    "event_type_string": "Championship Division",
+    "first_event_code": "johnson",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJgw3vTiK_QIYRsMwBp668_Lo",
+    "gmaps_url": "https://maps.google.com/?q=1001+Avenida+De+Las+Americas,+Houston,+TX+77010,+USA&ftid=0x8640bf224eef0d83:0xbafcbcaea701ccb0",
+    "key": "2024joh",
+    "lat": 29.7520006,
+    "lng": -95.3576434,
+    "location_name": "1001 Avenida De Las Americas",
+    "name": "Johnson Division",
+    "parent_event_key": "2024cmptx",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "77010",
+    "short_name": "Johnson",
+    "start_date": "2024-04-17",
+    "state_prov": "TX",
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires_johnson",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://www.firstchampionship.org",
+    "week": null,
+    "year": 2024
+  },
+  {
+    "address": "5900 Monticello Rd, Shawnee, KS 66226, USA",
     "city": "Shawnee",
     "country": "USA",
     "district": null,
@@ -1694,28 +2261,33 @@
     "event_type_string": "Regional",
     "first_event_code": "ksla",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJZ4HvRq-RwIcR5YWvKjLZURM",
+    "gmaps_url": "https://maps.google.com/?q=5900+Monticello+Rd,+Shawnee,+KS+66226,+USA&ftid=0x87c091af46ef8167:0x1351d9322aaf85e5",
     "key": "2024ksla",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 39.0185507,
+    "lng": -94.842767,
+    "location_name": "5900 Monticello Rd",
     "name": "Heartland Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "66226",
     "short_name": "Heartland",
     "start_date": "2024-03-13",
     "state_prov": "KS",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires4",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.kcfirst.org",
     "week": 2,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "4545 Williams Blvd, Kenner, LA 70065, USA",
     "city": "Kenner",
     "country": "USA",
     "district": null,
@@ -1726,28 +2298,33 @@
     "event_type_string": "Regional",
     "first_event_code": "lake",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJeT46CcG2IIYRfi5u_M_UdKw",
+    "gmaps_url": "https://maps.google.com/?q=4545+Williams+Blvd,+Kenner,+LA+70065,+USA&ftid=0x8620b6c1093a3e79:0xac74d4cffc6e2e7e",
     "key": "2024lake",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 30.0394185,
+    "lng": -90.2407332,
+    "location_name": "4545 Williams Blvd",
     "name": "Bayou Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "70065",
     "short_name": "Bayou",
     "start_date": "2024-04-03",
     "state_prov": "LA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires10",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.frcbayouregional.org",
     "week": 5,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "101 School St, Revere, MA 02151, USA",
     "city": "Revere",
     "country": "USA",
     "district": {
@@ -1763,28 +2340,37 @@
     "event_type_string": "District",
     "first_event_code": "mabos",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJcQSqZuRx44kRuoFVbwk1chk",
+    "gmaps_url": "https://maps.google.com/?cid=1833586312932065722",
     "key": "2024mabos",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 42.4119641,
+    "lng": -71.0093032,
+    "location_name": "Revere High School",
     "name": "NE District Greater Boston Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "02151",
     "short_name": "Greater Boston",
     "start_date": "2024-03-22",
     "state_prov": "MA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "nefirst_orange",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_blue",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.nefirst.org/",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "325 Plymouth St, Bridgewater, MA 02325, USA",
     "city": "Bridgewater",
     "country": "USA",
     "district": {
@@ -1800,28 +2386,41 @@
     "event_type_string": "District",
     "first_event_code": "mabri",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJa34sE6yR5IkRSZnFWOcTQX8",
+    "gmaps_url": "https://maps.google.com/?cid=9169632200650758473",
     "key": "2024mabri",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 41.9889856,
+    "lng": -70.9615773,
+    "location_name": "Adrian Tinsley Center",
     "name": "NE District BSU Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "02325",
     "short_name": "BSU",
     "start_date": "2024-03-08",
     "state_prov": "MA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "firstinspires18",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_blue",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_orange",
+        "type": "twitch"
+      }
+    ],
     "website": null,
     "week": 1,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "62 Oakland Rd, Reading, MA 01867, USA",
     "city": "Reading",
     "country": "USA",
     "district": {
@@ -1837,28 +2436,33 @@
     "event_type_string": "District",
     "first_event_code": "marea",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJYwnSKGYL44kR1sKtYa8Fa0c",
+    "gmaps_url": "https://maps.google.com/?q=62+Oakland+Rd,+Reading,+MA+01867,+USA&ftid=0x89e30b6628d20963:0x476b05af61adc2d6",
     "key": "2024marea",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 42.53460860000001,
+    "lng": -71.10908049999999,
+    "location_name": "62 Oakland Rd",
     "name": "NE District North Shore Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "01867",
     "short_name": "North Shore",
     "start_date": "2024-03-15",
     "state_prov": "MA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "nefirst_orange",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.nefirst.org/",
     "week": 2,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1215 Wilbraham Rd, Springfield, MA 01119, USA",
     "city": "Springfield",
     "country": "USA",
     "district": {
@@ -1874,28 +2478,33 @@
     "event_type_string": "District",
     "first_event_code": "mawne",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJ_XuXOuDn5okRNmyT7z8zJTA",
+    "gmaps_url": "https://maps.google.com/?cid=3469235437654207542",
     "key": "2024mawne",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 42.11607600000001,
+    "lng": -72.5198801,
+    "location_name": "Western New England University",
     "name": "NE District Western NE Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "01119",
     "short_name": "Western NE",
     "start_date": "2024-03-22",
     "state_prov": "MA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "nefirst_green",
+        "type": "twitch"
+      }
+    ],
     "website": "https://nefirst.org/",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "100 Institute Rd, Worcester, MA 01609, USA",
     "city": "Worcester",
     "country": "USA",
     "district": {
@@ -1911,22 +2520,27 @@
     "event_type_string": "District",
     "first_event_code": "mawor",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJdzY3EFkG5IkRrW3cc4Yhw8Y",
+    "gmaps_url": "https://maps.google.com/?cid=14322328101321469357",
     "key": "2024mawor",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 42.2746179,
+    "lng": -71.8068416,
+    "location_name": "Worcester Polytechnic Institute",
     "name": "NE District WPI Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "01609",
     "short_name": "WPI",
     "start_date": "2024-03-29",
     "state_prov": "MA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "nefirst_green",
+        "type": "twitch"
+      }
+    ],
     "website": "https://nefirst.org/",
     "week": 4,
     "year": 2024
@@ -1963,7 +2577,18 @@
     "start_date": "2024-03-22",
     "state_prov": "MD",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "YOsWk4Yejzw",
+        "date": "2024-03-23",
+        "type": "youtube"
+      },
+      {
+        "channel": "wJG3kdFtru8",
+        "date": "2024-03-24",
+        "type": "youtube"
+      }
+    ],
     "website": "https://www.firstchesapeake.org/calendar/owings-mills-md-first-robotics-competition/",
     "week": 3,
     "year": 2024
@@ -2000,13 +2625,24 @@
     "start_date": "2024-03-15",
     "state_prov": "MD",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "9allIxs6q3Y",
+        "date": "2024-03-16",
+        "type": "youtube"
+      },
+      {
+        "channel": "",
+        "date": "2024-03-17",
+        "type": "livestream"
+      }
+    ],
     "website": "https://www.firstchesapeake.org/calendar/severn-md-first-robotics-competition/",
     "week": 2,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "190 Birch St, Lewiston, ME 04240, USA",
     "city": "Lewiston",
     "country": "USA",
     "district": {
@@ -2022,24 +2658,61 @@
     "event_type_string": "District",
     "first_event_code": "melew",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJEwTULO9rskwRwE5q7XDj_qo",
+    "gmaps_url": "https://maps.google.com/?cid=12321535704691265216",
     "key": "2024melew",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 44.0955994,
+    "lng": -70.2050952,
+    "location_name": "The Colisée",
     "name": "NE District Pine Tree Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "04240",
     "short_name": "Pine Tree",
     "start_date": "2024-03-15",
     "state_prov": "ME",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "nefirst_yellow",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.nefirst.org/",
     "week": 2,
+    "year": 2024
+  },
+  {
+    "address": "129 Seamon Rd, Farmington, ME 04938, USA",
+    "city": "Farmington",
+    "country": "USA",
+    "district": null,
+    "division_keys": [],
+    "end_date": "2024-09-28",
+    "event_code": "mems",
+    "event_type": 99,
+    "event_type_string": "Offseason",
+    "first_event_code": null,
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJRyW6AISasUwRy5JV7U3URa4",
+    "gmaps_url": "https://maps.google.com/?cid=12557676567151874763",
+    "key": "2024mems",
+    "lat": 44.63839610000001,
+    "lng": -70.1318723,
+    "location_name": "Mt. Blue High School",
+    "name": "Mainely SPIRIT",
+    "parent_event_key": null,
+    "playoff_type": null,
+    "playoff_type_string": null,
+    "postal_code": "04938",
+    "short_name": "",
+    "start_date": "2024-09-28",
+    "state_prov": "ME",
+    "timezone": "America/New_York",
+    "webcasts": [],
+    "website": "http://offseason.team2648.com/",
+    "week": null,
     "year": 2024
   },
   {
@@ -2074,7 +2747,17 @@
     "start_date": "2024-03-15",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires32",
+        "type": "twitch"
+      },
+      {
+        "channel": "4GMHxewdCNg",
+        "date": "2024-03-16",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 2,
     "year": 2024
@@ -2111,7 +2794,12 @@
     "start_date": "2024-03-01",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires35",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 0,
     "year": 2024
@@ -2139,7 +2827,7 @@
     "lat": 42.2029273,
     "lng": -83.4931852,
     "location_name": "501 W Columbia Ave",
-    "name": "FIM District Belleville Event presented by Belleville Yacht Club",
+    "name": "FIM District Belleville Event presented by Autokiniton",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
@@ -2148,7 +2836,12 @@
     "start_date": "2024-03-07",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires36",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 1,
     "year": 2024
@@ -2176,7 +2869,7 @@
     "lat": 41.9461771,
     "lng": -86.34601769999999,
     "location_name": "Berrien Springs High School",
-    "name": "FIM District Berrien Springs Event",
+    "name": "FIM District Berrien Springs Event presented by Edgewater Automation",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
@@ -2185,7 +2878,12 @@
     "start_date": "2024-03-01",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires33",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 0,
     "year": 2024
@@ -2222,7 +2920,12 @@
     "start_date": "2024-03-01",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires32",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 0,
     "year": 2024
@@ -2259,7 +2962,12 @@
     "start_date": "2024-03-08",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires31",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 1,
     "year": 2024
@@ -2274,7 +2982,12 @@
       "key": "2024fim",
       "year": 2024
     },
-    "division_keys": [],
+    "division_keys": [
+      "2024micmp1",
+      "2024micmp2",
+      "2024micmp3",
+      "2024micmp4"
+    ],
     "end_date": "2024-04-06",
     "event_code": "micmp",
     "event_type": 2,
@@ -2289,14 +3002,263 @@
     "location_name": "Ryder Center for Health and Physical Education at Saginaw Valley State University",
     "name": "FIRST in Michigan State Championship",
     "parent_event_key": null,
-    "playoff_type": 10,
-    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "playoff_type": 11,
+    "playoff_type_string": "Double Elimination Bracket (4 Alliances)",
     "postal_code": "48710",
     "short_name": "Michigan",
     "start_date": "2024-04-04",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires31",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstinspires32",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstinspires33",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstinspires34",
+        "type": "twitch"
+      },
+      {
+        "channel": "5bj1XWQxdbU",
+        "type": "youtube"
+      }
+    ],
+    "website": "https://www.firstinmichigan.org/",
+    "week": 5,
+    "year": 2024
+  },
+  {
+    "address": "7400 Bay Rd, University Center, MI 48710, USA",
+    "city": "University Center",
+    "country": "USA",
+    "district": {
+      "abbreviation": "fim",
+      "display_name": "FIRST In Michigan",
+      "key": "2024fim",
+      "year": 2024
+    },
+    "division_keys": [],
+    "end_date": "2024-04-06",
+    "event_code": "micmp1",
+    "event_type": 5,
+    "event_type_string": "District Championship Division",
+    "first_event_code": "micmp1",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJB7CrvKrdI4gRKJhPHrr--ec",
+    "gmaps_url": "https://maps.google.com/?cid=16715671567288211496",
+    "key": "2024micmp1",
+    "lat": 43.5122069,
+    "lng": -83.9577029,
+    "location_name": "Ryder Center for Health and Physical Education at Saginaw Valley State University",
+    "name": "FIRST in Michigan State Championship - DTE Energy Foundation Division",
+    "parent_event_key": "2024micmp",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "48710",
+    "short_name": "MSC - DTE Energy Foundation",
+    "start_date": "2024-04-04",
+    "state_prov": "MI",
+    "timezone": "America/Detroit",
+    "webcasts": [
+      {
+        "channel": "firstinspires31",
+        "type": "twitch"
+      },
+      {
+        "channel": "-bgsoSWAtc0",
+        "date": "2024-04-04",
+        "type": "youtube"
+      },
+      {
+        "channel": "ni6lsk5qWvs",
+        "date": "2024-04-06",
+        "type": "youtube"
+      },
+      {
+        "channel": "v5V78b5ITq0",
+        "date": "2024-04-05",
+        "type": "youtube"
+      }
+    ],
+    "website": "https://www.firstinmichigan.org/",
+    "week": 5,
+    "year": 2024
+  },
+  {
+    "address": "7400 Bay Rd, University Center, MI 48710, USA",
+    "city": "University Center",
+    "country": "USA",
+    "district": {
+      "abbreviation": "fim",
+      "display_name": "FIRST In Michigan",
+      "key": "2024fim",
+      "year": 2024
+    },
+    "division_keys": [],
+    "end_date": "2024-04-06",
+    "event_code": "micmp2",
+    "event_type": 5,
+    "event_type_string": "District Championship Division",
+    "first_event_code": "micmp2",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJB7CrvKrdI4gRKJhPHrr--ec",
+    "gmaps_url": "https://maps.google.com/?cid=16715671567288211496",
+    "key": "2024micmp2",
+    "lat": 43.5122069,
+    "lng": -83.9577029,
+    "location_name": "Ryder Center for Health and Physical Education at Saginaw Valley State University",
+    "name": "FIRST in Michigan State Championship - Hemlock Semiconductor Division",
+    "parent_event_key": "2024micmp",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "48710",
+    "short_name": "MSC - Hemlock Semiconductor",
+    "start_date": "2024-04-04",
+    "state_prov": "MI",
+    "timezone": "America/Detroit",
+    "webcasts": [
+      {
+        "channel": "firstinspires32",
+        "type": "twitch"
+      },
+      {
+        "channel": "0mZ9pRag0sg",
+        "date": "2024-04-06",
+        "type": "youtube"
+      },
+      {
+        "channel": "WSrjMRXsZvY",
+        "date": "2024-04-05",
+        "type": "youtube"
+      },
+      {
+        "channel": "Wb5h9kpvwOc",
+        "date": "2024-04-04",
+        "type": "youtube"
+      }
+    ],
+    "website": "https://www.firstinmichigan.org/",
+    "week": 5,
+    "year": 2024
+  },
+  {
+    "address": "7400 Bay Rd, University Center, MI 48710, USA",
+    "city": "University Center",
+    "country": "USA",
+    "district": {
+      "abbreviation": "fim",
+      "display_name": "FIRST In Michigan",
+      "key": "2024fim",
+      "year": 2024
+    },
+    "division_keys": [],
+    "end_date": "2024-04-06",
+    "event_code": "micmp3",
+    "event_type": 5,
+    "event_type_string": "District Championship Division",
+    "first_event_code": "micmp3",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJB7CrvKrdI4gRKJhPHrr--ec",
+    "gmaps_url": "https://maps.google.com/?cid=16715671567288211496",
+    "key": "2024micmp3",
+    "lat": 43.5122069,
+    "lng": -83.9577029,
+    "location_name": "Ryder Center for Health and Physical Education at Saginaw Valley State University",
+    "name": "FIRST in Michigan State Championship - Consumers Energy Division",
+    "parent_event_key": "2024micmp",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "48710",
+    "short_name": "MSC - Consumers Energy",
+    "start_date": "2024-04-04",
+    "state_prov": "MI",
+    "timezone": "America/Detroit",
+    "webcasts": [
+      {
+        "channel": "firstinspires33",
+        "type": "twitch"
+      },
+      {
+        "channel": "riRrpKKmtrk",
+        "date": "2024-04-06",
+        "type": "youtube"
+      },
+      {
+        "channel": "tJzxXRpdfxg",
+        "date": "2024-04-04",
+        "type": "youtube"
+      },
+      {
+        "channel": "xlit-kPqZm4",
+        "date": "2024-04-05",
+        "type": "youtube"
+      }
+    ],
+    "website": "https://www.firstinmichigan.org/",
+    "week": 5,
+    "year": 2024
+  },
+  {
+    "address": "7400 Bay Rd, University Center, MI 48710, USA",
+    "city": "University Center",
+    "country": "USA",
+    "district": {
+      "abbreviation": "fim",
+      "display_name": "FIRST In Michigan",
+      "key": "2024fim",
+      "year": 2024
+    },
+    "division_keys": [],
+    "end_date": "2024-04-06",
+    "event_code": "micmp4",
+    "event_type": 5,
+    "event_type_string": "District Championship Division",
+    "first_event_code": "micmp4",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJB7CrvKrdI4gRKJhPHrr--ec",
+    "gmaps_url": "https://maps.google.com/?cid=16715671567288211496",
+    "key": "2024micmp4",
+    "lat": 43.5122069,
+    "lng": -83.9577029,
+    "location_name": "Ryder Center for Health and Physical Education at Saginaw Valley State University",
+    "name": "FIRST in Michigan State Championship - Aptiv Division",
+    "parent_event_key": "2024micmp",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "48710",
+    "short_name": "MSC - Aptiv",
+    "start_date": "2024-04-04",
+    "state_prov": "MI",
+    "timezone": "America/Detroit",
+    "webcasts": [
+      {
+        "channel": "firstinspires34",
+        "type": "twitch"
+      },
+      {
+        "channel": "j1d_mc0ndhY",
+        "date": "2024-04-05",
+        "type": "youtube"
+      },
+      {
+        "channel": "otjP-8U_1j4",
+        "date": "2024-04-04",
+        "type": "youtube"
+      },
+      {
+        "channel": "x166EHXb9X4",
+        "date": "2024-04-06",
+        "type": "youtube"
+      }
+    ],
     "website": "https://www.firstinmichigan.org/",
     "week": 5,
     "year": 2024
@@ -2333,7 +3295,12 @@
     "start_date": "2024-03-28",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires32",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 4,
     "year": 2024
@@ -2370,7 +3337,12 @@
     "start_date": "2024-03-14",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires33",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 2,
     "year": 2024
@@ -2407,7 +3379,12 @@
     "start_date": "2024-03-07",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires35",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstinmichigan.org/",
     "week": 1,
     "year": 2024
@@ -2444,7 +3421,12 @@
     "start_date": "2024-03-07",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires34",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 1,
     "year": 2024
@@ -2481,7 +3463,12 @@
     "start_date": "2024-03-28",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires33",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 4,
     "year": 2024
@@ -2518,7 +3505,17 @@
     "start_date": "2024-02-29",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires34",
+        "type": "twitch"
+      },
+      {
+        "channel": "PJH2szpDrdc",
+        "date": "2024-03-02",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 0,
     "year": 2024
@@ -2561,6 +3558,75 @@
     "year": 2024
   },
   {
+    "address": "1900 University Ave, Flint, MI 48504, USA",
+    "city": "Flint",
+    "country": "USA",
+    "district": null,
+    "division_keys": [],
+    "end_date": "2024-02-25",
+    "event_code": "mikk2",
+    "event_type": 100,
+    "event_type_string": "Preseason",
+    "first_event_code": null,
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJIe5Gj2SCI4gREbGW1XBp4B0",
+    "gmaps_url": "https://maps.google.com/?cid=2152836555223773457",
+    "key": "2024mikk2",
+    "lat": 43.01439239999999,
+    "lng": -83.7137177,
+    "location_name": "FIRST Community Center",
+    "name": "Kettering Week 0 - AM Session",
+    "parent_event_key": null,
+    "playoff_type": 1,
+    "playoff_type_string": "Elimination Bracket (16 Alliances)",
+    "postal_code": "48504",
+    "short_name": "",
+    "start_date": "2024-02-25",
+    "state_prov": "MI",
+    "timezone": "America/Detroit",
+    "webcasts": [],
+    "website": "https://www.kettering.edu/FIRST",
+    "week": null,
+    "year": 2024
+  },
+  {
+    "address": "1001 Avenida De Las Americas, Houston, TX 77010, USA",
+    "city": "Houston",
+    "country": "USA",
+    "district": null,
+    "division_keys": [],
+    "end_date": "2024-04-20",
+    "event_code": "mil",
+    "event_type": 3,
+    "event_type_string": "Championship Division",
+    "first_event_code": "milstein",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJgw3vTiK_QIYRsMwBp668_Lo",
+    "gmaps_url": "https://maps.google.com/?q=1001+Avenida+De+Las+Americas,+Houston,+TX+77010,+USA&ftid=0x8640bf224eef0d83:0xbafcbcaea701ccb0",
+    "key": "2024mil",
+    "lat": 29.7520006,
+    "lng": -95.3576434,
+    "location_name": "1001 Avenida De Las Americas",
+    "name": "Milstein Division",
+    "parent_event_key": "2024cmptx",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "77010",
+    "short_name": "Milstein",
+    "start_date": "2024-04-17",
+    "state_prov": "TX",
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires_milstein",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://www.firstchampionship.org",
+    "week": null,
+    "year": 2024
+  },
+  {
     "address": "251 Russell Rd, Lake City, MI 49651, USA",
     "city": "Lake City",
     "country": "USA",
@@ -2592,7 +3658,12 @@
     "start_date": "2024-03-08",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires32",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 1,
     "year": 2024
@@ -2629,7 +3700,22 @@
     "start_date": "2024-03-21",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires32",
+        "type": "twitch"
+      },
+      {
+        "channel": "I2zNHZuft_U",
+        "date": "2024-03-22",
+        "type": "youtube"
+      },
+      {
+        "channel": "XS-8Q4imUus",
+        "date": "2024-03-23",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 3,
     "year": 2024
@@ -2666,7 +3752,22 @@
     "start_date": "2024-03-22",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires35",
+        "type": "twitch"
+      },
+      {
+        "channel": "wlgfnkTA_Zg",
+        "date": "2024-03-23",
+        "type": "youtube"
+      },
+      {
+        "channel": "-CTlzfDQYE4",
+        "date": "2024-03-24",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 3,
     "year": 2024
@@ -2703,7 +3804,12 @@
     "start_date": "2024-03-14",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires35",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 2,
     "year": 2024
@@ -2740,7 +3846,12 @@
     "start_date": "2024-03-28",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires35",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstinmichigan.org/",
     "week": 4,
     "year": 2024
@@ -2777,7 +3888,16 @@
     "start_date": "2024-03-21",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires33",
+        "type": "twitch"
+      },
+      {
+        "channel": "first_glbr",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 3,
     "year": 2024
@@ -2814,7 +3934,17 @@
     "start_date": "2024-02-29",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires31",
+        "type": "twitch"
+      },
+      {
+        "channel": "kDB51Hj-CgU",
+        "date": "2024-03-02",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 0,
     "year": 2024
@@ -2851,7 +3981,22 @@
     "start_date": "2024-03-28",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires31",
+        "type": "twitch"
+      },
+      {
+        "channel": "Npf_Ron1wNg",
+        "date": "2023-03-29",
+        "type": "youtube"
+      },
+      {
+        "channel": "ZwxtOGGWTgI",
+        "date": "2024-03-30",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 4,
     "year": 2024
@@ -2888,7 +4033,17 @@
     "start_date": "2024-03-14",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires31",
+        "type": "twitch"
+      },
+      {
+        "channel": "-jphURpaADA",
+        "date": "2024-03-16",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 2,
     "year": 2024
@@ -2925,7 +4080,12 @@
     "start_date": "2024-03-07",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires33",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 1,
     "year": 2024
@@ -2962,7 +4122,12 @@
     "start_date": "2024-03-28",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires34",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 4,
     "year": 2024
@@ -2999,7 +4164,17 @@
     "start_date": "2024-03-22",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires34",
+        "type": "twitch"
+      },
+      {
+        "channel": "8_cI9pPdkww",
+        "date": "2024-03-24",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 3,
     "year": 2024
@@ -3036,7 +4211,12 @@
     "start_date": "2024-03-14",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires34",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 2,
     "year": 2024
@@ -3073,7 +4253,12 @@
     "start_date": "2024-03-21",
     "state_prov": "MI",
     "timezone": "America/Detroit",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires31",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstinmichigan.org",
     "week": 3,
     "year": 2024
@@ -3116,7 +4301,7 @@
     "year": 2024
   },
   {
-    "address": null,
+    "address": "350 Harbor Dr, Duluth, MN 55802, USA",
     "city": "Duluth",
     "country": "USA",
     "district": null,
@@ -3127,28 +4312,33 @@
     "event_type_string": "Regional",
     "first_event_code": "mndu",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJaTNyg5NSrlIRB45Mfkoq8Oc",
+    "gmaps_url": "https://maps.google.com/?cid=16712904716606803463",
     "key": "2024mndu",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 46.78150549999999,
+    "lng": -92.09795369999999,
+    "location_name": "Duluth Entertainment Convention Center",
     "name": "Lake Superior Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "55802",
     "short_name": "Lake Superior",
     "start_date": "2024-02-28",
     "state_prov": "MN",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires7",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.frcnorthland.org",
     "week": 0,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "350 Harbor Dr, Duluth, MN 55802, USA",
     "city": "Duluth",
     "country": "USA",
     "district": null,
@@ -3159,22 +4349,27 @@
     "event_type_string": "Regional",
     "first_event_code": "mndu2",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJaTNyg5NSrlIRB45Mfkoq8Oc",
+    "gmaps_url": "https://maps.google.com/?cid=16712904716606803463",
     "key": "2024mndu2",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 46.78150549999999,
+    "lng": -92.09795369999999,
+    "location_name": "Duluth Entertainment Convention Center",
     "name": "Northern Lights Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "55802",
     "short_name": "Northern Lights",
     "start_date": "2024-02-28",
     "state_prov": "MN",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires6",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.frcnorthland.org",
     "week": 0,
     "year": 2024
@@ -3243,13 +4438,18 @@
     "start_date": "2024-04-03",
     "state_prov": "MN",
     "timezone": "America/Chicago",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires4",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.frcnorthland.org",
     "week": 5,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "10 4th Ave S, St Cloud, MN 56301, USA",
     "city": "St. Cloud",
     "country": "USA",
     "district": null,
@@ -3260,28 +4460,65 @@
     "event_type_string": "Regional",
     "first_event_code": "mnmi2",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJXxFkFX5gtFIRE1qDvaP3paI",
+    "gmaps_url": "https://maps.google.com/?q=10+4th+Ave+S,+St+Cloud,+MN+56301,+USA&ftid=0x52b4607e1564115f:0xa2a5f7a3bd835a13",
     "key": "2024mnmi2",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 45.5620258,
+    "lng": -94.1570515,
+    "location_name": "10 4th Ave S",
     "name": "Minnesota Granite City Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "56301",
     "short_name": "Minnesota Granite City",
     "start_date": "2024-04-04",
     "state_prov": "MN",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires7",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.frcnorthland.org",
     "week": 5,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1925 University Ave SE, Minneapolis, MN 55455, USA",
+    "city": "Minneapolis",
+    "country": "USA",
+    "district": null,
+    "division_keys": [],
+    "end_date": "2024-05-04",
+    "event_code": "mnst",
+    "event_type": 99,
+    "event_type_string": "Offseason",
+    "first_event_code": null,
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJP7rCnhkts1IR4BLUQGfDsng",
+    "gmaps_url": "https://maps.google.com/?cid=8697228678642537184",
+    "key": "2024mnst",
+    "lat": 44.9770513,
+    "lng": -93.2282913,
+    "location_name": "Williams Arena",
+    "name": "Minnesota State High School League Championship",
+    "parent_event_key": null,
+    "playoff_type": null,
+    "playoff_type_string": null,
+    "postal_code": "55455",
+    "short_name": "",
+    "start_date": "2024-05-04",
+    "state_prov": "MN",
+    "timezone": "America/Chicago",
+    "webcasts": [],
+    "website": "https://firstuppermidwest.org/off-season-events/mshsl-championship/",
+    "week": null,
+    "year": 2024
+  },
+  {
+    "address": "901 NE Douglas St, Lee's Summit, MO 64086, USA",
     "city": "Lee's Summit",
     "country": "USA",
     "district": null,
@@ -3292,28 +4529,33 @@
     "event_type_string": "Regional",
     "first_event_code": "mokc",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJ56t7fMAfwYcRNq8k-TedZMA",
+    "gmaps_url": "https://maps.google.com/?q=901+NE+Douglas+St,+Lee%27s+Summit,+MO+64086,+USA&ftid=0x87c11fc07c7babe7:0xc0649d37f924af36",
     "key": "2024mokc",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 38.9288951,
+    "lng": -94.3773113,
+    "location_name": "901 NE Douglas St",
     "name": "Greater Kansas City Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "64086",
     "short_name": "Greater Kansas City",
     "start_date": "2024-04-03",
     "state_prov": "MO",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires9",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.kcfirst.org",
     "week": 5,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "2010 Tiger Pride Blvd, Sedalia, MO 65301, USA",
     "city": "Sedalia",
     "country": "USA",
     "district": null,
@@ -3324,28 +4566,33 @@
     "event_type_string": "Regional",
     "first_event_code": "mose",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJqc3I2h-Gw4cRG7FV1XUJzMM",
+    "gmaps_url": "https://maps.google.com/?q=2010+Tiger+Pride+Blvd,+Sedalia,+MO+65301,+USA&ftid=0x87c3861fdac8cda9:0xc3cc0975d555b11b",
     "key": "2024mose",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 38.6731237,
+    "lng": -93.2572625,
+    "location_name": "2010 Tiger Pride Blvd",
     "name": "Central Missouri Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "65301",
     "short_name": "Central Missouri",
     "start_date": "2024-03-06",
     "state_prov": "MO",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires6",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.kcfirst.org",
     "week": 1,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1 S Compton Ave, St. Louis, MO 63103, USA",
     "city": "St. Louis",
     "country": "USA",
     "district": null,
@@ -3356,22 +4603,27 @@
     "event_type_string": "Regional",
     "first_event_code": "mosl",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJUZ-S6KG02IcRtZ2MGJVIVCc",
+    "gmaps_url": "https://maps.google.com/?q=1+S+Compton+Ave,+St.+Louis,+MO+63103,+USA&ftid=0x87d8b4a1e8929f51:0x27544895188c9db5",
     "key": "2024mosl",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 38.6325141,
+    "lng": -90.2278753,
+    "location_name": "1 S Compton Ave",
     "name": "St. Louis Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "63103",
     "short_name": "St. Louis",
     "start_date": "2024-03-20",
     "state_prov": "MO",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires8",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.FIRSTinMissouri.org",
     "week": 3,
     "year": 2024
@@ -3408,13 +4660,29 @@
     "start_date": "2024-04-03",
     "state_prov": "PA",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "G0o5SW-QV8U",
+        "date": "2024-04-05",
+        "type": "youtube"
+      },
+      {
+        "channel": "iCDUeduIIeQ",
+        "date": "2024-04-06",
+        "type": "youtube"
+      },
+      {
+        "channel": "zLcQibPeSck",
+        "date": "2024-04-04",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.midatlanticrobotics.com/",
     "week": 5,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1457 Ellisville Blvd, Laurel, MS 39440, USA",
     "city": "Laurel",
     "country": "USA",
     "district": null,
@@ -3425,22 +4693,27 @@
     "event_type_string": "Regional",
     "first_event_code": "mslr",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJ78-ivvQ0g4gRn_r48mC5O8o",
+    "gmaps_url": "https://maps.google.com/?q=1457+Ellisville+Blvd,+Laurel,+MS+39440,+USA&ftid=0x888334f4bea2cfef:0xca3bb960f2f8fa9f",
     "key": "2024mslr",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 31.6666671,
+    "lng": -89.1507987,
+    "location_name": "1457 Ellisville Blvd",
     "name": "Magnolia Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "39440",
     "short_name": "Magnolia",
     "start_date": "2024-03-13",
     "state_prov": "MS",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires8",
+        "type": "twitch"
+      }
+    ],
     "website": null,
     "week": 2,
     "year": 2024
@@ -3472,7 +4745,12 @@
     "start_date": "2024-02-28",
     "state_prov": "N.L.",
     "timezone": "America/Monterrey",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires12",
+        "type": "twitch"
+      }
+    ],
     "website": "",
     "week": 0,
     "year": 2024
@@ -3504,7 +4782,12 @@
     "start_date": "2024-03-13",
     "state_prov": "SON",
     "timezone": "America/Mexico_City",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires12",
+        "type": "twitch"
+      }
+    ],
     "website": null,
     "week": 2,
     "year": 2024
@@ -3536,7 +4819,12 @@
     "start_date": "2024-03-20",
     "state_prov": "Coah.",
     "timezone": "America/Monterrey",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires12",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstlagunaregional.com.mx",
     "week": 3,
     "year": 2024
@@ -3573,7 +4861,12 @@
     "start_date": "2024-03-15",
     "state_prov": "NC",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires17",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstnorthcarolina.org/",
     "week": 2,
     "year": 2024
@@ -3610,7 +4903,12 @@
     "start_date": "2024-04-05",
     "state_prov": "NC",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires16",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstnorthcarolina.org/",
     "week": 5,
     "year": 2024
@@ -3647,7 +4945,12 @@
     "start_date": "2024-03-22",
     "state_prov": "NC",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires17",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstnorthcarolina.org",
     "week": 3,
     "year": 2024
@@ -3684,7 +4987,12 @@
     "start_date": "2024-03-08",
     "state_prov": "NC",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires16",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstnorthcarolina.org/",
     "week": 1,
     "year": 2024
@@ -3721,7 +5029,12 @@
     "start_date": "2024-03-22",
     "state_prov": "NC",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires16",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstnorthcarolina.org",
     "week": 3,
     "year": 2024
@@ -3758,13 +5071,18 @@
     "start_date": "2024-03-01",
     "state_prov": "NC",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires16",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstnorthcarolina.org",
     "week": 0,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1200 S 42nd St, Grand Forks, ND 58201, USA",
     "city": "Grand Forks",
     "country": "USA",
     "district": null,
@@ -3775,22 +5093,27 @@
     "event_type_string": "Regional",
     "first_event_code": "ndgf",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJN9YeNQaBxlIRd8Gwq9b2Dyw",
+    "gmaps_url": "https://maps.google.com/?cid=3175027664183411063",
     "key": "2024ndgf",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 47.9107995,
+    "lng": -97.0912024,
+    "location_name": "Alerus Center",
     "name": "Great Northern Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "58201",
     "short_name": "Great Northern",
     "start_date": "2024-03-06",
     "state_prov": "ND",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires7",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.frcnorthland.org",
     "week": 1,
     "year": 2024
@@ -3805,7 +5128,10 @@
       "key": "2024ne",
       "year": 2024
     },
-    "division_keys": [],
+    "division_keys": [
+      "2024necmp1",
+      "2024necmp2"
+    ],
     "end_date": "2024-04-06",
     "event_code": "necmp",
     "event_type": 2,
@@ -3820,21 +5146,175 @@
     "location_name": null,
     "name": "New England FIRST District Championship",
     "parent_event_key": null,
-    "playoff_type": 10,
-    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "playoff_type": 9,
+    "playoff_type_string": "Elimination Bracket (2 Alliances)",
     "postal_code": null,
     "short_name": "New England",
     "start_date": "2024-04-03",
     "state_prov": "MA",
     "timezone": null,
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires18",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstinspires19",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_green",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_orange",
+        "type": "twitch"
+      }
+    ],
     "website": "https://nefirst.org/",
     "week": 5,
     "year": 2024
   },
   {
-    "address": null,
-    "city": "Durham",
+    "address": "Young Building, 1305 Memorial Ave, West Springfield, MA 01089, USA",
+    "city": "West Springfield",
+    "country": "USA",
+    "district": {
+      "abbreviation": "ne",
+      "display_name": "New England",
+      "key": "2024ne",
+      "year": 2024
+    },
+    "division_keys": [],
+    "end_date": "2024-04-06",
+    "event_code": "necmp1",
+    "event_type": 5,
+    "event_type_string": "District Championship Division",
+    "first_event_code": "necmp1",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJibX3XTXh5okRs1v504QcyRE",
+    "gmaps_url": "https://maps.google.com/?q=Young+Building&ftid=0x89e6e1355df7b589:0x11c91c84d3f95bb3",
+    "key": "2024necmp1",
+    "lat": 42.09138069999999,
+    "lng": -72.61677999999999,
+    "location_name": "Young Building",
+    "name": "New England FIRST District Championship - Ganson Division",
+    "parent_event_key": "2024necmp",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "01089",
+    "short_name": "NEDC - Ganson",
+    "start_date": "2024-04-03",
+    "state_prov": "MA",
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "firstinspires18",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_red",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_orange",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://nefirst.org/",
+    "week": 5,
+    "year": 2024
+  },
+  {
+    "address": "Young Building, 1305 Memorial Ave, West Springfield, MA 01089, USA",
+    "city": "West Springfield",
+    "country": "USA",
+    "district": {
+      "abbreviation": "ne",
+      "display_name": "New England",
+      "key": "2024ne",
+      "year": 2024
+    },
+    "division_keys": [],
+    "end_date": "2024-04-06",
+    "event_code": "necmp2",
+    "event_type": 5,
+    "event_type_string": "District Championship Division",
+    "first_event_code": "necmp2",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJibX3XTXh5okRs1v504QcyRE",
+    "gmaps_url": "https://maps.google.com/?q=Young+Building&ftid=0x89e6e1355df7b589:0x11c91c84d3f95bb3",
+    "key": "2024necmp2",
+    "lat": 42.09138069999999,
+    "lng": -72.61677999999999,
+    "location_name": "Young Building",
+    "name": "New England FIRST District Championship - Richardson Division",
+    "parent_event_key": "2024necmp",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "01089",
+    "short_name": "NEDC - Richardson",
+    "start_date": "2024-04-03",
+    "state_prov": "MA",
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "firstinspires19",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_blue",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_green",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://nefirst.org/",
+    "week": 5,
+    "year": 2024
+  },
+  {
+    "address": "1001 Avenida De Las Americas, Houston, TX 77010, USA",
+    "city": "Houston",
+    "country": "USA",
+    "district": null,
+    "division_keys": [],
+    "end_date": "2024-04-20",
+    "event_code": "new",
+    "event_type": 3,
+    "event_type_string": "Championship Division",
+    "first_event_code": "newton",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJgw3vTiK_QIYRsMwBp668_Lo",
+    "gmaps_url": "https://maps.google.com/?q=1001+Avenida+De+Las+Americas,+Houston,+TX+77010,+USA&ftid=0x8640bf224eef0d83:0xbafcbcaea701ccb0",
+    "key": "2024new",
+    "lat": 29.7520006,
+    "lng": -95.3576434,
+    "location_name": "1001 Avenida De Las Americas",
+    "name": "Newton Division",
+    "parent_event_key": "2024cmptx",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "77010",
+    "short_name": "Newton",
+    "start_date": "2024-04-17",
+    "state_prov": "TX",
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires_newton",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://www.firstchampionship.org",
+    "week": null,
+    "year": 2024
+  },
+  {
+    "address": "128 Main St, South Hampton, NH 03827, USA",
+    "city": "South Hampton",
     "country": "USA",
     "district": {
       "abbreviation": "ne",
@@ -3849,28 +5329,33 @@
     "event_type_string": "District",
     "first_event_code": "nhdur",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJ6zTomerk4okRQN0XFpA3klk",
+    "gmaps_url": "https://maps.google.com/?q=128+Main+St,+South+Hampton,+NH+03827,+USA&ftid=0x89e2e4ea99e834eb:0x599237901617dd40",
     "key": "2024nhdur",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 42.88825,
+    "lng": -70.9777596,
+    "location_name": "128 Main St",
     "name": "NE District UNH Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "03827",
     "short_name": "UNH",
     "start_date": "2024-03-28",
     "state_prov": "NH",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "nefirst_orange",
+        "type": "twitch"
+      }
+    ],
     "website": null,
     "week": 4,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "44 Geremonty Dr, Salem, NH 03079, USA",
     "city": "Salem",
     "country": "USA",
     "district": {
@@ -3886,28 +5371,41 @@
     "event_type_string": "District",
     "first_event_code": "nhgrs",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJKSXG3Wuq44kRriNM4qokrxU",
+    "gmaps_url": "https://maps.google.com/?q=44+Geremonty+Dr,+Salem,+NH+03079,+USA&ftid=0x89e3aa6bddc62529:0x15af24aae24c23ae",
     "key": "2024nhgrs",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 42.7804445,
+    "lng": -71.2122444,
+    "location_name": "44 Geremonty Dr",
     "name": "NE District Granite State Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "03079",
     "short_name": "Granite State",
     "start_date": "2024-02-29",
     "state_prov": "NH",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "firstinspires18",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_orange",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_blue",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.nefirst.org/",
     "week": 0,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "27 High St, Allentown, NJ 08501, USA",
     "city": "Allentown",
     "country": "USA",
     "district": {
@@ -3923,29 +5421,40 @@
     "event_type_string": "District",
     "first_event_code": "njall",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJVUxi4aVgwYkRSP0KsDXq8ec",
+    "gmaps_url": "https://maps.google.com/?cid=16713397208456297800",
     "key": "2024njall",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 40.1725837,
+    "lng": -74.5894941,
+    "location_name": "Allentown High School",
     "name": "FMA District Allentown Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "08501",
     "short_name": "Allentown",
     "start_date": "2024-03-08",
     "state_prov": "NJ",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "2whtueXhJHM",
+        "date": "2024-03-09",
+        "type": "youtube"
+      },
+      {
+        "channel": "uVpvvl5y_ho",
+        "date": "2024-03-10",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.midatlanticrobotics.com/",
     "week": 1,
     "year": 2024
   },
   {
-    "address": null,
-    "city": "Flanders",
+    "address": "18 Corey Rd, Flanders, NJ 07836, USA",
+    "city": "Mount Olive",
     "country": "USA",
     "district": {
       "abbreviation": "fma",
@@ -3960,29 +5469,40 @@
     "event_type_string": "District",
     "first_event_code": "njfla",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJdbRb97Sdw4kR6r2ilZiuAbc",
+    "gmaps_url": "https://maps.google.com/?cid=13187013154286255594",
     "key": "2024njfla",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 40.858611,
+    "lng": -74.7139961,
+    "location_name": "Mount Olive High School",
     "name": "FMA District Mount Olive Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "07836",
     "short_name": "Mount Olive",
     "start_date": "2024-03-01",
     "state_prov": "NJ",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "JAw9BkAt1LU",
+        "date": "2024-03-02",
+        "type": "youtube"
+      },
+      {
+        "channel": "eh2bjhxQ1yk",
+        "date": "2024-03-03",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.midatlanticrobotics.com/",
     "week": 0,
     "year": 2024
   },
   {
-    "address": null,
-    "city": "Skillman",
+    "address": "1016 Rt 601, Skillman, NJ 08558, USA",
+    "city": "Montgomery",
     "country": "USA",
     "district": {
       "abbreviation": "fma",
@@ -3997,28 +5517,39 @@
     "event_type_string": "District",
     "first_event_code": "njski",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJ7ZxDGbrow4kRaXCeysrdKqY",
+    "gmaps_url": "https://maps.google.com/?cid=11973626422370398313",
     "key": "2024njski",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 40.4174592,
+    "lng": -74.7064384,
+    "location_name": "Montgomery High School",
     "name": "FMA District Montgomery Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "08558",
     "short_name": "Montgomery",
     "start_date": "2024-03-15",
     "state_prov": "NJ",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "AqHaRp8nvyE",
+        "date": "2024-03-17",
+        "type": "youtube"
+      },
+      {
+        "channel": "mvVaTAMrYR8",
+        "date": "2024-03-16",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.midatlanticrobotics.com/",
     "week": 2,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "110 Carranza Rd, Tabernacle, NJ 08088, USA",
     "city": "Tabernacle",
     "country": "USA",
     "district": {
@@ -4034,28 +5565,34 @@
     "event_type_string": "District",
     "first_event_code": "njtab",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJd3n8Hdk7wYkR9oFGutsM0VQ",
+    "gmaps_url": "https://maps.google.com/?q=110+Carranza+Rd,+Tabernacle,+NJ+08088,+USA&ftid=0x89c13bd91dfc7977:0x54d10cdbba4681f6",
     "key": "2024njtab",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 39.8573385,
+    "lng": -74.717795,
+    "location_name": "110 Carranza Rd",
     "name": "FMA District Seneca Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "08088",
     "short_name": "Seneca",
     "start_date": "2024-03-08",
     "state_prov": "NJ",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "PWLcffjZiOU",
+        "date": "2024-3-9",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.midatlanticrobotics.com/",
     "week": 1,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "41 Jackson Valley Rd, Washington, NJ 07882, USA",
     "city": "Washington",
     "country": "USA",
     "district": {
@@ -4071,28 +5608,39 @@
     "event_type_string": "District",
     "first_event_code": "njwas",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJfcUv7h14xIkR_capTZj8obw",
+    "gmaps_url": "https://maps.google.com/?q=41+Jackson+Valley+Rd,+Washington,+NJ+07882,+USA&ftid=0x89c4781dee2fc57d:0xbca1fc984da9c6fd",
     "key": "2024njwas",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 40.7743575,
+    "lng": -74.98398089999999,
+    "location_name": "41 Jackson Valley Rd",
     "name": "FMA District Warren Hills Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "07882",
     "short_name": "Warren Hills",
     "start_date": "2024-03-22",
     "state_prov": "NJ",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "4L8L2-HQarQ",
+        "date": "2023-03-24",
+        "type": "youtube"
+      },
+      {
+        "channel": "rWi4ANDyptA",
+        "date": "2024-03-23",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.midatlanticrobotics.com/",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "4505 S Maryland Pkwy, Las Vegas, NV 89154, USA",
     "city": "Las Vegas",
     "country": "USA",
     "district": null,
@@ -4103,22 +5651,27 @@
     "event_type_string": "Regional",
     "first_event_code": "nvlv",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJKW_xX1XEyIARGe57HLQXBg4",
+    "gmaps_url": "https://maps.google.com/?cid=1010521228730691097",
     "key": "2024nvlv",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 36.1048084,
+    "lng": -115.144046,
+    "location_name": "Thomas & Mack Center",
     "name": "Las Vegas Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "89154",
     "short_name": "Las Vegas",
     "start_date": "2024-03-27",
     "state_prov": "NV",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Los_Angeles",
+    "webcasts": [
+      {
+        "channel": "firstinspires3",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstnevada.org",
     "week": 4,
     "year": 2024
@@ -4150,13 +5703,18 @@
     "start_date": "2024-03-20",
     "state_prov": "NY",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires11",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.sbpli-lifirst.org",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "216 Fort Washington Ave, New York, NY 10032, USA",
     "city": "New York",
     "country": "USA",
     "district": null,
@@ -4167,28 +5725,33 @@
     "event_type_string": "Regional",
     "first_event_code": "nyny",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJi3eY95v2wokR4cL4GcqwiWM",
+    "gmaps_url": "https://maps.google.com/?cid=7172458263629841121",
     "key": "2024nyny",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 40.8421936,
+    "lng": -73.9413146,
+    "location_name": "The Nike Track & Field Center at The Armory",
     "name": "New York City Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "10032",
     "short_name": "New York City",
     "start_date": "2024-04-04",
     "state_prov": "NY",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "firstinspires11",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.nycfirst.org",
     "week": 5,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "149 Lomb Memorial Dr, Rochester, NY 14623, USA",
     "city": "Rochester",
     "country": "USA",
     "district": null,
@@ -4199,28 +5762,33 @@
     "event_type_string": "Regional",
     "first_event_code": "nyro",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJC7lMOWBM0YkRFxvTd8Vh4t4",
+    "gmaps_url": "https://maps.google.com/?cid=16060506721903385367",
     "key": "2024nyro",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 43.0845401,
+    "lng": -77.6818425,
+    "location_name": "Center For Integrated Manufacturing Studies (CIMS)",
     "name": "Finger Lakes Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "14623",
     "short_name": "Finger Lakes",
     "start_date": "2024-03-13",
     "state_prov": "NY",
-    "timezone": null,
-    "webcasts": [],
-    "website": "https://www.rit.edu/gcr/firstrobotics/",
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "firstinspires9",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://www.nysfirst.org/",
     "week": 2,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "145 College Rd, Suffern, NY 10901, USA",
     "city": "Suffern",
     "country": "USA",
     "district": null,
@@ -4231,28 +5799,33 @@
     "event_type_string": "Regional",
     "first_event_code": "nysu",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJQQaILZvdwokRuL4wqqvPsyE",
+    "gmaps_url": "https://maps.google.com/?q=145+College+Rd,+Suffern,+NY+10901,+USA&ftid=0x89c2dd9b2d880641:0x21b3cfabaa30beb8",
     "key": "2024nysu",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 41.13436960000001,
+    "lng": -74.0862796,
+    "location_name": "145 College Rd",
     "name": "Hudson Valley Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "10901",
     "short_name": "Hudson Valley",
     "start_date": "2024-03-06",
     "state_prov": "NY",
-    "timezone": null,
-    "webcasts": [],
-    "website": null,
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "firstinspires9",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://www.nysfirst.org/",
     "week": 1,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "51 S Pearl St, Albany, NY 12207, USA",
     "city": "Albany",
     "country": "USA",
     "district": null,
@@ -4263,22 +5836,27 @@
     "event_type_string": "Regional",
     "first_event_code": "nytr",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJtYTUwSMK3okR_Xnl22th_2U",
+    "gmaps_url": "https://maps.google.com/?q=51+S+Pearl+St,+Albany,+NY+12207,+USA&ftid=0x89de0a23c1d484b5:0x65ff616bdbe579fd",
     "key": "2024nytr",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 42.64846420000001,
+    "lng": -73.7549566,
+    "location_name": "51 S Pearl St",
     "name": "New York Tech Valley Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "12207",
     "short_name": "New York Tech Valley",
     "start_date": "2024-03-20",
     "state_prov": "NY",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "firstinspires9",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.techvalleyfirst.org/",
     "week": 3,
     "year": 2024
@@ -4310,13 +5888,24 @@
     "start_date": "2024-03-03",
     "state_prov": "NY",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "YcuOpqDf5Is",
+        "date": "2024-3-3",
+        "type": "youtube"
+      },
+      {
+        "channel": "",
+        "date": "2024-03-03",
+        "type": "livestream"
+      }
+    ],
     "website": "https://team2869.org/rampage/",
     "week": null,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "Wolstein Center, 2000 Prospect Ave E, Cleveland, OH 44115, USA",
     "city": "Cleveland",
     "country": "USA",
     "district": null,
@@ -4327,22 +5916,27 @@
     "event_type_string": "Regional",
     "first_event_code": "ohcl",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJMxTU82P6MIgR150J1Hs3ACo",
+    "gmaps_url": "https://maps.google.com/?cid=3026479954570878423",
     "key": "2024ohcl",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 41.499382,
+    "lng": -81.6768646,
+    "location_name": "Wolstein Center",
     "name": "Buckeye Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "44115",
     "short_name": "Buckeye",
     "start_date": "2024-03-20",
     "state_prov": "OH",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "firstinspires6",
+        "type": "twitch"
+      }
+    ],
     "website": "https://sites.google.com/view/frcbuckeye/home",
     "week": 3,
     "year": 2024
@@ -4374,7 +5968,12 @@
     "start_date": "2024-04-03",
     "state_prov": "OH",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires6",
+        "type": "twitch"
+      }
+    ],
     "website": null,
     "week": 5,
     "year": 2024
@@ -4438,7 +6037,12 @@
     "start_date": "2024-04-03",
     "state_prov": "OK",
     "timezone": "America/Chicago",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires3",
+        "type": "twitch"
+      }
+    ],
     "website": "https://first-oklahoma.com/first-robotics-competition/",
     "week": 5,
     "year": 2024
@@ -4470,13 +6074,18 @@
     "start_date": "2024-03-06",
     "state_prov": "OK",
     "timezone": "America/Chicago",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires4",
+        "type": "twitch"
+      }
+    ],
     "website": "https://first-oklahoma.com/first-robotics-competition/",
     "week": 1,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1 Georgian Dr, Barrie, ON L4M 3X9, Canada",
     "city": "Barrie",
     "country": "Canada",
     "district": {
@@ -4492,28 +6101,92 @@
     "event_type_string": "District",
     "first_event_code": "onbar",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJTZscQ3KjKogRJo8fooKiwA4",
+    "gmaps_url": "https://maps.google.com/?cid=1063028194008862502",
     "key": "2024onbar",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 44.4107237,
+    "lng": -79.6686843,
+    "location_name": "Georgian College Athletic & Fitness Centre",
     "name": "ONT District Georgian Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "L4M 3X9",
     "short_name": "Georgian",
     "start_date": "2024-03-15",
     "state_prov": "ON",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Toronto",
+    "webcasts": [
+      {
+        "channel": "FIRSTCanada",
+        "date": "2024-03-16",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario1",
+        "date": "2024-03-17",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario2",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstroboticscanada.org",
     "week": 2,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "6900 Airport Rd, Mississauga, ON L4V 1E8, Canada",
+    "city": "Mississauga",
+    "country": "Canada",
+    "district": {
+      "abbreviation": "ont",
+      "display_name": "Ontario",
+      "key": "2024ont",
+      "year": 2024
+    },
+    "division_keys": [
+      "2024oncmp1",
+      "2024oncmp2"
+    ],
+    "end_date": "2024-04-06",
+    "event_code": "oncmp",
+    "event_type": 2,
+    "event_type_string": "District Championship",
+    "first_event_code": "oncmp",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJryG3suI7K4gR8Fx4QyOOVOU",
+    "gmaps_url": "https://maps.google.com/?cid=16524989214836153584",
+    "key": "2024oncmp",
+    "lat": 43.70310620000001,
+    "lng": -79.6366377,
+    "location_name": "The International Centre",
+    "name": "FIRST Ontario Provincial Championship",
+    "parent_event_key": null,
+    "playoff_type": 9,
+    "playoff_type_string": "Elimination Bracket (2 Alliances)",
+    "postal_code": "L4V 1E8",
+    "short_name": "Ontario",
+    "start_date": "2024-04-03",
+    "state_prov": "ON",
+    "timezone": "America/Toronto",
+    "webcasts": [
+      {
+        "channel": "FIRSTCanada",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario1",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://firstroboticscanada.org/frc/championship/",
+    "week": 5,
+    "year": 2024
+  },
+  {
+    "address": "6900 Airport Rd, Mississauga, ON L4V 1E8, Canada",
     "city": "Mississauga",
     "country": "Canada",
     "district": {
@@ -4524,33 +6197,88 @@
     },
     "division_keys": [],
     "end_date": "2024-04-06",
-    "event_code": "oncmp",
-    "event_type": 2,
-    "event_type_string": "District Championship",
-    "first_event_code": "oncmp",
+    "event_code": "oncmp1",
+    "event_type": 5,
+    "event_type_string": "District Championship Division",
+    "first_event_code": "oncmp1",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
-    "key": "2024oncmp",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
-    "name": "FIRST Ontario Provincial Championship",
-    "parent_event_key": null,
+    "gmaps_place_id": "ChIJryG3suI7K4gR8Fx4QyOOVOU",
+    "gmaps_url": "https://maps.google.com/?cid=16524989214836153584",
+    "key": "2024oncmp1",
+    "lat": 43.70310620000001,
+    "lng": -79.6366377,
+    "location_name": "The International Centre",
+    "name": "FIRST Ontario Provincial Championship - Science Division",
+    "parent_event_key": "2024oncmp",
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
-    "short_name": "Ontario",
+    "postal_code": "L4V 1E8",
+    "short_name": "OPC - Science",
     "start_date": "2024-04-03",
     "state_prov": "ON",
-    "timezone": null,
-    "webcasts": [],
-    "website": "https://www.firstroboticscanada.org",
+    "timezone": "America/Toronto",
+    "webcasts": [
+      {
+        "channel": "FIRSTCanada",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario1",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://firstroboticscanada.org/frc/championship/",
     "week": 5,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "6900 Airport Rd, Mississauga, ON L4V 1E8, Canada",
+    "city": "Mississauga",
+    "country": "Canada",
+    "district": {
+      "abbreviation": "ont",
+      "display_name": "Ontario",
+      "key": "2024ont",
+      "year": 2024
+    },
+    "division_keys": [],
+    "end_date": "2024-04-06",
+    "event_code": "oncmp2",
+    "event_type": 5,
+    "event_type_string": "District Championship Division",
+    "first_event_code": "oncmp2",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJryG3suI7K4gR8Fx4QyOOVOU",
+    "gmaps_url": "https://maps.google.com/?cid=16524989214836153584",
+    "key": "2024oncmp2",
+    "lat": 43.70310620000001,
+    "lng": -79.6366377,
+    "location_name": "The International Centre",
+    "name": "FIRST Ontario Provincial Championship - Technology Division",
+    "parent_event_key": "2024oncmp",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "L4V 1E8",
+    "short_name": "OPC - Technology",
+    "start_date": "2024-04-03",
+    "state_prov": "ON",
+    "timezone": "America/Toronto",
+    "webcasts": [
+      {
+        "channel": "FIRSTOntario2",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario3",
+        "type": "twitch"
+      }
+    ],
+    "website": "https://firstroboticscanada.org/frc/championship/",
+    "week": 5,
+    "year": 2024
+  },
+  {
+    "address": "1280 Main St W, Hamilton, ON L8S 4L8, Canada",
     "city": "Hamilton",
     "country": "Canada",
     "district": {
@@ -4566,28 +6294,43 @@
     "event_type_string": "District",
     "first_event_code": "onham",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJwSr3RKyELIgRHAFDYeoAnjk",
+    "gmaps_url": "https://maps.google.com/?cid=4151756913136304412",
     "key": "2024onham",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 43.260879,
+    "lng": -79.9192254,
+    "location_name": "McMaster University",
     "name": "ONT District McMaster University",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "L8S 4L8",
     "short_name": "McMaster University",
     "start_date": "2024-03-28",
     "state_prov": "ON",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Toronto",
+    "webcasts": [
+      {
+        "channel": "FIRSTCanada",
+        "date": "2024-03-30",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario3",
+        "date": "2024-03-29",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario4",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstroboticscanada.org",
     "week": 4,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "100 Eagle St W, Newmarket, ON L3Y 1J4, Canada",
     "city": "Newmarket",
     "country": "Canada",
     "district": {
@@ -4603,28 +6346,49 @@
     "event_type_string": "District",
     "first_event_code": "onnew",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJ304BfZTRKogRyOK89R0Dla4",
+    "gmaps_url": "https://maps.google.com/?cid=12579964561341080264",
     "key": "2024onnew",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 44.0442404,
+    "lng": -79.4863871,
+    "location_name": "Ray Twinney Recreation Complex",
     "name": "ONT District Newmarket Complex Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "L3Y 1J4",
     "short_name": "Newmarket Complex",
     "start_date": "2024-03-08",
     "state_prov": "ON",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Toronto",
+    "webcasts": [
+      {
+        "channel": "FIRSTCanada",
+        "date": "2024-03-10",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario3",
+        "date": "2024-03-09",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario4",
+        "date": "2024-03-09",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario4",
+        "date": "2024-03-10",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstroboticscanada.org",
     "week": 1,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "Nipissing University, Robert J. Surtees Student Athletic Centre, 100 College Dr, North Bay, ON P1B 8L7, Canada",
     "city": "North Bay",
     "country": "Canada",
     "district": {
@@ -4640,28 +6404,52 @@
     "event_type_string": "District",
     "first_event_code": "onnob",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJC6omLtn_KE0RRe1M2P9BgW8",
+    "gmaps_url": "https://maps.google.com/?q=Robert+J.+Surtees+Student+Athletic+Centre&ftid=0x4d28ffd92e26aa0b:0x6f8141ffd84ced45",
     "key": "2024onnob",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 46.3442394,
+    "lng": -79.4895251,
+    "location_name": "Robert J. Surtees Student Athletic Centre",
     "name": "ONT District North Bay Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "P1B 8L7",
     "short_name": "North Bay",
     "start_date": "2024-03-22",
     "state_prov": "ON",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Toronto",
+    "webcasts": [
+      {
+        "channel": "FIRSTCanada",
+        "date": "2024-03-24",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario3",
+        "date": "2024-03-23",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario4",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario2",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario1",
+        "date": "2024-03-23",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstroboticscanada.org",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "2000 Simcoe St N, Oshawa, ON L1G 0C5, Canada",
     "city": "Oshawa",
     "country": "Canada",
     "district": {
@@ -4677,29 +6465,44 @@
     "event_type_string": "District",
     "first_event_code": "onosh",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJc7ntL5Ab1YkRoeg1QGmRYN0",
+    "gmaps_url": "https://maps.google.com/?cid=15951909761381165217",
     "key": "2024onosh",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 43.9436083,
+    "lng": -78.8969884,
+    "location_name": "Durham College",
     "name": "ONT District Durham College Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "L1G 0C5",
     "short_name": "Durham College",
     "start_date": "2024-03-15",
     "state_prov": "ON",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Toronto",
+    "webcasts": [
+      {
+        "channel": "FIRSTCanada",
+        "date": "2024-03-17",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario3",
+        "date": "2024-03-16",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario4",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstroboticscanada.org",
     "week": 2,
     "year": 2024
   },
   {
-    "address": null,
-    "city": "Scarborough",
+    "address": "941 Progress Ave, Scarborough, ON M1G 3T8, Canada",
+    "city": "Toronto",
     "country": "Canada",
     "district": {
       "abbreviation": "ont",
@@ -4714,28 +6517,43 @@
     "event_type_string": "District",
     "first_event_code": "onsca",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJjwfZH_LQ1IkRGCvNwJL-40Y",
+    "gmaps_url": "https://maps.google.com/?cid=5108206308621626136",
     "key": "2024onsca",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 43.7852043,
+    "lng": -79.2281691,
+    "location_name": "Centennial College",
     "name": "ONT District Centennial College Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "M1G 3T8",
     "short_name": "Centennial College",
     "start_date": "2024-03-08",
     "state_prov": "ON",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Toronto",
+    "webcasts": [
+      {
+        "channel": "FIRSTCanada",
+        "date": "2024-03-09",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario1",
+        "date": "2024-03-10",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario2",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstroboticscanada.org",
     "week": 1,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "205 Humber College Blvd, Toronto, ON M9W 5L7, Canada",
     "city": "Toronto",
     "country": "Canada",
     "district": {
@@ -4751,28 +6569,37 @@
     "event_type_string": "District",
     "first_event_code": "ontor",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJrd_BQqw7K4gRzFWfAGf8qBs",
+    "gmaps_url": "https://maps.google.com/?cid=1993120354433717708",
     "key": "2024ontor",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 43.72928110000001,
+    "lng": -79.6068458,
+    "location_name": "Humber College Fitness Centre North Campus",
     "name": "ONT District Humber College Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "M9W 5L7",
     "short_name": "Humber College",
     "start_date": "2024-03-18",
     "state_prov": "ON",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Toronto",
+    "webcasts": [
+      {
+        "channel": "FIRSTCanada",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario2",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstroboticscanada.org",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "200 University Ave W, Waterloo, ON N2L 3G1, Canada",
     "city": "Waterloo",
     "country": "Canada",
     "district": {
@@ -4788,28 +6615,45 @@
     "event_type_string": "District",
     "first_event_code": "onwat",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJ-68GNqr2K4gR3tz8fO5-sWQ",
+    "gmaps_url": "https://maps.google.com/?cid=7255720037434842334",
     "key": "2024onwat",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 43.47219329999999,
+    "lng": -80.54617209999999,
+    "location_name": "Physical Activities Complex (PAC)",
     "name": "ONT District University of Waterloo Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "N2L 3G1",
     "short_name": "University of Waterloo",
     "start_date": "2024-03-21",
     "state_prov": "ON",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Toronto",
+    "webcasts": [
+      {
+        "channel": "FIRSTCanada",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario2",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstontario4",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario4",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstroboticscanada.org",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "2555 College Ave, Windsor, ON N9B 3P4, Canada",
     "city": "Windsor",
     "country": "Canada",
     "district": {
@@ -4825,22 +6669,37 @@
     "event_type_string": "District",
     "first_event_code": "onwin",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJQQDy8Z4tO4gRtHkGFiEfVAY",
+    "gmaps_url": "https://maps.google.com/?cid=456023689235167668",
     "key": "2024onwin",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 42.29897049999999,
+    "lng": -83.0613372,
+    "location_name": "Toldo Lancer Centre",
     "name": "ONT District Windsor Essex Great Lakes Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "N9B 3P4",
     "short_name": "Windsor Essex Great Lakes",
     "start_date": "2024-03-28",
     "state_prov": "ON",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Toronto",
+    "webcasts": [
+      {
+        "channel": "FIRSTCanada",
+        "date": "2024-03-29",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario1",
+        "date": "2024-03-30",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTOntario2",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstroboticscanada.org",
     "week": 4,
     "year": 2024
@@ -4877,7 +6736,28 @@
     "start_date": "2024-02-29",
     "state_prov": "OR",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires14",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTWA_Red1",
+        "type": "twitch"
+      },
+      {
+        "channel": "FIRSTWA_Red2",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstwa_red1",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstwa_red2",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstwa.org/",
     "week": 0,
     "year": 2024
@@ -4914,7 +6794,20 @@
     "start_date": "2024-03-07",
     "state_prov": "OR",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires14",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstwa_red1",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstwa_red2",
+        "type": "twitch"
+      }
+    ],
     "website": "https://firstwa.org/",
     "week": 1,
     "year": 2024
@@ -4951,13 +6844,22 @@
     "start_date": "2024-03-21",
     "state_prov": "OR",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires14",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstwa_red2",
+        "type": "twitch"
+      }
+    ],
     "website": "https://firstwa.org/",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "4319 Hulmeville Rd, Bensalem, PA 19020, USA",
     "city": "Bensalem",
     "country": "USA",
     "district": {
@@ -4973,22 +6875,33 @@
     "event_type_string": "District",
     "first_event_code": "paben",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJse2aPnJNwYkRwWovMrtDEB0",
+    "gmaps_url": "https://maps.google.com/?q=4319+Hulmeville+Rd,+Bensalem,+PA+19020,+USA&ftid=0x89c14d723e9aedb1:0x1d1043bb322f6ac1",
     "key": "2024paben",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 40.1129884,
+    "lng": -74.93202029999999,
+    "location_name": "4319 Hulmeville Rd",
     "name": "FMA District Bensalem Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "19020",
     "short_name": "Bensalem",
     "start_date": "2024-03-22",
     "state_prov": "PA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "LloUlEIDaf4",
+        "date": "2024-03-24",
+        "type": "youtube"
+      },
+      {
+        "channel": "WM7VXwxw03s",
+        "date": "2024-03-23",
+        "type": "youtube"
+      }
+    ],
     "website": "https://midatlanticrobotics.com/",
     "week": 3,
     "year": 2024
@@ -5020,13 +6933,18 @@
     "start_date": "2024-02-28",
     "state_prov": "PA",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires8",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstwcpa.org",
     "week": 0,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "899 Horsham Rd, Horsham, PA 19044, USA",
     "city": "Horsham",
     "country": "USA",
     "district": {
@@ -5042,22 +6960,33 @@
     "event_type_string": "District",
     "first_event_code": "pahat",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJ49kHOXilxokRrMxXARMIXT0",
+    "gmaps_url": "https://maps.google.com/?q=899+Horsham+Rd,+Horsham,+PA+19044,+USA&ftid=0x89c6a5783907d9e3:0x3d5d08130157ccac",
     "key": "2024pahat",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 40.1984223,
+    "lng": -75.1649923,
+    "location_name": "899 Horsham Rd",
     "name": "FMA District Hatboro-Horsham Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "19044",
     "short_name": "Hatboro-Horsham",
     "start_date": "2024-03-01",
     "state_prov": "PA",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/New_York",
+    "webcasts": [
+      {
+        "channel": "5-lid9O227Q",
+        "date": "2024-03-02",
+        "type": "youtube"
+      },
+      {
+        "channel": "D1RCVRxK9pM",
+        "date": "2024-03-03",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.midatlanticrobotics.com/",
     "week": 0,
     "year": 2024
@@ -5094,13 +7023,24 @@
     "start_date": "2024-03-15",
     "state_prov": "PA",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "JIjhIxFiN0s",
+        "date": "2024-03-16",
+        "type": "youtube"
+      },
+      {
+        "channel": "ZzMXMsGXRKE",
+        "date": "2024-03-17",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.midatlanticrobotics.com/",
     "week": 2,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "300 N Ramsay Wy, Portland, OR 97227, USA",
     "city": "Portland",
     "country": "USA",
     "district": {
@@ -5116,22 +7056,35 @@
     "event_type_string": "District Championship",
     "first_event_code": "pncmp",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJb-ElDFOnlVQRPYudHOKNej4",
+    "gmaps_url": "https://maps.google.com/?cid=4502066779792444221",
     "key": "2024pncmp",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 45.532141,
+    "lng": -122.6693299,
+    "location_name": "Veterans Memorial Coliseum",
     "name": "Pacific Northwest FIRST District Championship",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "97227",
     "short_name": "Pacific Northwest",
     "start_date": "2024-04-03",
     "state_prov": "OR",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Los_Angeles",
+    "webcasts": [
+      {
+        "channel": "firstinspires14",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstinspires15",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstwa_blue2",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstwa.org",
     "week": 5,
     "year": 2024
@@ -5163,7 +7116,12 @@
     "start_date": "2024-03-01",
     "state_prov": "QC",
     "timezone": "America/Toronto",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires9",
+        "type": "twitch"
+      }
+    ],
     "website": "http://robotiquefirstquebec.org/festival/",
     "week": 0,
     "year": 2024
@@ -5200,7 +7158,16 @@
     "start_date": "2024-03-14",
     "state_prov": "RI",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "nefirst_green",
+        "type": "twitch"
+      },
+      {
+        "channel": "nefirst_red",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.nefirst.org/",
     "week": 2,
     "year": 2024
@@ -5237,7 +7204,24 @@
     "start_date": "2024-03-07",
     "state_prov": "SC",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstsc",
+        "type": "twitch"
+      },
+      {
+        "channel": "81d6c9px7zI",
+        "type": "youtube"
+      },
+      {
+        "channel": "firstscfrc",
+        "type": "twitch"
+      },
+      {
+        "channel": "4PEzbOhLAvE",
+        "type": "youtube"
+      }
+    ],
     "website": "http://firstsouthcarolina.org",
     "week": 1,
     "year": 2024
@@ -5274,7 +7258,12 @@
     "start_date": "2024-03-21",
     "state_prov": "SC",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "-pyI_J2w6jo",
+        "type": "youtube"
+      }
+    ],
     "website": "http://firstsouthcarolina.org",
     "week": 3,
     "year": 2024
@@ -5306,7 +7295,17 @@
     "start_date": "2024-03-03",
     "state_prov": "TN",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires10",
+        "date": "2024-03-04",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstinspires10",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.tnfirst.org/",
     "week": 0,
     "year": 2024
@@ -5338,7 +7337,12 @@
     "start_date": "2024-03-19",
     "state_prov": "İstanbul",
     "timezone": "Europe/Istanbul",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires13",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.fikretyukselfoundation.org/",
     "week": 3,
     "year": 2024
@@ -5370,7 +7374,16 @@
     "start_date": "2024-03-05",
     "state_prov": "İstanbul",
     "timezone": "Europe/Istanbul",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires13",
+        "type": "twitch"
+      },
+      {
+        "channel": "y5g3tZ-mHXQ",
+        "type": "youtube"
+      }
+    ],
     "website": "http://www.fikretyukselfoundation.org/",
     "week": 1,
     "year": 2024
@@ -5402,7 +7415,12 @@
     "start_date": "2024-03-08",
     "state_prov": "İstanbul",
     "timezone": "Europe/Istanbul",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires13",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.fikretyukselfoundation.org/",
     "week": 1,
     "year": 2024
@@ -5434,13 +7452,18 @@
     "start_date": "2024-03-22",
     "state_prov": "İstanbul",
     "timezone": "Europe/Istanbul",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires13",
+        "type": "twitch"
+      }
+    ],
     "website": null,
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "401 S Buchanan St, Amarillo, TX 79101, USA",
     "city": "Amarillo",
     "country": "USA",
     "district": {
@@ -5456,22 +7479,33 @@
     "event_type_string": "District",
     "first_event_code": "txama",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJQfHvZONOAYcRfp7PgNMZQLk",
+    "gmaps_url": "https://maps.google.com/?q=401+S+Buchanan+St,+Amarillo,+TX+79101,+USA&ftid=0x87014ee364eff141:0xb94019d380cf9e7e",
     "key": "2024txama",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 35.2077789,
+    "lng": -101.8301967,
+    "location_name": "401 S Buchanan St",
     "name": "FIT District Amarillo Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "79101",
     "short_name": "Amarillo",
     "start_date": "2024-03-28",
     "state_prov": "TX",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "Wh99RMXZp9w",
+        "date": "2024-03-29",
+        "type": "youtube"
+      },
+      {
+        "channel": "lUCQLMWj7q8",
+        "date": "2024-03-30",
+        "type": "youtube"
+      }
+    ],
     "website": "https://firstintexas.org/",
     "week": 4,
     "year": 2024
@@ -5508,13 +7542,19 @@
     "start_date": "2024-03-07",
     "state_prov": "TX",
     "timezone": "America/Chicago",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "tnt5TX84alg",
+        "date": "2024-03-08",
+        "type": "youtube"
+      }
+    ],
     "website": "https://firstintexas.org/",
     "week": 1,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "4607 FM 2351, Friendswood, TX 77546, USA",
     "city": "Friendswood",
     "country": "USA",
     "district": {
@@ -5530,28 +7570,84 @@
     "event_type_string": "District",
     "first_event_code": "txcle",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJSydApP-aQIYRPc96CM7Xgwk",
+    "gmaps_url": "https://maps.google.com/?q=4607+FM+2351,+Friendswood,+TX+77546,+USA&ftid=0x86409affa440274b:0x983d7ce087acf3d",
     "key": "2024txcle",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 29.5470287,
+    "lng": -95.18711239999999,
+    "location_name": "4607 FM 2351",
     "name": "FIT District Space City @ Friendswood Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "77546",
     "short_name": "Space City @ Friendswood",
     "start_date": "2024-03-28",
     "state_prov": "TX",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "fW88BAdvnE8",
+        "date": "2024-03-29",
+        "type": "youtube"
+      },
+      {
+        "channel": "Ejvgs_I3Z1M",
+        "date": "2024-03-30",
+        "type": "youtube"
+      }
+    ],
     "website": "https://firstintexas.org/",
     "week": 4,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1001 Avenida De Las Americas, Houston, TX 77010, USA",
+    "city": "Houston",
+    "country": "USA",
+    "district": {
+      "abbreviation": "fit",
+      "display_name": "FIRST In Texas",
+      "key": "2024fit",
+      "year": 2024
+    },
+    "division_keys": [
+      "2024txcmp1",
+      "2024txcmp2"
+    ],
+    "end_date": "2024-04-06",
+    "event_code": "txcmp",
+    "event_type": 2,
+    "event_type_string": "District Championship",
+    "first_event_code": "txcmp",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJgw3vTiK_QIYRsMwBp668_Lo",
+    "gmaps_url": "https://maps.google.com/?q=1001+Avenida+De+Las+Americas,+Houston,+TX+77010,+USA&ftid=0x8640bf224eef0d83:0xbafcbcaea701ccb0",
+    "key": "2024txcmp",
+    "lat": 29.7520006,
+    "lng": -95.3576434,
+    "location_name": "1001 Avenida De Las Americas",
+    "name": "FIRST In Texas District Championship",
+    "parent_event_key": null,
+    "playoff_type": 9,
+    "playoff_type_string": "Elimination Bracket (2 Alliances)",
+    "postal_code": "77010",
+    "short_name": "Texas",
+    "start_date": "2024-04-03",
+    "state_prov": "TX",
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "Wn7JEG2-AE8",
+        "type": "youtube"
+      }
+    ],
+    "website": "https://firstintexas.org/",
+    "week": 5,
+    "year": 2024
+  },
+  {
+    "address": "1001 Avenida De Las Americas, Houston, TX 77010, USA",
     "city": "Houston",
     "country": "USA",
     "district": {
@@ -5562,27 +7658,75 @@
     },
     "division_keys": [],
     "end_date": "2024-04-06",
-    "event_code": "txcmp",
-    "event_type": 2,
-    "event_type_string": "District Championship",
-    "first_event_code": "txcmp",
+    "event_code": "txcmp1",
+    "event_type": 5,
+    "event_type_string": "District Championship Division",
+    "first_event_code": "txcmp1",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
-    "key": "2024txcmp",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
-    "name": "FIRST In Texas District Championship",
-    "parent_event_key": null,
+    "gmaps_place_id": "ChIJgw3vTiK_QIYRsMwBp668_Lo",
+    "gmaps_url": "https://maps.google.com/?q=1001+Avenida+De+Las+Americas,+Houston,+TX+77010,+USA&ftid=0x8640bf224eef0d83:0xbafcbcaea701ccb0",
+    "key": "2024txcmp1",
+    "lat": 29.7520006,
+    "lng": -95.3576434,
+    "location_name": "1001 Avenida De Las Americas",
+    "name": "FIRST In Texas District Championship - Mercury Division",
+    "parent_event_key": "2024txcmp",
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
-    "short_name": "Texas",
+    "postal_code": "77010",
+    "short_name": "TDC - Mercury",
     "start_date": "2024-04-03",
     "state_prov": "TX",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "D3GL1D1ogTM",
+        "date": "2024-4-4",
+        "type": "youtube"
+      }
+    ],
+    "website": "https://firstintexas.org/",
+    "week": 5,
+    "year": 2024
+  },
+  {
+    "address": "1001 Avenida De Las Americas, Houston, TX 77010, USA",
+    "city": "Houston",
+    "country": "USA",
+    "district": {
+      "abbreviation": "fit",
+      "display_name": "FIRST In Texas",
+      "key": "2024fit",
+      "year": 2024
+    },
+    "division_keys": [],
+    "end_date": "2024-04-06",
+    "event_code": "txcmp2",
+    "event_type": 5,
+    "event_type_string": "District Championship Division",
+    "first_event_code": "txcmp2",
+    "first_event_id": null,
+    "gmaps_place_id": "ChIJgw3vTiK_QIYRsMwBp668_Lo",
+    "gmaps_url": "https://maps.google.com/?q=1001+Avenida+De+Las+Americas,+Houston,+TX+77010,+USA&ftid=0x8640bf224eef0d83:0xbafcbcaea701ccb0",
+    "key": "2024txcmp2",
+    "lat": 29.7520006,
+    "lng": -95.3576434,
+    "location_name": "1001 Avenida De Las Americas",
+    "name": "FIRST In Texas District Championship - Apollo Division",
+    "parent_event_key": "2024txcmp",
+    "playoff_type": 10,
+    "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
+    "postal_code": "77010",
+    "short_name": "TDC - Apollo",
+    "start_date": "2024-04-03",
+    "state_prov": "TX",
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "D3GL1D1ogTM",
+        "type": "youtube"
+      }
+    ],
     "website": "https://firstintexas.org/",
     "week": 5,
     "year": 2024
@@ -5619,13 +7763,19 @@
     "start_date": "2024-03-21",
     "state_prov": "TX",
     "timezone": "America/Chicago",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "wbumApC8dD4",
+        "date": "2024-03-22",
+        "type": "youtube"
+      }
+    ],
     "website": "https://firstintexas.org/",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "4501 Bridge St, Fort Worth, TX 76103, USA",
     "city": "Fort Worth",
     "country": "USA",
     "district": {
@@ -5641,28 +7791,52 @@
     "event_type_string": "District",
     "first_event_code": "txfor",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJHxQC0Q16ToYR0CX4G9UU0AI",
+    "gmaps_url": "https://maps.google.com/?q=4501+Bridge+St,+Fort+Worth,+TX+76103,+USA&ftid=0x864e7a0dd102141f:0x2d014d51bf825d0",
     "key": "2024txfor",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 32.7614096,
+    "lng": -97.25669909999999,
+    "location_name": "4501 Bridge St",
     "name": "FIT District Fort Worth Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "76103",
     "short_name": "Fort Worth",
     "start_date": "2024-03-14",
     "state_prov": "TX",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "",
+        "date": "2024-3-15",
+        "type": "livestream"
+      },
+      {
+        "channel": "As4dUCaqfM8",
+        "type": "youtube"
+      },
+      {
+        "channel": "",
+        "date": "2024-03-15",
+        "type": "livestream"
+      },
+      {
+        "channel": "",
+        "type": "livestream"
+      },
+      {
+        "channel": "l1W4YmSYJG0",
+        "date": "2024-03-16",
+        "type": "youtube"
+      }
+    ],
     "website": "https://firstintexas.org/",
     "week": 2,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "1865 Aldine Bender Rd, Houston, TX 77032, USA",
     "city": "Houston",
     "country": "USA",
     "district": {
@@ -5678,28 +7852,33 @@
     "event_type_string": "District",
     "first_event_code": "txhou",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJ1WP1B122QIYRNawdNyUZPOc",
+    "gmaps_url": "https://maps.google.com/?q=1865+Aldine+Bender+Rd,+Houston,+TX+77032,+USA&ftid=0x8640b65d07f563d5:0xe73c1925371dac35",
     "key": "2024txhou",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 29.9323823,
+    "lng": -95.3597719,
+    "location_name": "1865 Aldine Bender Rd",
     "name": "FIT District Houston Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "77032",
     "short_name": "Houston",
     "start_date": "2024-03-22",
     "state_prov": "TX",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "YdsfTL0YHyA",
+        "type": "youtube"
+      }
+    ],
     "website": "https://firstintexas.org/",
     "week": 3,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "6301 S Stadium Ln, Katy, TX 77494, USA",
     "city": "Katy",
     "country": "USA",
     "district": {
@@ -5715,22 +7894,32 @@
     "event_type_string": "District",
     "first_event_code": "txkat",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJGbDE6D4kQYYRcoDJdptkGU8",
+    "gmaps_url": "https://maps.google.com/?q=6301+S+Stadium+Ln,+Katy,+TX+77494,+USA&ftid=0x8641243ee8c4b019:0x4f19649b76c98072",
     "key": "2024txkat",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 29.7804502,
+    "lng": -95.8325816,
+    "location_name": "6301 S Stadium Ln",
     "name": "FIT District Katy Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "77494",
     "short_name": "Katy",
     "start_date": "2024-02-29",
     "state_prov": "TX",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "qgeYZQvLkDA",
+        "type": "youtube"
+      },
+      {
+        "channel": "zSmyVPHwUpY",
+        "date": "2024-03-02",
+        "type": "youtube"
+      }
+    ],
     "website": "https://firstintexas.org/",
     "week": 0,
     "year": 2024
@@ -5767,13 +7956,24 @@
     "start_date": "2024-03-08",
     "state_prov": "TX",
     "timezone": "America/Chicago",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "TLoL06QKNX0",
+        "date": "2024-03-09",
+        "type": "youtube"
+      },
+      {
+        "channel": "K9I7AZg45SE",
+        "date": "2024-03-10",
+        "type": "youtube"
+      }
+    ],
     "website": "https://firstintexas.org/",
     "week": 1,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "3201 E Houston St, San Antonio, TX 78219, USA",
     "city": "San Antonio",
     "country": "USA",
     "district": {
@@ -5789,28 +7989,39 @@
     "event_type_string": "District",
     "first_event_code": "txsan",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJj7_pbID2XIYRifihRWt2Li8",
+    "gmaps_url": "https://maps.google.com/?cid=3399784971813124233",
     "key": "2024txsan",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 29.4269635,
+    "lng": -98.43915760000002,
+    "location_name": "Freeman Coliseum",
     "name": "FIT District San Antonio Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "78219",
     "short_name": "San Antonio",
     "start_date": "2024-03-14",
     "state_prov": "TX",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "zCZzC6zl1Ic",
+        "date": "2024-03-15",
+        "type": "youtube"
+      },
+      {
+        "channel": "cAE1BeX9bd8",
+        "date": "2024-03-16",
+        "type": "youtube"
+      }
+    ],
     "website": "https://firstintexas.org/",
     "week": 2,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "4601 Bosque Blvd, Waco, TX 76710, USA",
     "city": "Waco",
     "country": "USA",
     "district": {
@@ -5826,28 +8037,38 @@
     "event_type_string": "District",
     "first_event_code": "txwac",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJRfOM-gyET4YRO1ZYhy4lJWQ",
+    "gmaps_url": "https://maps.google.com/?q=4601+Bosque+Blvd,+Waco,+TX+76710,+USA&ftid=0x864f840cfa8cf345:0x6425252e8758563b",
     "key": "2024txwac",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 31.5381287,
+    "lng": -97.1865188,
+    "location_name": "4601 Bosque Blvd",
     "name": "FIT District Waco Event",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "76710",
     "short_name": "Waco",
     "start_date": "2024-02-29",
     "state_prov": "TX",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "PfxkzMhMLUY",
+        "type": "youtube"
+      },
+      {
+        "channel": "Ei7OfvXh4uE",
+        "date": "2024-03-02",
+        "type": "youtube"
+      }
+    ],
     "website": "https://firstintexas.org/",
     "week": 0,
     "year": 2024
   },
   {
-    "address": null,
+    "address": "3200 Decker Lake Dr, West Valley City, UT 84119, USA",
     "city": "West Valley City",
     "country": "USA",
     "district": null,
@@ -5858,22 +8079,27 @@
     "event_type_string": "Regional",
     "first_event_code": "utwv",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJHVPj3l-LUocRnUrVDqohQrw",
+    "gmaps_url": "https://maps.google.com/?q=3200+Decker+Lake+Dr,+West+Valley+City,+UT+84119,+USA&ftid=0x87528b5fdee3531d:0xbc4221aa0ed54a9d",
     "key": "2024utwv",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 40.70270850000001,
+    "lng": -111.9505724,
+    "location_name": "3200 Decker Lake Dr",
     "name": "Utah Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "84119",
     "short_name": "Utah",
     "start_date": "2024-02-28",
     "state_prov": "UT",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Denver",
+    "webcasts": [
+      {
+        "channel": "firstinspires4",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.utfrc.utah.edu",
     "week": 0,
     "year": 2024
@@ -5910,7 +8136,18 @@
     "start_date": "2024-03-01",
     "state_prov": "VA",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "H8FO2AF86nM",
+        "date": "2024-02-03",
+        "type": "youtube"
+      },
+      {
+        "channel": "KU_piDQ8QSI",
+        "date": "2024-03-02",
+        "type": "youtube"
+      }
+    ],
     "website": "https://www.firstchesapeake.org/calendar/ashland-va-first-robotics-competition/",
     "week": 0,
     "year": 2024
@@ -5947,7 +8184,18 @@
     "start_date": "2024-03-01",
     "state_prov": "VA",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "0q3xw4rKd3k",
+        "date": "2024-03-02",
+        "type": "youtube"
+      },
+      {
+        "channel": "T3-KV0hXZZs",
+        "date": "2024-03-03",
+        "type": "youtube"
+      }
+    ],
     "website": "https://www.firstchesapeake.org/calendar/blacksburg-va-first-robotics-competition/",
     "week": 0,
     "year": 2024
@@ -5984,7 +8232,18 @@
     "start_date": "2024-03-22",
     "state_prov": "VA",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "55aKDMLW9u8",
+        "date": "2024-03-23",
+        "type": "youtube"
+      },
+      {
+        "channel": "L7t7tPeepOE",
+        "date": "2024-03-24",
+        "type": "youtube"
+      }
+    ],
     "website": "https://www.firstchesapeake.org/calendar/falls-church-va-first-robotics-competition/",
     "week": 3,
     "year": 2024
@@ -6021,7 +8280,18 @@
     "start_date": "2024-03-15",
     "state_prov": "VA",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "",
+        "date": "2024-03-16",
+        "type": "livestream"
+      },
+      {
+        "channel": "",
+        "date": "2024-03-17",
+        "type": "livestream"
+      }
+    ],
     "website": "https://www.firstchesapeake.org/calendar/glen-allen-va-first-robotics-competition/",
     "week": 2,
     "year": 2024
@@ -6058,7 +8328,18 @@
     "start_date": "2024-03-08",
     "state_prov": "VA",
     "timezone": "America/New_York",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "oUM4PGAY8eE",
+        "date": "2024-03-09",
+        "type": "youtube"
+      },
+      {
+        "channel": "",
+        "date": "2024-03-10",
+        "type": "livestream"
+      }
+    ],
     "website": "https://www.firstchesapeake.org/calendar/portsmouth-va-first-robotics-competition/",
     "week": 1,
     "year": 2024
@@ -6095,7 +8376,16 @@
     "start_date": "2024-03-08",
     "state_prov": "WA",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstwa_blue1",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstwa_blue2",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstwa.org",
     "week": 1,
     "year": 2024
@@ -6132,7 +8422,16 @@
     "start_date": "2024-03-15",
     "state_prov": "WA",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires15",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstwa_blue2",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstwa.org",
     "week": 2,
     "year": 2024
@@ -6169,7 +8468,16 @@
     "start_date": "2024-03-22",
     "state_prov": "WA",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires15",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstwa_blue2",
+        "type": "twitch"
+      }
+    ],
     "website": "https://firstwa.org/",
     "week": 3,
     "year": 2024
@@ -6206,7 +8514,12 @@
     "start_date": "2024-03-01",
     "state_prov": "WA",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires15",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstwa.org/",
     "week": 0,
     "year": 2024
@@ -6243,7 +8556,20 @@
     "start_date": "2024-03-14",
     "state_prov": "WA",
     "timezone": "America/Los_Angeles",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires14",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstwa_red1",
+        "type": "twitch"
+      },
+      {
+        "channel": "firstwa_red2",
+        "type": "twitch"
+      }
+    ],
     "website": "http://www.firstwa.org/",
     "week": 2,
     "year": 2024
@@ -6286,7 +8612,7 @@
     "year": 2024
   },
   {
-    "address": null,
+    "address": "300 Harborview Plaza, La Crosse, WI 54601, USA",
     "city": "La Crosse",
     "country": "USA",
     "district": null,
@@ -6297,22 +8623,27 @@
     "event_type_string": "Regional",
     "first_event_code": "wila",
     "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
+    "gmaps_place_id": "ChIJYUJP46VV-YcRSS3fU11juoo",
+    "gmaps_url": "https://maps.google.com/?cid=9996411575392480585",
     "key": "2024wila",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
+    "lat": 43.8118242,
+    "lng": -91.2555227,
+    "location_name": "La Crosse Center",
     "name": "Seven Rivers Regional",
     "parent_event_key": null,
     "playoff_type": 10,
     "playoff_type_string": "Double Elimination Bracket (8 Alliances)",
-    "postal_code": null,
+    "postal_code": "54601",
     "short_name": "Seven Rivers",
     "start_date": "2024-04-03",
     "state_prov": "WI",
-    "timezone": null,
-    "webcasts": [],
+    "timezone": "America/Chicago",
+    "webcasts": [
+      {
+        "channel": "firstinspires8",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstinspireswi.org/first-robotics-competition",
     "week": 5,
     "year": 2024
@@ -6344,7 +8675,12 @@
     "start_date": "2024-03-14",
     "state_prov": "WI",
     "timezone": "America/Chicago",
-    "webcasts": [],
+    "webcasts": [
+      {
+        "channel": "firstinspires7",
+        "type": "twitch"
+      }
+    ],
     "website": "https://www.firstinspireswi.org/first-robotics-competition",
     "week": 2,
     "year": 2024
@@ -6389,8 +8725,8 @@
     "division_keys": [],
     "end_date": "2024-02-18",
     "event_code": "wiwz",
-    "event_type": 99,
-    "event_type_string": "Offseason",
+    "event_type": 100,
+    "event_type_string": "Preseason",
     "first_event_code": null,
     "first_event_id": null,
     "gmaps_place_id": "ChIJTxyg1IyqBYgRPoT2Gli6O6s",
@@ -6401,8 +8737,8 @@
     "location_name": "Hamilton High School",
     "name": "Sussex Scrimmage",
     "parent_event_key": null,
-    "playoff_type": null,
-    "playoff_type_string": null,
+    "playoff_type": 1,
+    "playoff_type_string": "Elimination Bracket (16 Alliances)",
     "postal_code": "53089",
     "short_name": "",
     "start_date": "2024-02-18",
@@ -6416,38 +8752,6 @@
     ],
     "website": "https://www.chargerrobotics.org/sussex-scrimmage",
     "week": null,
-    "year": 2024
-  },
-  {
-    "address": null,
-    "city": "TBD",
-    "country": "China",
-    "district": null,
-    "division_keys": [],
-    "end_date": "2024-03-23",
-    "event_code": "zhha",
-    "event_type": 0,
-    "event_type_string": "Regional",
-    "first_event_code": "zhha",
-    "first_event_id": null,
-    "gmaps_place_id": null,
-    "gmaps_url": null,
-    "key": "2024zhha",
-    "lat": null,
-    "lng": null,
-    "location_name": null,
-    "name": "China Regional (CHINA TEAMS PLEASE PREFERENCE THIS EVENT)",
-    "parent_event_key": null,
-    "playoff_type": 11,
-    "playoff_type_string": "Double Elimination Bracket (4 Alliances)",
-    "postal_code": null,
-    "short_name": "China",
-    "start_date": "2024-03-20",
-    "state_prov": "BJ",
-    "timezone": "Asia/Shanghai",
-    "webcasts": [],
-    "website": null,
-    "week": 3,
     "year": 2024
   }
 ]

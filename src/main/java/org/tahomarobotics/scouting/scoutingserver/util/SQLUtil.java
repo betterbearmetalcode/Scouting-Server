@@ -165,7 +165,7 @@ public class SQLUtil {
                 //record should not be null if called by method storing data
                 DatabaseManager.QRRecord oldRecord = DatabaseManager.getRecord(oldMap.get(0));
                 if (!newRecord.equals(oldRecord)) {
-                    //if they are not the same then we need to throw noteA duplicate data exception
+                    //if they are not the same then we need to throw a duplicate data exception
                     throw new DuplicateDataException("Duplicate Data Detected", new SQLException(statement), oldRecord, newRecord);
                 }
             }

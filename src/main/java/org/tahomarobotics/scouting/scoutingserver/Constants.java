@@ -68,6 +68,8 @@ public class Constants {
         TOTAL_NOTES,
         TELE_SPEAKER_ADJUSTED,
         IS_SHUTTELING_MATCH,
+
+        SCOUT_NAME,
         RAW_AUTO_DESCRIPTION
     }
 
