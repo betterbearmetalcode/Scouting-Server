@@ -35,10 +35,9 @@ public class DatabaseManager {
             //this will make compatibility and extension of what is colleted simpler
 
             //figure out the auto note values from tele comments
-            //String[] autodata = getAutoData(data[17].split(":")[0]);
             ArrayList<String> auto;
-            if (data[26].contains(":")) {
-                 auto = getAutoData(data[26].split(":")[1]);
+            if (data[17].contains(":")) {
+                 auto = getAutoData(data[17].split(":")[1]);
             }else {
                 auto = getAutoData("");
             }
@@ -60,17 +59,17 @@ public class DatabaseManager {
                     auto.get(6),//note 7
                     auto.get(7),//note 8
                     auto.get(8),//note 9
-                    Integer.parseInt(data[16]),//a stop
-                    Integer.parseInt(data[17]),//shuttled
-                    Integer.parseInt(data[18]),//tele speaker
-                    Integer.parseInt(data[19]),//tele amp
-                    Integer.parseInt(data[20]),//tele trap
-                    Integer.parseInt(data[21]),//tele speakermissed
-                    Integer.parseInt(data[22]),//tele amp missed
-                    Integer.parseInt(data[23]),//speaker received
-                    Integer.parseInt(data[24]),//amp recievied
-                    Integer.parseInt(data[25]),//lost comms
-                    data[26]);//tele comments
+                    Integer.parseInt(data[7]),//a stop
+                    Integer.parseInt(data[8]),//shuttled
+                    Integer.parseInt(data[9]),//tele speaker
+                    Integer.parseInt(data[10]),//tele amp
+                    Integer.parseInt(data[11]),//tele trap
+                    Integer.parseInt(data[12]),//tele speakermissed
+                    Integer.parseInt(data[13]),//tele amp missed
+                    Integer.parseInt(data[14]),//speaker received
+                    Integer.parseInt(data[15]),//amp recievied
+                    Integer.parseInt(data[16]),//lost comms
+                    data[17]);//tele comments
             storeQrRecord(m, tablename);
     }
 
@@ -263,8 +262,7 @@ public class DatabaseManager {
                            String teleNotes
     ) {
 
-        //for exporting
-        public LinkedList<DataPoint> getDataAsList() {
+        public LinkedList<DataPoint> getDataAsList(boolean includeAutoNotes)  {
             LinkedList<DataPoint> output = new LinkedList<>();
             output.add(new DataPoint(Constants.SQLColumnName.MATCH_NUM.toString(), String.valueOf(matchNumber)));
             output.add(new DataPoint(Constants.SQLColumnName.TEAM_NUM.toString(), String.valueOf(teamNumber)));
@@ -274,15 +272,18 @@ public class DatabaseManager {
             output.add(new DataPoint(Constants.SQLColumnName.AUTO_SPEAKER_MISSED.toString(), String.valueOf(autoSpeakerMissed)));
             output.add(new DataPoint(Constants.SQLColumnName.AUTO_AMP_MISSED.toString(), String.valueOf(autoAmpMissed)));
 
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_1.toString(), note1));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_2.toString(), note2));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_3.toString(), note3));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_4.toString(), note4));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_5.toString(), note5));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_6.toString(), note6));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_7.toString(), note7));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_8.toString(), note8));
-            output.add(new DataPoint(Constants.SQLColumnName.NOTE_9.toString(), note9));
+            if (includeAutoNotes) {
+                output.add(new DataPoint(Constants.SQLColumnName.NOTE_1.toString(), note1));
+                output.add(new DataPoint(Constants.SQLColumnName.NOTE_2.toString(), note2));
+                output.add(new DataPoint(Constants.SQLColumnName.NOTE_3.toString(), note3));
+                output.add(new DataPoint(Constants.SQLColumnName.NOTE_4.toString(), note4));
+                output.add(new DataPoint(Constants.SQLColumnName.NOTE_5.toString(), note5));
+                output.add(new DataPoint(Constants.SQLColumnName.NOTE_6.toString(), note6));
+                output.add(new DataPoint(Constants.SQLColumnName.NOTE_7.toString(), note7));
+                output.add(new DataPoint(Constants.SQLColumnName.NOTE_8.toString(), note8));
+                output.add(new DataPoint(Constants.SQLColumnName.NOTE_9.toString(), note9));
+            }
+
             output.add(new DataPoint(Constants.SQLColumnName.A_STOP.toString(), String.valueOf(aStop)));
             output.add(new DataPoint(Constants.SQLColumnName.SHUTTLED.toString(), String.valueOf(shuttled)));
 
@@ -294,10 +295,15 @@ public class DatabaseManager {
             output.add(new DataPoint(Constants.SQLColumnName.SPEAKER_RECEIVED.toString(), String.valueOf(speakerReceived)));
             output.add(new DataPoint(Constants.SQLColumnName.AMP_RECEIVED.toString(), String.valueOf(ampReceived)));
             output.add(new DataPoint(Constants.SQLColumnName.LOST_COMMS.toString(), String.valueOf(lostComms)));
-            output.add(new DataPoint(Constants.SQLColumnName.TELE_COMMENTS.toString(), "\"autopath::" + teleNotes + "\""));
+            output.add(new DataPoint(Constants.SQLColumnName.TELE_COMMENTS.toString(), "\""  + teleNotes + "\""));
 
 
             return output;
+        }
+
+        //for exporting
+        public LinkedList<DataPoint> getDataAsList() {
+           return getDataAsList(true);
         }
 
         public String getDataForSQL() {
@@ -332,10 +338,9 @@ public class DatabaseManager {
 
         public String getQRString() {
             StringBuilder qrBuilder = new StringBuilder();
-            for (DataPoint dataPoint : this.getDataAsList()) {
+            for (DataPoint dataPoint : this.getDataAsList(false)) {
                 qrBuilder.append(dataPoint.getValue().replaceAll("\"", "")).append(Constants.QR_DATA_DELIMITER);
             }
-            String[] split = qrBuilder.toString().split(Constants.QR_DATA_DELIMITER);
             return  qrBuilder.substring(0, qrBuilder.toString().length() - 1);
         }
 
