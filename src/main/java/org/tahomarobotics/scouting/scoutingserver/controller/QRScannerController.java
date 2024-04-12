@@ -95,9 +95,6 @@ public class QRScannerController {
     }
 
 
-
-
-    //consider this https://www.tutorialspoint.com/java_mysql/java_mysql_quick_guide.html
     @FXML
     public void loadCSV(ActionEvent event) {
         FileChooser chooser = new FileChooser();
@@ -115,40 +112,46 @@ public class QRScannerController {
                 JSONObject data = (JSONObject) o;
                 try {
                     //if any of these fail, then skip the data
-                    int x = data.getInt("Match #");
-                    int y = data.getInt("Team #");
-                    DatabaseManager.RobotPosition.valueOf(data.getString("Position"));
+                    int x = data.getInt(Constants.SQLColumnName.MATCH_NUM.toString());
+                    int y = data.getInt(Constants.SQLColumnName.TEAM_NUM.toString());
+                    DatabaseManager.RobotPosition.valueOf(data.getString(Constants.SQLColumnName.ALLIANCE_POS.toString()));
                 }catch (Exception e) {
                     continue;
                 }
-                DatabaseManager.QRRecord m = new DatabaseManager.QRRecord(data.getInt("Match #"),//match num
-                        data.getInt("Team #"),//team num
-                        DatabaseManager.RobotPosition.valueOf(data.getString("Position")),//allinace pos
-                        data.optInt("Auto Speaker", 0),//auto speaker
-                        data.optInt("Auto Amp", 0),//auto amp
-                        data.optInt("Auto Speaker Missed", 0),//auto speaker missed
-                        data.optInt("Auto Amp Missed", 0),//auto amp missed
-                        data.optInt("noteA", 0),//F1
-                        data.optInt("noteB", 0),//F2
-                        data.optInt("noteC", 0),//F3
-                        data.optInt("1", 0),//M1
-                        data.optInt("2", 0),//M2
-                        data.optInt("3", 0),//M3
-                        data.optInt("4", 0),//M4
-                        data.optInt("5", 0),//M5
-                        data.optInt("A-Stop", 0),
-                        data.optInt("Shuttled", 0),//shuttled notes
-                        data.optInt("Tele Speaker", 0),//tele speaker
-                        data.optInt("Tele Amp", 0),//tele amp
-                        data.optInt("Tele Trap", 0),//tele trap
-                        data.optInt("Tele Speaker Missed", 0),//tele speakermissed
-                        data.optInt("Tele Amp missed", 0),//tele amp missed
-                        data.optInt("Lost Comms", 0),//auto notes
-                        data.optString("Tele Comments", "No Comments"));//tele notes
+                ArrayList<String> autoData = DatabaseManager.parseTeleCommentsToAutoData(data.optString("Tele Comments", "No Comments"));
+                DatabaseManager.QRRecord m = new DatabaseManager.QRRecord(data.getInt(Constants.SQLColumnName.MATCH_NUM.toString()),//match num
+                        data.getInt(Constants.SQLColumnName.TEAM_NUM.toString()),//team num
+                        DatabaseManager.RobotPosition.valueOf(data.getString(Constants.SQLColumnName.ALLIANCE_POS.toString())),//allinace pos
+                        data.optInt(Constants.SQLColumnName.AUTO_SPEAKER.toString(), 0),//auto speaker
+                        data.optInt(Constants.SQLColumnName.AUTO_AMP.toString(), 0),//auto amp
+                        data.optInt(Constants.SQLColumnName.AUTO_SPEAKER_MISSED.toString(), 0),//auto speaker missed
+                        data.optInt(Constants.SQLColumnName.AUTO_AMP_MISSED.toString(), 0),//auto amp missed
+                        autoData.get(0),//note 1
+                        autoData.get(1),//note 2
+                        autoData.get(2),//note 3
+                        autoData.get(3),//note 4
+                        autoData.get(4),//note 5
+                        autoData.get(5),//note 6
+                        autoData.get(6),//note 7
+                        autoData.get(7),//note 8
+                        autoData.get(8),//note 9
+                        data.optInt(Constants.SQLColumnName.A_STOP.toString(), 0),//a-stop
+                        data.optInt(Constants.SQLColumnName.SHUTTLED.toString(), 0),//shuttled notes
+                        data.optInt(Constants.SQLColumnName.AUTO_SPEAKER.toString(), 0),//tele speaker
+                        data.optInt(Constants.SQLColumnName.TELE_SPEAKER.toString(), 0),//tele amp
+                        data.optInt(Constants.SQLColumnName.TELE_TRAP.toString(), 0),//tele trap
+                        data.optInt(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString(), 0),//tele speakermissed
+                        data.optInt(Constants.SQLColumnName.TELE_AMP_MISSED.toString(), 0),//tele amp missed
+                        data.optInt(Constants.SQLColumnName.SPEAKER_RECEIVED.toString(), 0),//speaker revieced
+                        data.optInt(Constants.SQLColumnName.AMP_RECEIVED.toString(), 0),//amp recieved
+                        data.optInt(Constants.SQLColumnName.AUTO_SPEAKER.toString(), 0),//lost comms
+                        data.optString(Constants.SQLColumnName.TELE_COMMENTS.toString(), "No Comments"));//tele notes
                 try {
                     DatabaseManager.storeQrRecord(m, activeTable);
                 } catch (DuplicateDataException e) {
                     duplicates.add(e);
+                } catch (SQLException e) {
+                    Logging.logError(e, "SQL Exception: ");
                 }
             }
             handleDuplicates(duplicates);
@@ -239,6 +242,8 @@ public class QRScannerController {
                         DatabaseManager.storeQrRecord(qrRecord, activeTable);
                     } catch (DuplicateDataException e) {
                         Logging.logInfo("Gosh dang it, got duplicate data again after trying to resolve duplicate data, just giving up now", true);
+                    } catch (SQLException e) {
+                        Logging.logError(e);
                     }
 
                 }

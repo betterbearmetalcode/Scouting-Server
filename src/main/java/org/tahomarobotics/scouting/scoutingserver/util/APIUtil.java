@@ -54,12 +54,8 @@ public class APIUtil {
         try {
             JSONArray eventMatches = APIUtil.get("/event/" + eventCode + "/matches");
 
-            //if the query succedes but there are no matches an empty array will be returned
             //check if their are no matches before next check to avoid exceptions
-            if (eventMatches.isEmpty()) {
-                return Optional.empty();
-            }
-            if (eventMatches.get(0).equals("NoInternet")) {
+            if (eventMatches == null || eventMatches.isEmpty()) {
                 return Optional.empty();
             }
             //if the code has gotten to here, then the array ought to be valid

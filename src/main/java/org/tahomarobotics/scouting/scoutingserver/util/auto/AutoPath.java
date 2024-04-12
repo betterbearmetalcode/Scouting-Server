@@ -126,7 +126,7 @@ public class AutoPath {
 
     public static Note getNoteFromSQLColumn(Constants.SQLColumnName column, boolean red) {
         switch (column) {
-            case NOTE_A -> {
+            /*case NOTE_A -> {
                 return red?Note.RED_A:Note.BLUE_A;
             }
             case NOTE_B -> {
@@ -134,7 +134,7 @@ public class AutoPath {
             }
             case NOTE_C -> {
                 return red?Note.RED_C:Note.BLUE_C;
-            }
+            }*/
             case NOTE_1 -> {
                 return Note.ONE;
             }

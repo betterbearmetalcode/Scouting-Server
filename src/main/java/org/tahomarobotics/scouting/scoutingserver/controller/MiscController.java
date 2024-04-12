@@ -6,6 +6,7 @@ import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
@@ -16,6 +17,7 @@ import org.tahomarobotics.scouting.scoutingserver.util.data.TrapThing;
 import javax.crypto.interfaces.PBEKey;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
@@ -160,6 +162,9 @@ public class MiscController {
             eventKeys = new ArrayList<>(events.toList());
             for (Object eventKey : eventKeys) {
                 System.out.println("Event: " + eventKey);
+                if (eventKey == "2024marea") {
+                        System.out.println();
+                }
                 JSONArray eventData = APIUtil.get("/event/" + eventKey.toString() + "/matches");
                 for (Object match : eventData) {
                     JSONObject matchMap = (JSONObject) match;
@@ -230,6 +235,71 @@ public class MiscController {
                 teamsWithTrap.add(new TrapThing(s, 1, new ArrayList<>(List.of(eventKey))));
             }
         });
+    }
+    @FXML
+    public void getCSVBackupTemplate(ActionEvent event) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save CSV Template");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", ".csv"));
+        chooser.setInitialFileName("CSV Backup.csv");
+        File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+        if (selectedFile == null) {
+            return;
+        }
+
+        Logging.logInfo("Getting backup template for CSV");
+        StringBuilder builder = new StringBuilder();
+        //title row
+        builder.append(Constants.SQLColumnName.MATCH_NUM).append(",");
+        builder.append(Constants.SQLColumnName.TEAM_NUM).append(",");
+        builder.append(Constants.SQLColumnName.ALLIANCE_POS).append(",");
+        builder.append(Constants.SQLColumnName.AUTO_SPEAKER).append(",");
+        builder.append(Constants.SQLColumnName.AUTO_AMP).append(",");
+        builder.append(Constants.SQLColumnName.AUTO_SPEAKER_MISSED).append(",");
+        builder.append(Constants.SQLColumnName.AUTO_AMP_MISSED).append(",");
+        builder.append(Constants.SQLColumnName.A_STOP).append(",");
+        builder.append(Constants.SQLColumnName.SHUTTLED).append(",");
+        builder.append(Constants.SQLColumnName.TELE_SPEAKER).append(",");
+        builder.append(Constants.SQLColumnName.TELE_TRAP).append(", ");
+        builder.append(Constants.SQLColumnName.TELE_AMP).append(",");
+        builder.append(Constants.SQLColumnName.TELE_SPEAKER_MISSED).append(",");
+        builder.append(Constants.SQLColumnName.TELE_AMP_MISSED).append(",");
+        builder.append(Constants.SQLColumnName.SPEAKER_RECEIVED).append(",");
+        builder.append(Constants.SQLColumnName.AMP_RECEIVED).append(",");
+        builder.append(Constants.SQLColumnName.LOST_COMMS).append(",");
+        builder.append(Constants.SQLColumnName.TELE_COMMENTS).append(",\n");
+        //for each match
+        for (int matchNum = 1; matchNum <= 130; matchNum++) {
+            for (DatabaseManager.RobotPosition value : DatabaseManager.RobotPosition.values()) {
+                //for each of the columns
+                for (int i = 0; i < 18; i++) {
+                    if (i == 0) {
+                        builder.append(matchNum);
+                    }else if (i == 2) {
+                        builder.append(value);
+                    }else if (i == 17) {
+                        builder.append("No Comments");
+                    }
+                    builder.append(",");
+                }
+                builder.append("\n");
+
+            }
+
+        }
+
+        try {
+            if (!selectedFile.exists()) {
+                selectedFile.createNewFile();
+            }
+            FileWriter writer = new FileWriter(selectedFile);
+            writer.write(builder.toString());
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            Logging.logError(e);
+        }
+
     }
 
 }

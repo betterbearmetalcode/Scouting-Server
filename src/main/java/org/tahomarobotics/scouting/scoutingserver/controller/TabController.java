@@ -71,15 +71,12 @@ public class TabController {
         setEditMode(false);
         treeView.setShowRoot(false);
         treeView.setRoot(rootItem);
-        treeView.setOnEditStart(new EventHandler<TreeView.EditEvent<Label>>() {
-            @Override
-            public void handle(TreeView.EditEvent<Label> event) {
-                if (!editmode) {
-                    setEditMode(true);
-                    event.consume();
-                }
-
+        treeView.setOnEditStart(event -> {
+            if (!editmode) {
+                setEditMode(true);
+                event.consume();
             }
+
         });
 
         //init list of events
@@ -100,7 +97,7 @@ public class TabController {
     public void export(Event event) {
         Logging.logInfo("Exporting");
         //first gather the nessacary data from tba to export and check to make sure
-        //everything is good and ready before showing the user noteA save dialog
+        //everything is good and ready before showing the user a save dialog
         //save dialog should be the last dialog becuase in the user's mind the file is already created when that dialog comes up
 
 
@@ -115,7 +112,7 @@ public class TabController {
                 return;
             }
         }
-        //gather TBA data and prepare noteA list of teams who are at the comp
+        //gather TBA data and prepare a list of teams who are at the comp
         Exporter exporter;
         try {
             exporter = new Exporter(currentEventCode, tableName);
@@ -218,7 +215,7 @@ public class TabController {
         if (matches.isEmpty()) {
             return;
         }
-        //construct noteA array containing the expansion structure of the database, if there are changes (exceptions), then we can defualt the expansionto false
+        //construct a array containing the expansion structure of the database, if there are changes (exceptions), then we can defualt the expansionto false
         ArrayList<Pair<Boolean, ArrayList<Boolean>>> expainsionStructure = new ArrayList<>();
         for (TreeItem<Label> matchItem : rootItem.getChildren()) {
             ArrayList<Boolean> matchExpansion = new ArrayList<>();
@@ -316,6 +313,15 @@ public class TabController {
     public void saveJSONBackup(ActionEvent event) {
         Logging.logInfo("Making JSON Backup of " + tableName);
         JSONObject output = new JSONObject();
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save Backup");
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + ".json");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
+        File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+        if (selectedFile == null) {
+            return;
+        }
         for (DatabaseManager.RobotPosition robotPosition : DatabaseManager.RobotPosition.values()) {
             //get all the data for each of the positions
             LinkedList<DatabaseManager.QRRecord> data = DatabaseManager.readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"" + " WHERE "  + Constants.SQLColumnName.ALLIANCE_POS + "=?", new Object[]{robotPosition.ordinal()}, false);
@@ -326,12 +332,8 @@ public class TabController {
             output.put(robotPosition.name(), positionArray);
         }
 
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Save Backup");
-        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + ".json");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
-        File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+
+
         try {
             if (!selectedFile.exists()) {
                 //noinspection ResultOfMethodCallIgnored
@@ -376,7 +378,7 @@ public class TabController {
             editToggle.setSelected(true);
             editmode = true;
             treeView.getSelectionModel().select(treeView.getRoot().getChildren().get(matchNum).getChildren().get(teamNum).getChildren().get(dataumIndex));//for some reason letting this line throw exceptions makes the app work
-            //if you catch ten exceptions, then it will not work, if you iplement noteA check to stop them, it also won't work. Don't bother to try and fix this, it doesn't matter.
+            //if you catch ten exceptions, then it will not work, if you iplement a check to stop them, it also won't work. Don't bother to try and fix this, it doesn't matter.
         }else {
             //get out of edit mode
             validateDataButton.setDisable(false);
@@ -402,7 +404,7 @@ public class TabController {
             renameItem.setOnAction(arg0 -> startEdit());
             deleteItem.setOnAction(event -> {
                 if (getTreeItem().getParent() == rootItem) {
-                    //then this is noteA match item
+                    //then this is a match item
                     System.out.println("match item");
                     for (TreeItem<Label> positionItem : getTreeItem().getChildren()) {
                         deletePositionItem(positionItem);
@@ -442,7 +444,7 @@ public class TabController {
             if (this.getTreeItem().isLeaf()) {
                 String name = this.getTreeItem().getValue().getText().split(":")[0];
                 if ((Objects.equals(name, Constants.SQLColumnName.ALLIANCE_POS.toString().replaceAll("_", " ").toLowerCase())) || (Objects.equals(name, Constants.SQLColumnName.TEAM_NUM.toString().replaceAll("_", " ").toLowerCase())) ||(Objects.equals(name, Constants.SQLColumnName.MATCH_NUM.toString().replaceAll("_", " ").toLowerCase()))  || (Objects.equals(name, Constants.SQLColumnName.TELE_COMMENTS.toString().replaceAll("_", " ").toLowerCase())) ) {
-                    //then this is noteA comment
+                    //then this is a comment
                     cancelEdit();
                     Logging.logInfo("This data cannot be edited", true);
 
@@ -466,13 +468,13 @@ public class TabController {
         @Override
         public void commitEdit(Label newLabel) {
             if (this.getTreeItem().isLeaf()) {
-                //given the code in start edit, the newLabel is guarentted to be noteA numeric leaf item.
+                //given the code in start edit, the newLabel is guarentted to be a numeric leaf item.
                 try {
-                    //see if they actually entered noteA number
+                    //see if they actually entered a number
                     Integer.valueOf(newLabel.getText());
                 }catch (NumberFormatException e) {
                     cancelEdit();
-                    Logging.logInfo("This needs to be noteA number, cancelling edit", true);
+                    Logging.logInfo("This needs to be a number, cancelling edit", true);
 
                 }
                 TreeItem<Label> dataItem = this.getTreeItem();

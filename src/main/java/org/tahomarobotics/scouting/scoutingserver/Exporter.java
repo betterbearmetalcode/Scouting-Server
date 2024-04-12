@@ -15,9 +15,8 @@ import java.util.stream.Collectors;
 
 public class Exporter {
 
-    private JSONArray competitionData;
+    private final JSONArray competitionData;
     private final String eventCode;
-    private boolean haveMatches = true;
 
     private final ArrayList<HashMap<String, Object>> teamsScouted;
 
@@ -36,14 +35,16 @@ public class Exporter {
         Optional<JSONArray> optionalEventMatches = APIUtil.getEventMatches(eventCode);
         if (optionalEventMatches.isEmpty()) {
             Logging.logInfo("Failed to fetch matches from tba");
-            haveMatches = false;
             //only confinue after alerting the user to the risks of exporing without internet
-            if (Constants.askQuestion("You are trying to export data without matches from tba, doing so will result in incorrect data because you cannot access TBA Continue?")) {
+            if (!Constants.askQuestion("You are trying to export data without matches from tba, doing so will result in incorrect data because you cannot access TBA Continue?")) {
 
                 throw new OperationAbortedByUserException("User aborted operation due to inability to fetch matches");
             }
+            competitionData = null;
+        }else {
+            competitionData = optionalEventMatches.get();
         }
-        competitionData = optionalEventMatches.get();
+
 
     }
 
@@ -61,7 +62,7 @@ public class Exporter {
             //for each match
             int matchNum =(int) matchNumMap.get(Constants.SQLColumnName.MATCH_NUM.toString());
             HashMap<String, HashMap<String, Object>> tbaMatchBreakdown = null;
-            if (haveMatches) {
+            if (competitionData != null) {
 
                 Optional<Object> optional = competitionData.toList().stream().filter(o -> Objects.equals(((HashMap<String, String>) o).get("key"), eventCode + "_qm" + matchNum)).findFirst();
                 if (optional.isPresent()) {
@@ -70,7 +71,7 @@ public class Exporter {
                 }else {
                     Logging.logInfo("using null breakdown for match exporting "  + matchNum);
                 }
-            }
+        }
             ArrayList<HashMap<String, Object>> matchScoutData = SQLUtil.exec("SELECT * FROM \"" + tableName + "\"" + " WHERE " + Constants.SQLColumnName.MATCH_NUM + "=?", new Object[]{matchNum}, false);
             //we have all the data for a match
             //do the smae thing to both the red and blue alliances
@@ -201,6 +202,13 @@ public class Exporter {
         output.add(String.valueOf(toalNotesMissed + autoAmp + autoSpeaker + teleAmp + teleSpeaker));//total notes
         output.add(isShuttlingMatch?String.valueOf(teleSpeakerAdjusted):String.valueOf(teleSpeaker));
         output.add(isShuttlingMatch?"1":"0");//boolean which indicated whethere there was a significant amount of shuttling done by this team
+        String scoutName = "No name provided";
+        String[] commentData = sqlRow.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().split(":");
+        if (commentData.length >= 4) {
+            scoutName = commentData[3];
+        }
+        output.add(scoutName);//scout name
+        output.add(commentData[1]);//raw auto
         return output;
 
     }
