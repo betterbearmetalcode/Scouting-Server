@@ -35,12 +35,8 @@ public class DatabaseManager {
             //this will make compatibility and extension of what is colleted simpler
 
             //figure out the auto note values from tele comments
-            ArrayList<String> auto;
-            if (data[17].contains(":")) {
-                 auto = getAutoData(data[17].split(":")[1]);
-            }else {
-                auto = getAutoData("");
-            }
+            ArrayList<String> auto = parseTeleCommentsToAutoData(data[17]);
+
 
             //ArrayList<String> auto = getAutoData(data[17].split(":")[0]);//should be this, but have to use old data
             QRRecord m = new QRRecord(Integer.parseInt(data[0]),//match num
@@ -73,7 +69,12 @@ public class DatabaseManager {
             storeQrRecord(m, tablename);
     }
 
-    private static ArrayList<String> getAutoData(String scoutInput) {
+    public static ArrayList<String> parseTeleCommentsToAutoData(String scoutInput) {
+        if (scoutInput.contains(":")) {
+            scoutInput = scoutInput.split(":")[1];
+        }else {
+            scoutInput = "";
+        }
         ArrayList<String> output = new ArrayList<>();
         //standardize characters
         scoutInput = scoutInput.toLowerCase();

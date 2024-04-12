@@ -34,6 +34,7 @@
                         <Button mnemonicParsing="false" onAction="#findTraps" text="Find Matches With Trap" />
                      </children>
                   </HBox>
+                  <Button mnemonicParsing="false" onAction="#getCSVBackupTemplate" text="Get CSV BackupTemplate" />
                </children>
             </VBox>
         </items>
