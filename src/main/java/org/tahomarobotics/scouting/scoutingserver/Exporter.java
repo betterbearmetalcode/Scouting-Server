@@ -94,7 +94,12 @@ public class Exporter {
                 ArrayList<String> row = new ArrayList<>();
                 row.add(String.valueOf(teamNum));
                 for (HashMap<String, Object> teamsMatch : teamsMatches) {
-                    row.add(teamsMatch.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().replace("No Comments", ""));
+                    try {
+                        row.add(teamsMatch.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().split(":")[2].replace("No Comments", ""));
+
+                    }catch (Exception e) {
+                        row.add(teamsMatch.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().replace("No Comments", ""));
+                    }
                 }
                 output.add(row);
             }
@@ -206,9 +211,15 @@ public class Exporter {
         String[] commentData = sqlRow.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().split(":");
         if (commentData.length >= 4) {
             scoutName = commentData[3];
+            output.add(scoutName);//scout name
+            output.add(commentData[1]);//raw auto
+            output.add(commentData[2]);//comments
+        }else {
+            output.add("Error, check tele comments raw");//scout name
+            output.add("Error, check tele comments raw");//raw auto
+            output.add("Error, check tele comments raw");//comments
         }
-        output.add(scoutName);//scout name
-        output.add(commentData[1]);//raw auto
+
         return output;
 
     }

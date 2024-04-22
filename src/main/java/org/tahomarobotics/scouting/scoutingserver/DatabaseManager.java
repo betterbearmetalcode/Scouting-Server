@@ -30,6 +30,10 @@ public class DatabaseManager {
 
     public static void storeRawQRData(String dataRaw, String tablename) throws IOException, DuplicateDataException, SQLException {
             String[] data = dataRaw.split(Constants.QR_DATA_DELIMITER);
+            if (!data[17].startsWith("autopath:")) {
+                data[17] = "autopath:" + data[17];
+            }
+
             //scouting app is not coorrectly trasmitting which notes are where in qr string, this is to read them correctly
             //for future years  migrate to a new type of data transfer which has the column name attached to each data point
             //this will make compatibility and extension of what is colleted simpler

@@ -70,7 +70,8 @@ public class Constants {
         IS_SHUTTELING_MATCH,
 
         SCOUT_NAME,
-        RAW_AUTO_DESCRIPTION
+        RAW_AUTO_DESCRIPTION,
+        TELE_COMMENTS
     }
 
     public static final String SHUTTLED_NOTE_IDENTIFIER = "poodle";//identifier which scouts put in comments to indicate that a team is reciving shuttled notes

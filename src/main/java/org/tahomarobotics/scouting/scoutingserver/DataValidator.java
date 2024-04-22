@@ -155,8 +155,20 @@ public class DataValidator {
             }
             autoSpeakerMeasured = robotPositons.get(0).record().autoSpeaker() + robotPositons.get(1).record().autoSpeaker() + robotPositons.get(2).record().autoSpeaker();
             autoAmpMeasured = robotPositons.get(0).record().autoAmp() + robotPositons.get(1).record().autoAmp() + robotPositons.get(2).record().autoAmp();
-            teleSpeakerMeasured = robotPositons.get(0).record().teleSpeaker() + robotPositons.get(1).record().teleSpeaker() + robotPositons.get(2).record().teleSpeaker();
-            teleAmpMeasured = robotPositons.get(0).record().teleAmp() + robotPositons.get(1).record().teleAmp() + robotPositons.get(2).record().teleAmp();
+            teleSpeakerMeasured =
+                    robotPositons.get(0).record().teleSpeaker() +
+                    robotPositons.get(1).record().teleSpeaker() +
+                    robotPositons.get(2).record().teleSpeaker() +
+                    robotPositons.get(0).record().speakerReceived() +
+                    robotPositons.get(1).record().speakerReceived() +
+                    robotPositons.get(2).record().speakerReceived();
+            teleAmpMeasured =
+                    robotPositons.get(0).record().teleAmp() +
+                    robotPositons.get(1).record().teleAmp() +
+                    robotPositons.get(2).record().teleAmp() +
+                    robotPositons.get(0).record().ampReceived() +
+                    robotPositons.get(1).record().ampReceived() +
+                    robotPositons.get(2).record().ampReceived();
 
         }
         for (RobotPositon robotPositon : robotPositons) {
@@ -181,15 +193,15 @@ public class DataValidator {
                             case AUTO_AMP -> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), autoAmpMeasured - autoAmpTrue));
                             }
-                            case TELE_SPEAKER -> {
+                            case TELE_SPEAKER, SPEAKER_RECEIVED -> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), teleSpeakerMeasured- teleSpeakerTrue));
                                 break;
                             }
-                            case TELE_AMP -> {
+                            case TELE_AMP, AMP_RECEIVED -> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), teleAmpMeasured - teleAmpTrue));
                                 break;
                             }
-                            case TELE_SPEAKER_MISSED, TELE_AMP_MISSED, AUTO_SPEAKER_MISSED, AUTO_AMP_MISSED, NOTE_1, NOTE_2, NOTE_3, NOTE_4, NOTE_5, NOTE_6, NOTE_7, NOTE_8, NOTE_9, A_STOP , AMP_RECEIVED, SPEAKER_RECEIVED , LOST_COMMS-> {
+                            case TELE_SPEAKER_MISSED, TELE_AMP_MISSED, AUTO_SPEAKER_MISSED, AUTO_AMP_MISSED, NOTE_1, NOTE_2, NOTE_3, NOTE_4, NOTE_5, NOTE_6, NOTE_7, NOTE_8, NOTE_9, A_STOP, SHUTTLED,  LOST_COMMS-> {
                                 recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
                                 break;
                             }

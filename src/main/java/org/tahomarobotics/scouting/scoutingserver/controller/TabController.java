@@ -340,7 +340,7 @@ public class TabController {
                 selectedFile.createNewFile();
             }
             FileOutputStream os = new FileOutputStream(selectedFile);
-            os.write(output.toString().getBytes());
+            os.write(output.toString(1).getBytes());
             os.flush();
             os.close();
         } catch (IOException e) {
