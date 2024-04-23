@@ -10,11 +10,14 @@ import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DataValidationCompetitionChooser;
 import org.tahomarobotics.scouting.scoutingserver.util.data.TrapThing;
+import org.xml.sax.SAXException;
 
 import javax.crypto.interfaces.PBEKey;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -149,93 +152,22 @@ public class MiscController {
     }
 
 
-    //this is some code that mr buranik wanted to find all the matches that have had a trap done in the pnw so far.
-    //just leave it in as it may be useful
+
     @FXML
     public void findTraps(ActionEvent event) {
-
-        ArrayList<Object> eventKeys;
-        ArrayList<TrapThing> teamsWithTrap = new ArrayList<>();
+            //save data
         try {
-            JSONArray events =  APIUtil.get("" +
-                    "/events/2024/keys");
-            eventKeys = new ArrayList<>(events.toList());
-            for (Object eventKey : eventKeys) {
-                System.out.println("Event: " + eventKey);
-                if (eventKey == "2024marea") {
-                        System.out.println();
-                }
-                JSONArray eventData = APIUtil.get("/event/" + eventKey.toString() + "/matches");
-                for (Object match : eventData) {
-                    JSONObject matchMap = (JSONObject) match;
-                    try {
-                        JSONObject alliances =  (JSONObject) matchMap.get("alliances");
-                        JSONObject blueAlliance = (JSONObject) alliances.get("blue");
-                        JSONObject redAlliance = (JSONObject) alliances.get("red");
-                        JSONObject breakDown = (JSONObject) matchMap.get("score_breakdown");
-                        JSONObject redBreakdown = (JSONObject) breakDown.get("red");
-                        JSONObject blueBreakdown = (JSONObject) breakDown.get("blue");
-
-
-                        if (redBreakdown.getBoolean("trapStageLeft") || redBreakdown.getBoolean("trapCenterStage") || redBreakdown.getBoolean("trapStageRight")) {
-                            //then red alliance had a trap
-                            addTeams(redAlliance, teamsWithTrap, eventKey.toString());
-
-
-                        }else if ( blueBreakdown.getBoolean("trapStageLeft") || blueBreakdown.getBoolean("trapCenterStage") || blueBreakdown.getBoolean("trapStageRight")) {
-                            //then blue had a trap
-                            addTeams(blueAlliance, teamsWithTrap, eventKey.toString());
-                        }
-                    }catch (Exception e) {
-                        //e.printStackTrace();
-                    }
-
-                }
-            }
-        } catch (Exception  e) {
-            //e.printStackTrace();
+            Configuration.initializeConfigFile();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (SAXException e) {
+            throw new RuntimeException(e);
         }
-        teamsWithTrap.sort((o1, o2) -> Integer.compare(o2.getAverageTrap(), o1.getAverageTrap()));
-        StringBuilder builder = new StringBuilder();
-        builder.append("Teams With Trap: \n");
-        for (TrapThing trap : teamsWithTrap) {
-            builder.append("Team: " + trap.teamNumber() + " was in an average of " + trap.getAverageTrap() + " matches with trap\n");
-        }
-        System.out.println(builder);
 
     }
 
-    private static void addTeams(JSONObject redAlliance, ArrayList<TrapThing> teamsWithTrap, String eventKey) {
-        JSONArray teamKeys = (JSONArray) redAlliance.get("team_keys");
-        ArrayList<String> teams = new ArrayList<>();
-        teamKeys.forEach(o -> teams.add(o.toString().substring(3)));
-
-
-        //for the teams in this alliance
-        teams.forEach(s -> {
-            //if we already have a team in the list, increment their frequence
-            if (teamsWithTrap.stream().anyMatch(stringIntegerPair -> Objects.equals(stringIntegerPair.teamNumber(), s))) {
-                //if we already have this team in increment their frequency
-                final int[] oldFrequency = {0};
-                final ArrayList<String>[] events = new ArrayList[]{new ArrayList<>()};
-                teamsWithTrap.removeIf(stringIntegerPair -> {
-                    if (Objects.equals(s, stringIntegerPair.teamNumber())) {
-                        oldFrequency[0] = stringIntegerPair.numTraps();
-                        events[0] = stringIntegerPair.events();
-                        return true;
-                    }
-                    return false;
-                });
-                if (!events[0].contains(eventKey)) {
-                    events[0].add(eventKey);
-                }
-                teamsWithTrap.add(new TrapThing(s, ++oldFrequency[0], events[0]));
-            }else {
-                //add them to the list
-                teamsWithTrap.add(new TrapThing(s, 1, new ArrayList<>(List.of(eventKey))));
-            }
-        });
-    }
     @FXML
     public void getCSVBackupTemplate(ActionEvent event) {
         FileChooser chooser = new FileChooser();

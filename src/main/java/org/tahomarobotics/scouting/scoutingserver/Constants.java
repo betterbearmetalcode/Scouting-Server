@@ -15,7 +15,7 @@ public class Constants {
     public static final String IMAGE_DATA_FILEPATH = BASE_APP_DATA_FILEPATH + "/resources/images/";
     public static final String DATABASE_FILEPATH = BASE_APP_DATA_FILEPATH + "/resources/database/";
 
-
+    public static final String CONFIG_FILE_LOCATION = BASE_APP_DATA_FILEPATH + "/resources/config/config.cfg";
     public static final String SQL_DATABASE_NAME = "database.db";
 
     public static final String QR_DATA_DELIMITER = "/";

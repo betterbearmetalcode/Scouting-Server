@@ -96,6 +96,11 @@ public class ScoutingServer extends Application {
             if (!duplicateDataFilepath.exists()) {
                 duplicateDataFilepath.mkdirs();
             }
+
+            File configFilepath = new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/config");
+            if (!configFilepath.exists()) {
+                duplicateDataFilepath.mkdirs();
+            }
             //set up database
             SQLUtil.initialize(Constants.DATABASE_FILEPATH + Constants.SQL_DATABASE_NAME);
         }catch (SecurityException e) {
