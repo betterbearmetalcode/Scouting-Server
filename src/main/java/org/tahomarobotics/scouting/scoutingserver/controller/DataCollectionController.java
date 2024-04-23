@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class QRScannerController {
+public class DataCollectionController {
     public static String activeTable = "";
 
     @FXML
@@ -44,7 +44,7 @@ public class QRScannerController {
         selectedDatabaseLabel.setText("No Database Selected");
         jsonImprt.setDisable(true);
         takePictureButton.setDisable(true);
-        ScoutingServer.qrScannerController  = this;
+        ScoutingServer.dataCollectionController = this;
         ServerUtil.setServerStatus(false);
     }
 

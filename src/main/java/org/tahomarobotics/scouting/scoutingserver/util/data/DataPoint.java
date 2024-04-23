@@ -4,15 +4,40 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration.Datatype;
 
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class DataPoint {
-    private String name;
-    private String value;
+public class DataPoint<T> {
+    private final String name;
+    private T value;
+    private final Datatype datatype;
+
+    public DataPoint(T theValue, String theName, Datatype theDatatype) {
+        this.name = theName;
+        this.value = theValue;
+        this.datatype = theDatatype;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public T getValue() {
+        return value;
+    }
+
+    public void setValue(T value) {
+        this.value = value;
+    }
+
+    public Datatype getDatatype() {
+        return datatype;
+    }
+
     private double howOff;
 
     public boolean isValidated() {
@@ -45,28 +70,30 @@ public class DataPoint {
             Map.entry(ErrorLevel.UNKNOWN, Color.BLUE)
     ));
 
-    public DataPoint(String theName, String theValue, double errorLevel) {
+    public DataPoint(String theName, T theValue, double errorLevel) {
         this.name = theName;
         this.value = theValue;
         this.howOff = errorLevel;
         this.validated = true;
         this.errorLevel = translateErrorNum(errorLevel);
+        this.datatype = Datatype.STRING;
 
     }
 
-    public DataPoint(String theName, String theValue) {
+    public DataPoint(String theName, T theValue) {
         this.name = theName;
         this.value = theValue;
         this.howOff = Double.NaN;
         this.validated = false;
         this.errorLevel = ErrorLevel.UNKNOWN;
+        this.datatype = Datatype.STRING;
 
     }
 
     public DataPoint(String displayString) {
         String[] tokens = displayString.split(":");
         this.name = tokens[0].replaceAll(" ", "_").toUpperCase();
-        this.value = tokens[1];
+        this.value = (T) tokens[1];
         String errorVal = tokens[2].split("=")[1];
         if (!Objects.equals(errorVal, ErrorLevel.UNKNOWN.toString())) {
             this.howOff = Double.parseDouble(errorVal);
@@ -75,6 +102,7 @@ public class DataPoint {
         }
         this.validated = false;
         this.errorLevel = translateErrorNum(howOff);
+        this.datatype = Datatype.STRING;
     }
 
     @Override
@@ -91,21 +119,7 @@ public class DataPoint {
         return stringBuilder.toString();
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 
     public double getHowOff() {
         return howOff;

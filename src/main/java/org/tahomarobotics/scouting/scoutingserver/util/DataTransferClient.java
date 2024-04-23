@@ -3,12 +3,10 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
-import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
+import org.tahomarobotics.scouting.scoutingserver.controller.DataCollectionController;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -46,8 +44,8 @@ public class DataTransferClient extends Thread {
                 }
             }
             Logging.logInfo("storing data, time elapsed: " + (System.currentTimeMillis() - start));
-            ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONObject(new JSONObject(builder.toString()), QRScannerController.activeTable);
-            QRScannerController.handleDuplicates(duplicates);
+            ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONObject(new JSONObject(builder.toString()), DataCollectionController.activeTable);
+            DataCollectionController.handleDuplicates(duplicates);
 
             Logging.logInfo("data is" + builder);
             Logging.logInfo("Closing client Connection");

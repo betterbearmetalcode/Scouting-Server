@@ -172,37 +172,37 @@ public class DataValidator {
 
         }
         for (RobotPositon robotPositon : robotPositons) {
-            LinkedList<DataPoint> recordTemp = new LinkedList<>();
+            LinkedList<DataPoint<String>> recordTemp = new LinkedList<>();
             //for each robot
-            for (DataPoint dataPoint : robotPositon.data()) {
+            for (DataPoint<String> dataPoint : robotPositon.data()) {
                 if (!allianceComplete) {
                     //then there is missing data for at least on robot or there is excess data and the whole match will be marked as unknown
-                    recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
+                    recordTemp.add(new DataPoint<String>(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
                 }else {
                     try {
                         switch (Constants.SQLColumnName.valueOf(dataPoint.getName())) {
 
                             case MATCH_NUM, TEAM_NUM, ALLIANCE_POS, TELE_COMMENTS, TELE_TRAP -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), 0));
+                                recordTemp.add(new DataPoint<String>(dataPoint.getName(), dataPoint.getValue(), 0));
                                 break;
                             }
                             case AUTO_SPEAKER -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), (autoSpeakerMeasured - autoSpeakerTrue)));
+                                recordTemp.add(new DataPoint<>(dataPoint.getName(), dataPoint.getValue(), (autoSpeakerMeasured - autoSpeakerTrue)));
                                 break;
                             }
                             case AUTO_AMP -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), autoAmpMeasured - autoAmpTrue));
+                                recordTemp.add(new DataPoint<>(dataPoint.getName(), dataPoint.getValue(), autoAmpMeasured - autoAmpTrue));
                             }
                             case TELE_SPEAKER, SPEAKER_RECEIVED -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), teleSpeakerMeasured- teleSpeakerTrue));
+                                recordTemp.add(new DataPoint<>(dataPoint.getName(), dataPoint.getValue(), teleSpeakerMeasured- teleSpeakerTrue));
                                 break;
                             }
                             case TELE_AMP, AMP_RECEIVED -> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), teleAmpMeasured - teleAmpTrue));
+                                recordTemp.add(new DataPoint<>(dataPoint.getName(), dataPoint.getValue(), teleAmpMeasured - teleAmpTrue));
                                 break;
                             }
                             case TELE_SPEAKER_MISSED, TELE_AMP_MISSED, AUTO_SPEAKER_MISSED, AUTO_AMP_MISSED, NOTE_1, NOTE_2, NOTE_3, NOTE_4, NOTE_5, NOTE_6, NOTE_7, NOTE_8, NOTE_9, A_STOP, SHUTTLED,  LOST_COMMS-> {
-                                recordTemp.add(new DataPoint(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
+                                recordTemp.add(new DataPoint<>(dataPoint.getName(), dataPoint.getValue(), Double.NaN));
                                 break;
                             }
                         }//end switch

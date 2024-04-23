@@ -10,7 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.tahomarobotics.scouting.scoutingserver.controller.MenuController;
-import org.tahomarobotics.scouting.scoutingserver.controller.QRScannerController;
+import org.tahomarobotics.scouting.scoutingserver.controller.DataCollectionController;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
@@ -61,7 +61,7 @@ public class ScoutingServer extends Application {
 
 
 
-    public static QRScannerController qrScannerController = new QRScannerController();
+    public static DataCollectionController dataCollectionController = new DataCollectionController();
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override

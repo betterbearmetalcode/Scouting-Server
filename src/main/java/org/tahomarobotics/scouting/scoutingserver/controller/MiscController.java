@@ -3,28 +3,23 @@ package org.tahomarobotics.scouting.scoutingserver.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
-import javafx.util.Pair;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.Configuration;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.ConfigFileFormatException;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DataValidationCompetitionChooser;
-import org.tahomarobotics.scouting.scoutingserver.util.data.TrapThing;
 import org.xml.sax.SAXException;
 
-import javax.crypto.interfaces.PBEKey;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MiscController {
@@ -157,13 +152,9 @@ public class MiscController {
     public void findTraps(ActionEvent event) {
             //save data
         try {
-            Configuration.initializeConfigFile();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (SAXException e) {
-            throw new RuntimeException(e);
+            Configuration.updateConfiguration();
+        } catch (ParserConfigurationException | IOException | SAXException | ConfigFileFormatException e) {
+            Logging.logError(e);
         }
 
     }
