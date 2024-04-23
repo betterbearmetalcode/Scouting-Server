@@ -1,6 +1,4 @@
-package org.tahomarobotics.scouting.scoutingserver.util.configuration;
-
-import java.io.IOException;
+package org.tahomarobotics.scouting.scoutingserver.util.exceptions;
 
 public class ConfigFileFormatException extends Exception{
     public ConfigFileFormatException() {

@@ -1,26 +1,15 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Dialog;
-import javafx.util.Callback;
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
-import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
-import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.ArrayList;
 
 @SuppressWarnings("ALL")
 public class SpreadsheetUtil {

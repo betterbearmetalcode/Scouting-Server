@@ -1,21 +1,12 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
-import com.google.zxing.NotFoundException;
-import com.google.zxing.WriterException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ScrollPane;
-import javafx.util.Pair;
-import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.util.*;
-import org.tahomarobotics.scouting.scoutingserver.util.UI.DuplicateDataResolvedDialog;
-import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
+import org.tahomarobotics.scouting.scoutingserver.util.NetworkingDebug;
 
-import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 

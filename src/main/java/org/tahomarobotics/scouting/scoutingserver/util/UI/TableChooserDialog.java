@@ -1,13 +1,16 @@
 package org.tahomarobotics.scouting.scoutingserver.util.UI;
 
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.ListView;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

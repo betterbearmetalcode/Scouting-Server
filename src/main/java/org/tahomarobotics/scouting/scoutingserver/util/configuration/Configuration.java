@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.util.configuration;
 
 import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -12,7 +13,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 
 public class Configuration {

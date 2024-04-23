@@ -2,8 +2,6 @@ package org.tahomarobotics.scouting.scoutingserver.util.exceptions;
 
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 
-import java.sql.SQLException;
-
 public class DuplicateDataException extends Exception {
 
     private DatabaseManager.QRRecord oldData;

@@ -1,4 +1,5 @@
 package org.tahomarobotics.scouting.scoutingserver.util.UI;
+
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
@@ -8,9 +9,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.util.Chart;
-import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

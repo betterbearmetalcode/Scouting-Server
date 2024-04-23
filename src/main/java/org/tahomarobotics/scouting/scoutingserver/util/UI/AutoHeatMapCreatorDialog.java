@@ -1,13 +1,10 @@
 package org.tahomarobotics.scouting.scoutingserver.util.UI;
 
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 import org.controlsfx.control.CheckListView;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
@@ -17,11 +14,7 @@ import org.tahomarobotics.scouting.scoutingserver.util.auto.HeatmapCreationInfor
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
-import java.util.jar.JarEntry;
 
 public class AutoHeatMapCreatorDialog extends Dialog<HeatmapCreationInformation> {
     private  final int spacing = 10;

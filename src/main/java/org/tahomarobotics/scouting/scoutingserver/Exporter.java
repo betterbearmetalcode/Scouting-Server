@@ -9,8 +9,6 @@ import org.tahomarobotics.scouting.scoutingserver.util.exceptions.OperationAbort
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Exporter {

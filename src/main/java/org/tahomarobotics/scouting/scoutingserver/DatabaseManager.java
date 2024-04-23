@@ -3,17 +3,20 @@ package org.tahomarobotics.scouting.scoutingserver;
 import javafx.scene.paint.Color;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchRecordComparator;
-import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

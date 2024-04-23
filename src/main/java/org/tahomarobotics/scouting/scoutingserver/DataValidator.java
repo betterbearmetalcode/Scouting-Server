@@ -7,12 +7,8 @@ import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
 
-import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DataValidator {
 

@@ -1,7 +1,10 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 import javafx.collections.FXCollections;
-import javafx.scene.chart.*;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.StackedBarChart;
+import javafx.scene.chart.XYChart;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 
 import java.sql.SQLException;

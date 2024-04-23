@@ -1,12 +1,8 @@
 package org.tahomarobotics.scouting.scoutingserver.util.UI;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
@@ -15,11 +11,11 @@ import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
-import java.util.function.Consumer;
 
 //returns list of records to add
 public class DuplicateDataResolvedDialog extends Dialog<ArrayList<DatabaseManager.QRRecord>>{

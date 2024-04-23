@@ -3,7 +3,6 @@ package org.tahomarobotics.scouting.scoutingserver.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
@@ -16,7 +15,8 @@ import org.tahomarobotics.scouting.scoutingserver.util.UI.ChartCreatorDialog;
 import java.awt.*;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class ChartsController implements Initializable {
     @FXML

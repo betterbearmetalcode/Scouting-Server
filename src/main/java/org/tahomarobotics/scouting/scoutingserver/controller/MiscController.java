@@ -8,10 +8,10 @@ import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.configuration.ConfigFileFormatException;
-import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DataValidationCompetitionChooser;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -19,7 +19,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MiscController {

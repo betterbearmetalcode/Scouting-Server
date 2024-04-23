@@ -2,11 +2,13 @@ package org.tahomarobotics.scouting.scoutingserver.util.auto;
 
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.image.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;

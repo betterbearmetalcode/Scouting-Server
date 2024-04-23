@@ -17,7 +17,10 @@ package org.dhatim.fastexcel.reader;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class Row implements Iterable<Cell> {

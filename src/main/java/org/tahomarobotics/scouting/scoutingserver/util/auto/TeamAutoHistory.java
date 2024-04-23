@@ -2,7 +2,6 @@ package org.tahomarobotics.scouting.scoutingserver.util.auto;
 
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public record TeamAutoHistory(String teamNumber,

@@ -3,7 +3,8 @@ package org.tahomarobotics.scouting.scoutingserver.controller;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -13,14 +14,20 @@ import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
-import org.tahomarobotics.scouting.scoutingserver.util.*;
+import org.tahomarobotics.scouting.scoutingserver.util.Logging;
+import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DuplicateDataResolvedDialog;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.TableChooserDialog;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 

@@ -1,11 +1,8 @@
 package org.tahomarobotics.scouting.scoutingserver.util.data;
 
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration.Datatype;
-
 
 import java.util.HashMap;
 import java.util.Map;
