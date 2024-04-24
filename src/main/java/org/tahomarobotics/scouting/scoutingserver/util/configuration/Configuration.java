@@ -16,15 +16,18 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Configuration {
+
+    //the order of this enum is essential and determines the protocol for json transfer
     public enum Datatype {
         INTEGER,
         STRING,
         BOOLEAN
     }
 
-    private static final ArrayList<DataMetric> rawDataMetrics = new ArrayList<>();
+    public static  ArrayList<DataMetric> rawDataMetrics = new ArrayList<>();
 
     public static void updateConfiguration() throws ParserConfigurationException, IOException, SAXException, ConfigFileFormatException {
+        ArrayList<DataMetric> backupDataMetrics = rawDataMetrics;//create backup in case of exceptions
         // Specify the file path as a File object
         File configFile = new File(Constants.CONFIG_FILE_LOCATION);
 
@@ -51,7 +54,7 @@ public class Configuration {
                 continue;
             }
             NodeList dataMetricFields = node.getChildNodes();
-            if (dataMetricFields.getLength() != 7 ) {
+            if (dataMetricFields.getLength() != 9 ) {
                 //if there are not the right number of children, skip
                 continue;
             }
@@ -77,8 +80,31 @@ public class Configuration {
                 }else if (!validateableNode.getTextContent().equalsIgnoreCase("no")) {
                     continue;
                 }
-                rawDataMetrics.add(new DataMetric(dataType, name, validateable));
+                Node defaultValueNode = dataMetricFields.item(7);
+                if (!defaultValueNode.getNodeName().equals("default")) {
+                    continue;
+                }
+                switch (dataType) {
+
+                    case INTEGER -> {
+                        int val = 0;//default default is 0
+                        try {
+                            val = Integer.parseInt(defaultValueNode.getTextContent());//try and set to reasonable default
+                        }catch (NumberFormatException ignored) {
+
+                        }
+                        rawDataMetrics.add(new DataMetric<>(dataType, name, validateable, val));
+                    }
+                    case STRING -> {
+                        rawDataMetrics.add(new DataMetric<>(dataType, name, validateable, defaultValueNode.getTextContent()));
+                    }
+                    case BOOLEAN -> {
+                        rawDataMetrics.add(new DataMetric<>(dataType, name, validateable, defaultValueNode.getTextContent().equalsIgnoreCase("true")));
+                    }
+                }
+
             }catch (IllegalArgumentException e) {
+                rawDataMetrics = backupDataMetrics;//restore config to whatever we had before
                 throw new ConfigFileFormatException("Unsupported Datatype: " + dataTypeNode.getTextContent() + " for Metric: " + name);
             }
 

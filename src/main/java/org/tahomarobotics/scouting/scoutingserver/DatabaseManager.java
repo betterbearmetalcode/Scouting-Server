@@ -6,11 +6,16 @@ import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchRecordComparator;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -106,32 +111,74 @@ public class DatabaseManager {
 
         return output;
     }
-    public static ArrayList<DuplicateDataException> importJSONObject(JSONObject object, String activeTable) {
+    public static ArrayList<DuplicateDataException> importJSONObject(JSONArray data, String activeTable){
+        try {
+            Configuration.updateConfiguration();
+        } catch (ParserConfigurationException | IOException | SAXException | ConfigFileFormatException e) {
+           if (!Constants.askQuestion("Unable to update configuration, proceed with current configuration?")) {
+               return new ArrayList<>();
+           }
+        }
         ArrayList<DuplicateDataException> duplicates = new ArrayList<>();
         int numErrors = 0;
         boolean showErrors = true;
-        for (String s : object.keySet()) {
-            JSONArray arr = object.getJSONArray(s);
+        for (Object object : data) {
+            JSONObject datum = (JSONObject) object;
+            StringBuilder statementBuilder = new StringBuilder("INSERT INTO \"" + activeTable + "\" VALUES (");
+            //for each data metric the scouting server is configured to care about add it into the database or handle duplicates
+            for (DataMetric rawDataMetric : Configuration.rawDataMetrics) {
+                JSONObject potentialMetric = datum.optJSONObject(rawDataMetric.getName());//json object which represents the datatype and value for this metric
+                if (potentialMetric == null) {
+                    //then this metric was not provided, but have no fear, defaults exist!
+                    potentialMetric = new JSONObject();
+                    potentialMetric.put(String.valueOf(rawDataMetric.getDatatype().ordinal()), rawDataMetric.getDefaultValue());
+                }
 
-            for (Object o : arr.toList()) {
-                String string = o.toString();
-                try {
-                    DatabaseManager.storeRawQRData(string, activeTable);
-                } catch (DuplicateDataException e) {
-                    duplicates.add(e);
-                } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IllegalStateException | IOException |
-                         SQLException e) {
-                    numErrors++;
-                    if (numErrors >= 3 && showErrors) {
-                        showErrors = Constants.askQuestion("There have been " + numErrors + " errors so far in this import, continue showing alerts?");
-                    }
-                    ScoutingServer.dataCollectionController.writeToDataCollectionConsole("Failed to construct QrRecord, likly corrupted data", Color.RED);
-                    if (showErrors) {
-                        Logging.logError(e, "Failed to construct match record, most likly corrupted data");
-                    }
+                if (potentialMetric.keySet().size() != 1) {
+                    //not exptected
+                    continue;
+                }
+                String key = "";
+                //this will only loop once
+                for (String string : potentialMetric.keySet()) {
+                    key = string;
+                }
 
+                //check that the declared datatype is correct according to the config file
+                if (rawDataMetric.getDatatype().ordinal() != Integer.parseInt(key)) {
+                    continue;
+                }
+
+                switch (rawDataMetric.getDatatype()) {
+
+                    case INTEGER, BOOLEAN -> {
+                        statementBuilder.append(potentialMetric.get(key)).append(", ");
+                    }
+                    case STRING -> {
+                        statementBuilder.append("\"").append(potentialMetric.get(key)).append("\" , ");
+                    }
                 }
             }
+            statementBuilder.replace(statementBuilder.toString().length() - 2, statementBuilder.length()  -1, "");
+            statementBuilder.append(")");
+            try {
+                SQLUtil.execNoReturn(statementBuilder.toString());
+            } catch (DuplicateDataException e) {
+                duplicates.add(e);
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IllegalStateException |
+                     SQLException e) {
+                numErrors++;
+                if (numErrors >= 3 && showErrors) {
+                    showErrors = Constants.askQuestion("There have been " + numErrors + " errors so far in this import, continue showing alerts?");
+                }
+                ScoutingServer.dataCollectionController.writeToDataCollectionConsole("Failed to construct import datum", Color.RED);
+                if (showErrors) {
+                    Logging.logError(e, "Failed to import datum");
+                }
+
+            }
+
+
         }
         return duplicates;
     }

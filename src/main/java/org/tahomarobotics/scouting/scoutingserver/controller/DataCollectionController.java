@@ -23,6 +23,7 @@ import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataE
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -57,11 +58,11 @@ public class DataCollectionController {
 
 
 
+    @FXML
     public void selectTargetTable(ActionEvent event) {
         try {
             TableChooserDialog dialog = new TableChooserDialog(SQLUtil.getTableNames());
             Optional<String> result = dialog.showAndWait();
-            AtomicReference<String> selectedTable = new AtomicReference<>("");
             result.ifPresent(selectedDatabaseLabel::setText);
             result.ifPresent(this::setActiveTable);
         } catch (SQLException e) {
@@ -70,6 +71,7 @@ public class DataCollectionController {
     }
 
 
+    //this is an event handler
     @FXML
     public void importJSON(ActionEvent event) {
         try {
@@ -77,7 +79,8 @@ public class DataCollectionController {
             chooser.setTitle("Select JSON File");
             chooser.setInitialDirectory(new File(System.getProperty("user.home")));
             chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
-            importJSONFiles(chooser.showOpenMultipleDialog(ScoutingServer.mainStage.getOwner()));
+            importJSONFile(chooser.showOpenDialog(ScoutingServer.mainStage.getOwner()));
+
 
         } catch (IOException e) {
             Logging.logError(e);
@@ -85,21 +88,20 @@ public class DataCollectionController {
 
     }
 
-    private void importJSONFiles(List<File> files) throws IOException {
-        if (files != null) {
-
-            for (File file : files) {
-                if (file.exists()) {
-                    FileInputStream inputStream = new FileInputStream(file);
-                    JSONObject object = new JSONObject(new String(inputStream.readAllBytes()));
-                    ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONObject(object, activeTable);
-                    handleDuplicates(duplicates);
-                    inputStream.close();
-                }
-
-            }
+    private void importJSONFile(File selectedFile) throws IOException {
+        if (selectedFile == null) {
+            return;
         }
+        if (!selectedFile.exists()) {
+            return;
+        }
+        FileInputStream inputStream = new FileInputStream(selectedFile);
+        JSONArray object = new JSONArray(new String(inputStream.readAllBytes()));
+        ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONObject(object, activeTable);
+        handleDuplicates(duplicates);
+        inputStream.close();
     }
+
 
 
     @FXML
@@ -188,7 +190,7 @@ public class DataCollectionController {
         chooser.setInitialDirectory(new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/duplicateDataBackups"));
         chooser.setTitle("Select Backup to import");
         try {
-            importJSONFiles(chooser.showOpenMultipleDialog(ScoutingServer.mainStage.getOwner()));
+            importJSONFile(chooser.showOpenDialog(ScoutingServer.mainStage.getOwner()));
         } catch (IOException e) {
             Logging.logError(e);
         }
