@@ -1,7 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.controller.DataCollectionController;
@@ -48,7 +47,7 @@ public class DataTransferClient extends Thread {
                 }
             }
             Logging.logInfo("storing data, time elapsed: " + (System.currentTimeMillis() - start));
-            ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONObject(new JSONArray(builder.toString()), DataCollectionController.activeTable);
+            ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONArrayOfDataObjects(new JSONArray(builder.toString()), DataCollectionController.activeTable);
             DataCollectionController.handleDuplicates(duplicates);
 
             Logging.logInfo("data is" + builder);

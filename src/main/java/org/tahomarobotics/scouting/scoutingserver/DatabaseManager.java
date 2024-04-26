@@ -31,54 +31,7 @@ public class DatabaseManager {
 
     }
 
-
-
-    public static void storeRawQRData(String dataRaw, String tablename) throws IOException, DuplicateDataException, SQLException {
-            String[] data = dataRaw.split(Constants.QR_DATA_DELIMITER);
-            if (!data[17].startsWith("autopath:")) {
-                data[17] = "autopath:" + data[17];
-            }
-
-            //scouting app is not coorrectly trasmitting which notes are where in qr string, this is to read them correctly
-            //for future years  migrate to a new type of data transfer which has the column name attached to each data point
-            //this will make compatibility and extension of what is colleted simpler
-
-            //figure out the auto note values from tele comments
-            ArrayList<String> auto = parseTeleCommentsToAutoData(data[17]);
-
-
-            //ArrayList<String> auto = getAutoData(data[17].split(":")[0]);//should be this, but have to use old data
-            QRRecord m = new QRRecord(Integer.parseInt(data[0]),//match num
-                    Integer.parseInt(data[1]),//team num
-                    getRobotPositionFromNum(Integer.parseInt(data[2])),//allinace pos
-                    Integer.parseInt(data[3]),//auto speaker
-                    Integer.parseInt(data[4]),//auto amp
-                    Integer.parseInt(data[5]),//auto speaker missed
-                    Integer.parseInt(data[6]),//auto amp missed
-                    auto.get(0),//note 1
-                    auto.get(1),//note 2
-                    auto.get(2),//note 3
-                    auto.get(3),//note 4
-                    auto.get(4),//note 5
-                    auto.get(5),//note 6
-                    auto.get(6),//note 7
-                    auto.get(7),//note 8
-                    auto.get(8),//note 9
-                    Integer.parseInt(data[7]),//a stop
-                    Integer.parseInt(data[8]),//shuttled
-                    Integer.parseInt(data[9]),//tele speaker
-                    Integer.parseInt(data[10]),//tele amp
-                    Integer.parseInt(data[11]),//tele trap
-                    Integer.parseInt(data[12]),//tele speakermissed
-                    Integer.parseInt(data[13]),//tele amp missed
-                    Integer.parseInt(data[14]),//speaker received
-                    Integer.parseInt(data[15]),//amp recievied
-                    Integer.parseInt(data[16]),//lost comms
-                    data[17]);//tele comments
-            storeQrRecord(m, tablename);
-    }
-
-    public static ArrayList<String> parseTeleCommentsToAutoData(String scoutInput) {
+   /* public static ArrayList<String> parseTeleCommentsToAutoData(String scoutInput) {
         if (scoutInput.contains(":")) {
             scoutInput = scoutInput.split(":")[1];
         }else {
@@ -107,8 +60,8 @@ public class DatabaseManager {
         }
 
         return output;
-    }
-    public static ArrayList<DuplicateDataException> importJSONObject(JSONArray data, String activeTable){
+    }*/
+    public static ArrayList<DuplicateDataException> importJSONArrayOfDataObjects(JSONArray data, String activeTable){
         try {
             Configuration.updateConfiguration();
         } catch (ParserConfigurationException | IOException | SAXException | ConfigFileFormatException e) {
@@ -120,49 +73,8 @@ public class DatabaseManager {
         int numErrors = 0;
         boolean showErrors = true;
         for (Object object : data) {
-            JSONObject datum = (JSONObject) object;
-            StringBuilder statementBuilder = new StringBuilder("INSERT INTO \"" + activeTable + "\" VALUES (");
-            //for each data metric the scouting server is configured to care about add it into the database or handle duplicates
-            if (Objects.equals(((JSONObject) datum.get("TEAM_NUM")).get("0").toString(), "1403")) {
-                System.out.print("");
-            }
-            for (DataMetric rawDataMetric : Configuration.rawDataMetrics) {
-                JSONObject potentialMetric = datum.optJSONObject(rawDataMetric.getName());//json object which represents the datatype and value for this metric
-                if (potentialMetric == null) {
-                    //then this metric was not provided, but have no fear, defaults exist!
-                    potentialMetric = new JSONObject();
-                    potentialMetric.put(String.valueOf(rawDataMetric.getDatatype().ordinal()), rawDataMetric.getDefaultValue());
-                }
-
-                if (potentialMetric.keySet().size() != 1) {
-                    //not exptected
-                    continue;
-                }
-                String key = "";
-                //this will only loop once
-                for (String string : potentialMetric.keySet()) {
-                    key = string;
-                }
-
-                //check that the declared datatype is correct according to the config file
-                if (rawDataMetric.getDatatype().ordinal() != Integer.parseInt(key)) {
-                    continue;
-                }
-
-                switch (rawDataMetric.getDatatype()) {
-
-                    case INTEGER, BOOLEAN -> {
-                        statementBuilder.append(potentialMetric.get(key)).append(", ");
-                    }
-                    case STRING -> {
-                        statementBuilder.append("\"").append(potentialMetric.get(key)).append("\" , ");
-                    }
-                }
-            }
-            statementBuilder.replace(statementBuilder.toString().length() - 2, statementBuilder.length()  -1, "");
-            statementBuilder.append(")");
             try {
-                SQLUtil.execNoReturn(statementBuilder.toString());
+                SQLUtil.execNoReturn(getSQLStatementFromJSONJata((JSONObject) object, activeTable));
             } catch (DuplicateDataException e) {
                 duplicates.add(e);
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IllegalStateException |
@@ -183,6 +95,49 @@ public class DatabaseManager {
         return duplicates;
     }
 
+    public static String getSQLStatementFromJSONJata(JSONObject datum, String tableName) {
+        StringBuilder statementBuilder = new StringBuilder("INSERT INTO \"" + tableName + "\" VALUES (");
+        //for each data metric the scouting server is configured to care about add it into the database or handle duplicates
+        if (Objects.equals(((JSONObject) datum.get("TEAM_NUM")).get("0").toString(), "1403")) {
+            System.out.print("");
+        }
+        for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
+            JSONObject potentialMetric = datum.optJSONObject(rawDataMetric.getName());//json object which represents the datatype and value for this metric
+            if (potentialMetric == null) {
+                //then this metric was not provided, but have no fear, defaults exist!
+                potentialMetric = new JSONObject();
+                potentialMetric.put(String.valueOf(rawDataMetric.getDatatype().ordinal()), rawDataMetric.getDefaultValue());
+            }
+
+            if (potentialMetric.keySet().size() != 1) {
+                //not exptected
+                continue;
+            }
+            String key = "";
+            //this will only loop once
+            for (String string : potentialMetric.keySet()) {
+                key = string;
+            }
+
+            //check that the declared datatype is correct according to the config file
+            if (rawDataMetric.getDatatype().ordinal() != Integer.parseInt(key)) {
+                continue;
+            }
+
+            switch (rawDataMetric.getDatatype()) {
+
+                case INTEGER, BOOLEAN -> {
+                    statementBuilder.append(potentialMetric.get(key)).append(", ");
+                }
+                case STRING -> {
+                    statementBuilder.append("\"").append(potentialMetric.get(key)).append("\" , ");
+                }
+            }
+        }
+        statementBuilder.replace(statementBuilder.toString().length() - 2, statementBuilder.length()  -1, "");
+        statementBuilder.append(")");
+        return statementBuilder.toString();
+    }
 
 
 

@@ -19,17 +19,20 @@ import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DuplicateDataResolvedDialog;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.TableChooserDialog;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public class DataCollectionController {
@@ -97,7 +100,7 @@ public class DataCollectionController {
         }
         FileInputStream inputStream = new FileInputStream(selectedFile);
         JSONArray object = new JSONArray(new String(inputStream.readAllBytes()));
-        ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONObject(object, activeTable);
+        ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONArrayOfDataObjects(object, activeTable);
         handleDuplicates(duplicates);
         inputStream.close();
     }
@@ -116,47 +119,69 @@ public class DataCollectionController {
             String csv = new String(inputStream.readAllBytes());
             csv = csv.replaceAll("\r", "");
             JSONArray result = CDL.toJSONArray(csv);
+            Configuration.updateConfiguration();
             ArrayList<DuplicateDataException> duplicates = new ArrayList<>();
             for (Object o : result) {
-                JSONObject data = (JSONObject) o;
+                JSONObject rawData = (JSONObject) o;
+                //check if the data is valid
                 try {
                     //if any of these fail, then skip the data
-                    int x = data.getInt(Constants.SQLColumnName.MATCH_NUM.toString());
-                    int y = data.getInt(Constants.SQLColumnName.TEAM_NUM.toString());
-                    DatabaseManager.RobotPosition.valueOf(data.getString(Constants.SQLColumnName.ALLIANCE_POS.toString()));
+                    int x = rawData.getInt(Constants.SQLColumnName.MATCH_NUM.toString());
+                    int y = rawData.getInt(Constants.SQLColumnName.TEAM_NUM.toString());
+                    DatabaseManager.RobotPosition.valueOf(rawData.getString(Constants.SQLColumnName.ALLIANCE_POS.toString()));
                 }catch (Exception e) {
                     continue;
                 }
-                ArrayList<String> autoData = DatabaseManager.parseTeleCommentsToAutoData(data.optString("Tele Comments", "No Comments"));
-                DatabaseManager.QRRecord m = new DatabaseManager.QRRecord(data.getInt(Constants.SQLColumnName.MATCH_NUM.toString()),//match num
-                        data.getInt(Constants.SQLColumnName.TEAM_NUM.toString()),//team num
-                        DatabaseManager.RobotPosition.valueOf(data.getString(Constants.SQLColumnName.ALLIANCE_POS.toString())),//allinace pos
-                        data.optInt(Constants.SQLColumnName.AUTO_SPEAKER.toString(), 0),//auto speaker
-                        data.optInt(Constants.SQLColumnName.AUTO_AMP.toString(), 0),//auto amp
-                        data.optInt(Constants.SQLColumnName.AUTO_SPEAKER_MISSED.toString(), 0),//auto speaker missed
-                        data.optInt(Constants.SQLColumnName.AUTO_AMP_MISSED.toString(), 0),//auto amp missed
-                        autoData.get(0),//note 1
-                        autoData.get(1),//note 2
-                        autoData.get(2),//note 3
-                        autoData.get(3),//note 4
-                        autoData.get(4),//note 5
-                        autoData.get(5),//note 6
-                        autoData.get(6),//note 7
-                        autoData.get(7),//note 8
-                        autoData.get(8),//note 9
-                        data.optInt(Constants.SQLColumnName.A_STOP.toString(), 0),//a-stop
-                        data.optInt(Constants.SQLColumnName.SHUTTLED.toString(), 0),//shuttled notes
-                        data.optInt(Constants.SQLColumnName.AUTO_SPEAKER.toString(), 0),//tele speaker
-                        data.optInt(Constants.SQLColumnName.TELE_SPEAKER.toString(), 0),//tele amp
-                        data.optInt(Constants.SQLColumnName.TELE_TRAP.toString(), 0),//tele trap
-                        data.optInt(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString(), 0),//tele speakermissed
-                        data.optInt(Constants.SQLColumnName.TELE_AMP_MISSED.toString(), 0),//tele amp missed
-                        data.optInt(Constants.SQLColumnName.SPEAKER_RECEIVED.toString(), 0),//speaker revieced
-                        data.optInt(Constants.SQLColumnName.AMP_RECEIVED.toString(), 0),//amp recieved
-                        data.optInt(Constants.SQLColumnName.AUTO_SPEAKER.toString(), 0),//lost comms
-                        data.optString(Constants.SQLColumnName.TELE_COMMENTS.toString(), "No Comments"));//tele notes
+                //convert to standard JSON format
+                JSONObject dataToImport = new JSONObject();
+                for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
+                    //if it can't parse anything the set a default that no one will ever enter so that we can detect if we need to use the default for string datatypes
+                    //and seriously, if the following was really what the scout said, then we might as well use the default...
+                    String weirdDefault = "deeeeeeeeeeeeeeeeedddffeeeeeeeeefault!!";
+                    String csvDatum = rawData.optString(rawDataMetric.getName(), weirdDefault);//if the csv data has something for this, metric, then good, otherwise nothing, sort out default in a sec
+                    //in the csv templates the alliance positions are put in as letters to be human readable
+                    if (Objects.equals(rawDataMetric.getName(), Constants.SQLColumnName.ALLIANCE_POS.name())) {
+                        csvDatum = String.valueOf(DatabaseManager.RobotPosition.valueOf(csvDatum).ordinal());
+                    }
+                    JSONObject finalDataCarryingaObject = new JSONObject();
+                    //then we have something
+                    switch (rawDataMetric.getDatatype()) {
+
+                        case INTEGER -> {
+                            try {
+                                finalDataCarryingaObject.put("0", Integer.parseInt(csvDatum));
+                            }catch (NumberFormatException e) {
+                                finalDataCarryingaObject.put("0", rawDataMetric.getDefaultValue());
+                            }
+
+                        }
+                        case STRING -> {
+                            if (!Objects.equals(csvDatum, weirdDefault)) {
+                                finalDataCarryingaObject.put("1", csvDatum);
+                            }else {
+                                finalDataCarryingaObject.put("1", rawDataMetric.getDefaultValue());
+                            }
+
+                        }
+                        case BOOLEAN -> {
+                            try {
+                                int i = Integer.parseInt(csvDatum);
+                                if ((i != 0) && (i != 1)) {
+                                    //then we have a non boolean value so go the catch block
+                                    throw new NumberFormatException();
+                                }
+                                finalDataCarryingaObject.put("2", i);
+                            }catch (NumberFormatException e) {
+                                //use default
+                                finalDataCarryingaObject.put("2", rawDataMetric.getDefaultValue());
+                            }
+
+                        }
+                    }
+                    dataToImport.put(rawDataMetric.getName(), finalDataCarryingaObject);
+                }
                 try {
-                    DatabaseManager.storeQrRecord(m, activeTable);
+                    SQLUtil.execNoReturn(DatabaseManager.getSQLStatementFromJSONJata(dataToImport, activeTable));
                 } catch (DuplicateDataException e) {
                     duplicates.add(e);
                 } catch (SQLException e) {
@@ -166,7 +191,7 @@ public class DataCollectionController {
             handleDuplicates(duplicates);
 
             inputStream.close();
-        } catch (IOException e) {
+        } catch (IOException | ParserConfigurationException | SAXException | ConfigFileFormatException e) {
             Logging.logError(e);
         }
     }

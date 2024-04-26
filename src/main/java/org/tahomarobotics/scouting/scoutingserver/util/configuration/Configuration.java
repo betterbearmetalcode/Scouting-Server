@@ -24,7 +24,7 @@ public class Configuration {
         BOOLEAN
     }
 
-    public static  ArrayList<DataMetric> rawDataMetrics = new ArrayList<>();
+    private static  ArrayList<DataMetric> rawDataMetrics = new ArrayList<>();
 
     public static void updateConfiguration() throws ParserConfigurationException, IOException, SAXException, ConfigFileFormatException {
         ArrayList<DataMetric> backupDataMetrics = rawDataMetrics;//create backup in case of exceptions
@@ -109,5 +109,9 @@ public class Configuration {
             }
 
         }
+    }
+
+    public static  ArrayList<DataMetric> getRawDataMetrics() {
+        return rawDataMetrics;
     }
 }
