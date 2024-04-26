@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class Configuration {
 
@@ -27,6 +29,7 @@ public class Configuration {
     private static  ArrayList<DataMetric> rawDataMetrics = new ArrayList<>();
 
     public static void updateConfiguration() throws ParserConfigurationException, IOException, SAXException, ConfigFileFormatException {
+        long start = System.currentTimeMillis();
         ArrayList<DataMetric> backupDataMetrics = rawDataMetrics;//create backup in case of exceptions
         // Specify the file path as a File object
         File configFile = new File(Constants.CONFIG_FILE_LOCATION);
@@ -107,8 +110,18 @@ public class Configuration {
                 rawDataMetrics = backupDataMetrics;//restore config to whatever we had before
                 throw new ConfigFileFormatException("Unsupported Datatype: " + dataTypeNode.getTextContent() + " for Metric: " + name);
             }
+            System.out.println("Took: " + (System.currentTimeMillis() - start) + "ms to update configuration.");
 
         }
+    }
+
+    public static Optional<DataMetric> getMetric(String name) {
+        for (DataMetric rawDataMetric : rawDataMetrics) {
+            if (rawDataMetric.getName() == name) {
+                return Optional.of(rawDataMetric);
+            }
+        }
+        return Optional.empty();
     }
 
     public static  ArrayList<DataMetric> getRawDataMetrics() {

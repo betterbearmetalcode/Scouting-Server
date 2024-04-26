@@ -140,6 +140,30 @@ public class DatabaseManager {
     }
 
 
+    public static JSONArray readDatabaseNew(String tableName) throws SQLException {
+        ArrayList<HashMap<String, Object>> rawList = SQLUtil.exec("SELECT * FROM \"" + tableName + "\"", true);
+        JSONArray output = new JSONArray();
+        for (HashMap<String, Object> rawRow : rawList) {
+            //export all the data we have regardless of whether or not the config file says we care about it
+            //users can make mistakes and importing only imports what the config file wants to export everything in an effort to never lose data
+            JSONObject rowObject = new JSONObject();
+            for (String sqlColumnName : rawRow.keySet()) {
+                //for each of columsn in the sql database
+                JSONObject dataCarrier = new JSONObject();
+                Optional<DataMetric> optionalMetric = Configuration.getMetric(sqlColumnName);
+                //try and use this metric to ascertain the datatype, otherwise, just assume its a string
+                if (optionalMetric.isPresent()) {
+                    dataCarrier.put(String.valueOf(optionalMetric.get().getDatatype().ordinal()), rawRow.get(sqlColumnName));
+                }else {
+                    //assume string if all else fails
+                    dataCarrier.put("1",  rawRow.get(sqlColumnName).toString());
+                }
+                rowObject.put(sqlColumnName, dataCarrier);
+            }//end for each sql column
+            output.put(rowObject);
+        }//end for each row
+        return output;
+    }
 
     public static LinkedList<QRRecord> readDatabase(String tableName) throws IOException {
         return readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"", SQLUtil.EMPTY_PARAMS, true);
