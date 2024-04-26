@@ -3,9 +3,8 @@ package org.tahomarobotics.scouting.scoutingserver;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -15,9 +14,17 @@ import org.tahomarobotics.scouting.scoutingserver.controller.MenuController;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
+import org.xml.sax.SAXException;
 
+import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 
 import static org.tahomarobotics.scouting.scoutingserver.Constants.UIValues.*;
@@ -67,6 +74,7 @@ public class ScoutingServer extends Application {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void start(Stage stage) {
+        Logging.logInfo("Starting");
         mainStage = stage;
         mainStage.setTitle("Scouting Server");
         mainStage.setScene(dataCollectionScene);
@@ -76,6 +84,7 @@ public class ScoutingServer extends Application {
             ServerUtil.setServerStatus(false);
         });
         mainStage.show();
+
 
 
         try {
@@ -130,6 +139,25 @@ public class ScoutingServer extends Application {
 
     @Override
     public void init() throws Exception {
+        Logging.logInfo("Initializing");
+        try {
+            Configuration.updateConfiguration();
+        }catch (Exception e) {
+            Logging.logInfo(e.getMessage());
+            // create a dialog Box
+            JDialog d = new JDialog();
+            // create a label
+            JLabel l = new JLabel("Failed to load configuration file, application will  exit in 10 seconds. \n -> LOG AT: " + Constants.LOG_PATH + " <-");
+            d.add(l);
+            // setsize of dialog
+            d.setSize(1000, 100);
+            d.setLocationRelativeTo(null);
+            // set visibility of dialog
+            d.setVisible(true);
+            Thread.sleep(10000);
+            System.exit(1);
+
+        }
         setAppWidthProperty(Toolkit.getDefaultToolkit().getScreenSize().width * WIDTH_MULTIPLIER);
         setAppHeight(Toolkit.getDefaultToolkit().getScreenSize().height * HEIGHT_MULTIPLIER);
         FXMLLoader mainLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/main-scene.fxml").toURI().toURL());

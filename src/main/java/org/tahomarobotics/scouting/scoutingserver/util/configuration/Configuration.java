@@ -110,14 +110,15 @@ public class Configuration {
                 rawDataMetrics = backupDataMetrics;//restore config to whatever we had before
                 throw new ConfigFileFormatException("Unsupported Datatype: " + dataTypeNode.getTextContent() + " for Metric: " + name);
             }
-            System.out.println("Took: " + (System.currentTimeMillis() - start) + "ms to update configuration.");
+
 
         }
+        System.out.println("Took: " + (System.currentTimeMillis() - start) + "ms to update configuration.");
     }
 
     public static Optional<DataMetric> getMetric(String name) {
         for (DataMetric rawDataMetric : rawDataMetrics) {
-            if (rawDataMetric.getName() == name) {
+            if (Objects.equals(rawDataMetric.getName(), name)) {
                 return Optional.of(rawDataMetric);
             }
         }

@@ -20,9 +20,12 @@ import org.tahomarobotics.scouting.scoutingserver.util.UI.DataValidationCompetit
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.OperationAbortedByUserException;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
@@ -311,156 +314,33 @@ public class TabController {
     @FXML
     public void saveJSONBackup(ActionEvent event) {
         Logging.logInfo("Making JSON Backup of " + tableName);
-        JSONObject output = new JSONObject();
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Save Backup");
-        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + ".json");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
-        File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
-        if (selectedFile == null) {
-            return;
-        }
-        JSONArray dataArray = new JSONArray();
+
         try {
-
-            LinkedList<DatabaseManager.QRRecord> data = DatabaseManager.readDatabase(tableName);
-            for (DatabaseManager.QRRecord datum : data) {
-                JSONObject recordObject = new JSONObject();
-
-
-                JSONObject matchNum = new JSONObject();
-                matchNum.put("0",datum.matchNumber());
-                recordObject.put(Constants.SQLColumnName.MATCH_NUM.toString(), matchNum);
-
-                JSONObject teamNumber = new JSONObject();
-                teamNumber.put("0",datum.teamNumber());
-                recordObject.put(Constants.SQLColumnName.TEAM_NUM.toString(), teamNumber);
-
-                JSONObject position = new JSONObject();
-                position.put("0",datum.position().ordinal());
-                recordObject.put(Constants.SQLColumnName.ALLIANCE_POS.toString(), position);
-
-                JSONObject autoSpeaker = new JSONObject();
-                autoSpeaker.put("0",datum.autoSpeaker());
-                recordObject.put(Constants.SQLColumnName.AUTO_SPEAKER.toString(), autoSpeaker);
-
-                JSONObject autoAmp = new JSONObject();
-                autoAmp.put("0",datum.autoAmp());
-                recordObject.put(Constants.SQLColumnName.AUTO_AMP.toString(), autoAmp);
-
-                JSONObject autoSpeakerMissed = new JSONObject();
-                autoSpeakerMissed.put("0",datum.autoSpeakerMissed());
-                recordObject.put(Constants.SQLColumnName.AUTO_SPEAKER_MISSED.toString(), autoSpeakerMissed);
-
-                JSONObject autoAmpMissed = new JSONObject();
-                autoAmpMissed.put("0",datum.autoAmpMissed());
-                recordObject.put(Constants.SQLColumnName.AUTO_AMP_MISSED.toString(), autoAmpMissed);
-
-                JSONObject note1 = new JSONObject();
-                note1.put("1",datum.note1());
-                recordObject.put(Constants.SQLColumnName.NOTE_1.toString(), note1);
-
-                JSONObject note2 = new JSONObject();
-                note2.put("1",datum.note2());
-                recordObject.put(Constants.SQLColumnName.NOTE_2.toString(), note2);
-
-                JSONObject note3 = new JSONObject();
-                note3.put("1",datum.note3());
-                recordObject.put(Constants.SQLColumnName.NOTE_3.toString(), note3);
-
-                JSONObject note4 = new JSONObject();
-                note4.put("1",datum.note4());
-                recordObject.put(Constants.SQLColumnName.NOTE_4.toString(), note4);
-
-                JSONObject note5 = new JSONObject();
-                note5.put("1",datum.note5());
-                recordObject.put(Constants.SQLColumnName.NOTE_5.toString(), note5);
-
-                JSONObject note6 = new JSONObject();
-                note6.put("1",datum.note6());
-                recordObject.put(Constants.SQLColumnName.NOTE_6.toString(), note6);
-
-                JSONObject note7 = new JSONObject();
-                note7.put("1",datum.note7());
-                recordObject.put(Constants.SQLColumnName.NOTE_7.toString(), note7);
-
-                JSONObject note8 = new JSONObject();
-                note8.put("1",datum.note8());
-                recordObject.put(Constants.SQLColumnName.NOTE_8.toString(), note8);
-
-                JSONObject note9 = new JSONObject();
-                note9.put("1",datum.note9());
-                recordObject.put(Constants.SQLColumnName.NOTE_9.toString(), note9);
-
-                JSONObject aStop = new JSONObject();
-                aStop.put("2",datum.aStop());
-                recordObject.put(Constants.SQLColumnName.A_STOP.toString(), aStop);
-
-                JSONObject shuttled = new JSONObject();
-                shuttled.put("0",datum.shuttled());
-                recordObject.put(Constants.SQLColumnName.SHUTTLED.toString(), shuttled);
-
-                JSONObject teleSpeaker = new JSONObject();
-                teleSpeaker.put("0",datum.teleSpeaker());
-                recordObject.put(Constants.SQLColumnName.TELE_SPEAKER.toString(), teleSpeaker);
-
-                JSONObject teleAmp = new JSONObject();
-                teleAmp.put("0",datum.teleAmp());
-                recordObject.put(Constants.SQLColumnName.TELE_AMP.toString(), teleAmp);
-
-                JSONObject teleTrap = new JSONObject();
-                teleTrap.put("0",datum.teleTrap());
-                recordObject.put(Constants.SQLColumnName.TELE_TRAP.toString(), teleTrap);
-
-                JSONObject teleSpeakerMissed = new JSONObject();
-                teleSpeakerMissed.put("0",datum.teleSpeakerMissed());
-                recordObject.put(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString(), teleSpeakerMissed);
-
-                JSONObject teleAmpMissed = new JSONObject();
-                teleAmpMissed.put("0",datum.teleAmpMissed());
-                recordObject.put(Constants.SQLColumnName.TELE_AMP_MISSED.toString(), teleAmpMissed);
-
-                JSONObject speakerReceived = new JSONObject();
-                speakerReceived.put("0",datum.speakerReceived());
-                recordObject.put(Constants.SQLColumnName.SPEAKER_RECEIVED.toString(), speakerReceived);
-
-                JSONObject ampReceived = new JSONObject();
-                ampReceived.put("0",datum.ampReceived());
-                recordObject.put(Constants.SQLColumnName.AMP_RECEIVED.toString(), ampReceived);
-
-                JSONObject lostComms = new JSONObject();
-                lostComms.put("2",datum.lostComms());
-                recordObject.put(Constants.SQLColumnName.LOST_COMMS.toString(), lostComms);
-
-                JSONObject teleNotes = new JSONObject();
-                teleNotes.put("1",datum.teleNotes());
-                recordObject.put(Constants.SQLColumnName.TELE_COMMENTS.toString(), teleNotes);
-                dataArray.put(recordObject);
+            JSONArray dataArray = DatabaseManager.readDatabaseNew(tableName);
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Save Backup");
+            chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + ".json");
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
+            File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+            if (selectedFile == null) {
+                return;
             }
-
-
-
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-
-
-        try {
             if (!selectedFile.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 selectedFile.createNewFile();
             }
             FileOutputStream os = new FileOutputStream(selectedFile);
-           // os.write(output.toString(1).getBytes());
+            // os.write(output.toString(1).getBytes());
             os.write(dataArray.toString(1).getBytes());
             os.flush();
             os.close();
-        } catch (IOException e) {
+
+
+        } catch (IOException | SQLException | ConfigFileFormatException | ParserConfigurationException | SAXException e) {
             Logging.logError(e, "Failed to save backup");
         }
+
     }
 
     public void clearDatabase() {

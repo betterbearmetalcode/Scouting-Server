@@ -14,7 +14,7 @@ public class Logging {
             java.util.logging.Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME);
 
     static {
-        File dir = new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/logs");
+        File dir = new File(Constants.LOG_PATH);
         if (!dir.exists()) {
             //noinspection ResultOfMethodCallIgnored
             dir.mkdirs();

@@ -140,9 +140,10 @@ public class DatabaseManager {
     }
 
 
-    public static JSONArray readDatabaseNew(String tableName) throws SQLException {
+    public static JSONArray readDatabaseNew(String tableName) throws SQLException, ConfigFileFormatException, ParserConfigurationException, IOException, SAXException {
         ArrayList<HashMap<String, Object>> rawList = SQLUtil.exec("SELECT * FROM \"" + tableName + "\"", true);
         JSONArray output = new JSONArray();
+        Configuration.updateConfiguration();
         for (HashMap<String, Object> rawRow : rawList) {
             //export all the data we have regardless of whether or not the config file says we care about it
             //users can make mistakes and importing only imports what the config file wants to export everything in an effort to never lose data
