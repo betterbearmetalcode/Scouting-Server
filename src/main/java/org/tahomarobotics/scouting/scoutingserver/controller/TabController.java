@@ -321,23 +321,12 @@ public class TabController {
         if (selectedFile == null) {
             return;
         }
-        /*for (DatabaseManager.RobotPosition robotPosition : DatabaseManager.RobotPosition.values()) {
-            //get all the data for each of the positions
-            LinkedList<DatabaseManager.QRRecord> data = DatabaseManager.readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"" + " WHERE "  + Constants.SQLColumnName.ALLIANCE_POS + "=?", new Object[]{robotPosition.ordinal()}, false);
-            JSONArray positionArray = new JSONArray();
-            for (DatabaseManager.QRRecord record : data) {
-                positionArray.put(record.getQRString());
-            }
-            output.put(robotPosition.name(), positionArray);
-        }
-*/
         JSONArray dataArray = new JSONArray();
         try {
 
             LinkedList<DatabaseManager.QRRecord> data = DatabaseManager.readDatabase(tableName);
             for (DatabaseManager.QRRecord datum : data) {
                 JSONObject recordObject = new JSONObject();
-
 
 
                 JSONObject matchNum = new JSONObject();

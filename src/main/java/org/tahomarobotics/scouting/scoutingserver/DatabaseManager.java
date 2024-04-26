@@ -18,10 +18,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -126,6 +123,9 @@ public class DatabaseManager {
             JSONObject datum = (JSONObject) object;
             StringBuilder statementBuilder = new StringBuilder("INSERT INTO \"" + activeTable + "\" VALUES (");
             //for each data metric the scouting server is configured to care about add it into the database or handle duplicates
+            if (Objects.equals(((JSONObject) datum.get("TEAM_NUM")).get("0").toString(), "1403")) {
+                System.out.print("");
+            }
             for (DataMetric rawDataMetric : Configuration.rawDataMetrics) {
                 JSONObject potentialMetric = datum.optJSONObject(rawDataMetric.getName());//json object which represents the datatype and value for this metric
                 if (potentialMetric == null) {
