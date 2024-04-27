@@ -10,9 +10,10 @@ import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
+import javafx.util.converter.DefaultStringConverter;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.*;
+import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
@@ -25,13 +26,14 @@ import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.OperationAbortedByUserException;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class TabController {
 
@@ -57,9 +59,10 @@ public class TabController {
 
     private TreeItem<String> stringRootItem;
     private JSONArray eventList;
- //   private final ArrayList<Pair<String, String>> otherEvents = new ArrayList<>();
+
     private String currentEventCode = "";
-    private  boolean editmode = false;
+
+    private Optional<JSONArray> tbaDataOptional = Optional.empty();
 
 
     public TabController(ArrayList<Match> databaseData, String table, TabPane thePane) {
@@ -68,6 +71,8 @@ public class TabController {
         pane = thePane;
     }
 
+
+
     @FXML
     public void initialize(TreeView<String> view) {
         Logging.logInfo("Initializing Tab Controller: " + tableName);
@@ -75,15 +80,33 @@ public class TabController {
         treeView = view;
         rootItem = new TreeItem<>(new Label("root-item"));
         stringRootItem = new TreeItem<>("root-item");
-        setEditMode(false);
+
+        treeView.setEditable(true);
         treeView.setShowRoot(false);
         treeView.setRoot(stringRootItem);
-        treeView.setOnEditStart(event -> {
-            if (!editmode) {
-                setEditMode(true);
-                event.consume();
-            }
+        treeView.setCellFactory(tv -> new TextFieldTreeCell<>(new DefaultStringConverter()) {
 
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setTextFill(Color.RED);
+
+
+                if (empty) {
+                    setText("");
+                } else {
+                    setText(item);
+                    //make it readable even if the item is selected
+                    if (selectedProperty().get()) {
+                        setTextFill(Color.WHITE);
+                    }else {
+                        setTextFill(Color.RED);
+                    }
+
+/*                    String styleClass = "-fx-text-fill: #ff0000"; // choose style class for item
+                    getStyleClass().add(styleClass);*/
+                }
+            }
         });
 
         //init list of events
@@ -96,6 +119,8 @@ public class TabController {
         } catch (IOException e) {
             Logging.logError(e, "Whooop de doo, another IO exception, I guess your just screwed now,-C.H");
         }
+
+        updateDisplay(false);
 
 
     }
@@ -162,20 +187,10 @@ public class TabController {
     }
 
     @FXML
-    public void validateDataButtonHandler(ActionEvent event) {
-        validateData();
-    }
+    public void expandAll(Event e) {
+        Logging.logInfo("Expanding Tree");
+        setExpansionAll(rootItem, true);
 
-    @FXML
-    public void refresh() {
-        Logging.logInfo("Refreshing");
-        try {
-            databaseData = DatabaseManager.getUnCorrectedDataFromDatabase(tableName);
-        } catch (IOException ex) {
-            Logging.logError(ex);
-        }
-        //constructTree(databaseData, false);
-        udpateDisplay();
     }
 
     @FXML
@@ -184,231 +199,39 @@ public class TabController {
         setExpansionAll(rootItem, false);
     }
 
-    @FXML
-    public void expandAll(Event e) {
-        Logging.logInfo("Expanding Tree");
-        setExpansionAll(rootItem, true);
-
-    }
 
     @FXML
-    public void toggleEditMode(ActionEvent event) {
-        Logging.logInfo("Toggleing Edit Mode");
-        if (editmode != editToggle.isSelected()) {
-            setEditMode(editToggle.isSelected());
-        }
-
-
-    }
-
-    public boolean validateData() {
-        Logging.logInfo("Validating Data");
-        refresh();
-
-        //always force user to select competiton, even if we already have one, this discision is made after
-        //three competitions of closing and reopening databases just so I can be able to go through the competion selector dialog again
-
-        if (selectCompetition()) {
-            Logging.logInfo("Data Validation Aborted");
-            return false;
-        }
-        databaseData = DataValidator.validateData(currentEventCode, databaseData);
-        constructTree(databaseData, false);
-        return true;
-
-    }
-
-    private void udpateDisplay() {
-        Logging.logInfo("Updating database: " + tableName);
-        try {
-            Configuration.updateConfiguration();
-        } catch (ConfigFileFormatException e) {
-            Logging.logError(e);
-        }
-        try {
-            JSONArray data = DatabaseManager.readDatabaseNew(tableName, true);
-            //construct a array containing the expansion structure of the database, if there are changes (exceptions), then we can defualt the expansionto false
-            ArrayList<Pair<Boolean, ArrayList<Boolean>>> expainsionStructure = new ArrayList<>();
-            for (TreeItem<Label> matchItem : rootItem.getChildren()) {
-                ArrayList<Boolean> matchExpansion = new ArrayList<>();
-                for (TreeItem<Label> robotItem : matchItem.getChildren()) {
-                    matchExpansion.add(robotItem.isExpanded());
-                }
-                expainsionStructure.add(new Pair<>(matchItem.isExpanded(), matchExpansion));
-            }
-            stringRootItem.getChildren().clear();
-            //for each json object representing a entry in the database, sorted
-            int arrayIndex = 0;
-            int lastMatch = getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, (HashMap<String, Object>)data.get(data.length() - 1));
-            for (int matchNum = 1; matchNum <=  lastMatch; matchNum++) {
-                if (matchNum == 123) {
-                    System.currentTimeMillis();
-                }
-                HashMap<String, Object> entryObject = (HashMap<String, Object>) data.get(arrayIndex);
-
-                int observedMatchNum = getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, entryObject);
-
-                if (observedMatchNum != matchNum) {
-                    //then there are no robots for this match number, or we have tried all of them, but we need to move on
-                    //break out and imcrement the match number we are looking at and see if the first data object matches up then. The data should be sorted.
-                    break;
-                }
-                //now we have asertained that the data entry we are analyzing is actually the match number we think it is.
-                TreeItem<String> matchItem = new TreeItem<>("Match: " + matchNum);
-                try {
-                    matchItem.setExpanded(expainsionStructure.get(matchNum - 1).getKey());
-                }catch (IndexOutOfBoundsException e) {
-                    matchItem.setExpanded(false);
-                }
-
-                for (int robotPosition = 0; robotPosition < DatabaseManager.RobotPosition.values().length; robotPosition++) {
-                    int teamNum = getIntFromEntryObject(Constants.SQLColumnName.TEAM_NUM, entryObject);
-                    DatabaseManager.RobotPosition observedPosition = DatabaseManager.getRobotPositionFromNum(getIntFromEntryObject(Constants.SQLColumnName.ALLIANCE_POS, entryObject));
-                    //the json entries will be in order of robot position, so we can assume that if we check for the first one first, it won't show up later and stuff wont be skipped
-                    if (robotPosition == observedPosition.ordinal()) {
-                        TreeItem<String> robotPositionItem = new TreeItem<>(observedPosition.name()  + ": " + teamNum);
-                        try {
-                            robotPositionItem.setExpanded(expainsionStructure.get(matchNum - 1).getValue().get(observedPosition.ordinal()));
-                        }catch (IndexOutOfBoundsException e) {
-                            robotPositionItem.setExpanded(false);
-                        }
-                        //add all the data to the robot position item
-                        for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
-                            TreeItem<String> dataPointItem = new TreeItem<>(rawDataMetric.getName()
-                                    + ":" +
-                                    ((HashMap<String, Object>) entryObject.get(rawDataMetric.getName())).get(String.valueOf(rawDataMetric.getDatatype().ordinal())).toString()
-                                    + ":Error=UNKNOWN");
-                            robotPositionItem.getChildren().add(dataPointItem);
-                        }
-
-                        matchItem.getChildren().add(robotPositionItem);
-                        //we are done taking data from this array entry, move on to the next one
-                        //increment if array index and check if the next one is not the same match
-
-                        if (++arrayIndex == data.length()) {
-                            //we have reached the end of the data, doing the next check will cause an exception
-                            break;
-                        }
-                        if (getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, (HashMap<String, Object>) data.get(arrayIndex)) != matchNum) {
-                            //if the next match number is differnet, the we need to increment the match number and start all over again
-                            //so break out of this loop and do the next loop of the match num loop
-
-                            break;
-                        }
-                        //update the object we are analying with the new array index
-                        entryObject = (HashMap<String, Object>) data.get(arrayIndex);
-
-                    }
-
-
-                }//robot position loop.
-                stringRootItem.getChildren().add(matchItem);
-            }//match num loop
-
-
-        } catch (SQLException | ConfigFileFormatException e) {
-            Logging.logError(e);
-        }
-    }
-
-
-    private void constructTree(ArrayList<Match> matches, boolean switchingToEditMode) {
-        Logging.logInfo("Constructing tree");
-        if (matches.isEmpty()) {
+    public void validateDataButtonHandler(ActionEvent event) {
+        if (tbaDataOptional.isEmpty()) {
+            Logging.logInfo("No TBA Data, so cannont validate. Click update to update.", true);
             return;
         }
-        //construct a array containing the expansion structure of the database, if there are changes (exceptions), then we can defualt the expansionto false
-        ArrayList<Pair<Boolean, ArrayList<Boolean>>> expainsionStructure = new ArrayList<>();
-        for (TreeItem<Label> matchItem : rootItem.getChildren()) {
-            ArrayList<Boolean> matchExpansion = new ArrayList<>();
-            for (TreeItem<Label> robotItem : matchItem.getChildren()) {
-                matchExpansion.add(robotItem.isExpanded());
-            }
-            expainsionStructure.add(new Pair<>(matchItem.isExpanded(), matchExpansion));
-        }
-        rootItem.getChildren().clear();
-        for (Match match : matches) {
-
-            DataPoint.ErrorLevel maxErrorLevelInThisMatch = DataPoint.ErrorLevel.ZERO;
-            Label matchLabel = new Label("Match: " + match.matchNumber());
-            TreeItem<Label> matchItem = new TreeItem<>(matchLabel);
-            try {
-            matchItem.setExpanded(expainsionStructure.get(match.matchNumber() - 1).getKey());
-            }catch (IndexOutOfBoundsException e) {
-                matchItem.setExpanded(false);
-
-               }
-
-
-            for (RobotPositon robotPositon : match.robotPositons()) {
-                DataPoint.ErrorLevel maxErrorForThisRobot = DataPoint.ErrorLevel.ZERO;
-                Label robotLabel = new Label(robotPositon.robotPosition().toString() + ": " + robotPositon.teamNumber());
-                TreeItem<Label> robotItem = new TreeItem<>(robotLabel);
-                matchItem.getChildren().add(robotItem);
-                try {
-                    robotItem.setExpanded(expainsionStructure.get(match.matchNumber() - 1).getValue().get(robotPositon.robotPosition().ordinal()));
-                }catch (IndexOutOfBoundsException e) {
-                    robotItem.setExpanded(false);
-                }
-
-                for (DataPoint dataPoint : robotPositon.data()) {
-                    Label l = new Label(dataPoint.toString());
-                    l.setTextFill(DataPoint.color.get(dataPoint.getErrorLevel()));
-                    TreeItem<Label> dataItem = new TreeItem<>(l);
-                    robotItem.getChildren().add(dataItem);
-                    if (dataPoint.getErrorLevel().ordinal() > maxErrorForThisRobot.ordinal()) {
-                        maxErrorForThisRobot = dataPoint.getErrorLevel();
-                    }
-                }//end robot for
-                if (maxErrorForThisRobot.ordinal() > maxErrorLevelInThisMatch.ordinal()) {
-                    maxErrorLevelInThisMatch = maxErrorForThisRobot;
-                }
-                if (!robotPositon.isUnknown()) {
-                    robotLabel.setTextFill(DataPoint.color.get(maxErrorForThisRobot));
-                }else {
-                    robotLabel.setTextFill(DataPoint.color.get(DataPoint.ErrorLevel.UNKNOWN));
-                }
-
-            }//end match for
-            if (!match.isUnknown()) {
-                matchLabel.setTextFill(DataPoint.color.get(maxErrorLevelInThisMatch));
-            }else {
-                matchLabel.setTextFill(DataPoint.color.get(DataPoint.ErrorLevel.UNKNOWN));
-            }
-
-            if (!matchItem.getChildren().isEmpty()) {
-                rootItem.getChildren().add(matchItem);
-            }
-
-        }//end comp for
-
-
-    }
-    public boolean selectCompetition() {
-        Logging.logInfo("asking user to select which competition they are at");
-        DataValidationCompetitionChooser chooser = new DataValidationCompetitionChooser();
-        Optional<String> result = chooser.showAndWait();
-        AtomicReference<String> selectedEvent = new AtomicReference<>("");
-        result.ifPresent(selectedEvent::set);
-        currentEventCode = selectedEvent.get();
-        return Objects.equals(currentEventCode, "");
-
+        updateDisplay(true);
     }
 
-    private void setExpansionAll(TreeItem<Label> treeItem, boolean val) {
-        if (treeItem.getValue().getText().equals("root-item")) {
-            //then we are dealing with the root item
-            treeItem.setExpanded(true);
-        } else {
-            treeItem.setExpanded(val);
-
+    @FXML
+    public void clearDatabase() {
+        if (!Constants.askQuestion("Are you sure you want to clear database " + tableName + "?")) {
+            return;
         }
-        if (!treeItem.getChildren().isEmpty()) {
-            for (TreeItem<Label> t : treeItem.getChildren()) {
-                setExpansionAll(t, val);
-            }
+        Logging.logInfo("Clearing databse: " + tableName);
+        try {
+            SQLUtil.execNoReturn("DELETE FROM \"" + tableName + "\"");
+        } catch (SQLException | DuplicateDataException e) {
+            Logging.logError(e);
         }
+        stringRootItem.getChildren().clear();
+        updateDisplay(false);
+    }
 
+    @FXML
+    public void updateTBAData() {
+        Logging.logInfo("UpdatingTBAData");
+        if (selectCompetition()) {
+            tbaDataOptional = Optional.empty();
+            return;
+        }
+        tbaDataOptional = APIUtil.getEventMatches(currentEventCode);
 
     }
     @FXML
@@ -443,49 +266,221 @@ public class TabController {
 
     }
 
-    public void clearDatabase() {
-        if (!Constants.askQuestion("Are you sure?")) {
-            return;
-        }
-        Logging.logInfo("Clearing databse: " + tableName);
+
+
+    public void updateDisplay(boolean validateData) {
+        Logging.logInfo("Updating database: " + tableName);
         try {
-            SQLUtil.execNoReturn("DELETE FROM \"" + tableName + "\"");
-        } catch (SQLException | DuplicateDataException e) {
+            Configuration.updateConfiguration();
+        } catch (ConfigFileFormatException e) {
             Logging.logError(e);
         }
-        databaseData.clear();
-        rootItem.getChildren().clear();
-        refresh();
-    }
-
-
-    private void setEditMode(boolean mode) {
-        setEditMode(mode, -1,-1,-1);
-    }
-
-    private void setEditMode(boolean mode, int matchNum, int teamNum, int dataumIndex) {
-        treeView.setEditable(mode);
-        if (mode) {
-            //set to edit mode
-          //  treeView.setCellFactory(param -> new EditableTreeCell(this));
-            validateDataButton.setDisable(true);
-            exportButton.setDisable(true);
-            editToggle.setSelected(true);
-            editmode = true;
-            treeView.getSelectionModel().select(treeView.getRoot().getChildren().get(matchNum).getChildren().get(teamNum).getChildren().get(dataumIndex));//for some reason letting this line throw exceptions makes the app work
-            //if you catch ten exceptions, then it will not work, if you iplement a check to stop them, it also won't work. Don't bother to try and fix this, it doesn't matter.
-        }else {
-            //get out of edit mode
-            validateDataButton.setDisable(false);
-            exportButton.setDisable(false);
-            treeView.setCellFactory(null);
-            treeView.setEditable(true);
-            editToggle.setSelected(false);
-            editmode = false;
+        if (validateData && tbaDataOptional.isEmpty()) {
+            Logging.logInfo("Cannont validate with no TBA Data. ", true);
+            validateData = false;
         }
-        //constructTree(databaseData, true);
-        udpateDisplay();
+        try {
+            JSONArray data = DatabaseManager.readDatabaseNew(tableName, true);
+            //construct a array containing the expansion structure of the database, if there are changes (exceptions), then we can defualt the expansionto false
+            ArrayList<Pair<Boolean, ArrayList<Boolean>>> expainsionStructure = new ArrayList<>();
+            for (TreeItem<Label> matchItem : rootItem.getChildren()) {
+                ArrayList<Boolean> matchExpansion = new ArrayList<>();
+                for (TreeItem<Label> robotItem : matchItem.getChildren()) {
+                    matchExpansion.add(robotItem.isExpanded());
+                }
+                expainsionStructure.add(new Pair<>(matchItem.isExpanded(), matchExpansion));
+            }
+            stringRootItem.getChildren().clear();
+            if (data.isEmpty()) {
+                stringRootItem.getChildren().add(new TreeItem<>("No Data..."));
+                return;
+            }
+            //for validation
+            boolean checkTeamNumbers = true;
+            //for each json object representing a entry in the database, sorted
+            int arrayIndex = 0;
+            int lastMatch = getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, (HashMap<String, Object>)data.get(data.length() - 1));
+            for (int matchNum = 1; matchNum <=  lastMatch; matchNum++) {
+                if (validateData) {
+
+                    int finalMatchNum = matchNum;
+                    Optional<Object> matchTBAData =  new ArrayList<>(tbaDataOptional.get().toList()).stream().filter(o -> {
+                        HashMap<String, Object> dataum = (HashMap<String, Object>) o;
+                        String exptectedMatchKey = currentEventCode + "_qm"  + finalMatchNum;
+                        return dataum.get("key").equals(exptectedMatchKey);
+                    }).findFirst();
+
+
+                    if (matchTBAData.isPresent()) {
+                        //now and only now are we able to validate this match
+                        HashMap<String, Object> matchDatum = (HashMap<String, Object>) matchTBAData.get();
+                        if (checkTeamNumbers) {
+                            checkTeamNumbers = checkTeamNumbersForMatch(matchNum, matchDatum, getDataForMatch(matchNum, data));
+                        }
+                    }
+
+                }
+
+                HashMap<String, Object> entryObject = (HashMap<String, Object>) data.get(arrayIndex);
+
+                int observedMatchNum = getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, entryObject);
+
+                if (observedMatchNum != matchNum) {
+                    //then there are no robots for this match number, or we have tried all of them, but we need to move on
+                    //break out and imcrement the match number we are looking at and see if the first data object matches up then. The data should be sorted.
+                    break;
+                }
+                //now we have asertained that the data entry we are analyzing is actually the match number we think it is.
+                TreeItem<String> matchItem = new TreeItem<>("Match: " + matchNum);
+                try {
+                    matchItem.setExpanded(expainsionStructure.get(matchNum - 1).getKey());
+                }catch (IndexOutOfBoundsException e) {
+                    matchItem.setExpanded(false);
+                }
+
+                for (int robotPosition = 0; robotPosition < DatabaseManager.RobotPosition.values().length; robotPosition++) {
+                    int teamNum = getIntFromEntryObject(Constants.SQLColumnName.TEAM_NUM, entryObject);
+                    DatabaseManager.RobotPosition observedPosition = DatabaseManager.getRobotPositionFromNum(getIntFromEntryObject(Constants.SQLColumnName.ALLIANCE_POS, entryObject));
+                    //the json entries will be in order of robot position, so we can assume that if we check for the first one first, it won't show up later and stuff wont be skipped
+                    if (robotPosition == observedPosition.ordinal()) {
+                        TreeItem<String> robotPositionItem = new TreeItem<>(observedPosition.name()  + ": " + teamNum);
+                        try {
+                            robotPositionItem.setExpanded(expainsionStructure.get(matchNum - 1).getValue().get(observedPosition.ordinal()));
+                        }catch (IndexOutOfBoundsException e) {
+                            robotPositionItem.setExpanded(false);
+                        }
+                        //here I know the match num, team num, and robot position. i need to validate data.
+
+                        //add all the data to the robot position item
+                        for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
+                            TreeItem<String> dataPointItem = new TreeItem<>(rawDataMetric.getName()
+                                    + ":" +
+                                    ((HashMap<String, Object>) entryObject.get(rawDataMetric.getName())).get(String.valueOf(rawDataMetric.getDatatype().ordinal())).toString()
+                                    + ":Error=?");
+                            robotPositionItem.getChildren().add(dataPointItem);;
+                        }
+
+                        matchItem.getChildren().add(robotPositionItem);
+                        //we are done taking data from this array entry, move on to the next one
+                        //increment if array index and check if the next one is not the same match
+
+                        if (++arrayIndex == data.length()) {
+                            //we have reached the end of the data, doing the next check will cause an exception
+                            break;
+                        }
+                        if (getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, (HashMap<String, Object>) data.get(arrayIndex)) != matchNum) {
+                            //if the next match number is differnet, the we need to increment the match number and start all over again
+                            //so break out of this loop and do the next loop of the match num loop
+
+                            break;
+                        }
+                        //update the object we are analying with the new array index
+                        entryObject = (HashMap<String, Object>) data.get(arrayIndex);
+
+                    }
+
+
+                }//robot position loop.
+                stringRootItem.getChildren().add(matchItem);
+            }//match num loop
+
+
+        } catch (SQLException | ConfigFileFormatException e) {
+            Logging.logError(e);
+        }
     }
+
+    //checks team numbers and notifys user of problems
+    private boolean checkTeamNumbersForMatch(int matchNum, HashMap<String, Object> matchDatum, ArrayList<HashMap<String, Object>> scoutingDataForThisMatch) {
+        //check if the teams we have for this match line up with what tba says to look for scouting mistakes
+        //get a list of team numbers correlated with the robot positions.
+        //doing these with seperate try catch blocks because some parts of TBA data can be updated at different times
+
+
+
+        try {
+            //get team objects
+            HashMap<String, Object> allianceMap =  (HashMap<String, Object>) matchDatum.getOrDefault("alliances", null);
+            HashMap<String, Object> blueAllianceTeams = (HashMap<String, Object>) allianceMap.getOrDefault("blue", null);
+            HashMap<String, Object> redAllianceTeams = (HashMap<String, Object>) allianceMap.getOrDefault("red", null);
+
+            //get array of teams
+            ArrayList<String> blueTeams = (ArrayList<String>) blueAllianceTeams.getOrDefault("team_keys", null);
+            ArrayList<String> teamKeys = ((ArrayList<String>) redAllianceTeams.getOrDefault("team_keys", null));
+            teamKeys.addAll(blueTeams);
+            ArrayList<String> teamNums =new ArrayList<>();
+            teamKeys.forEach(s -> teamNums.add(s.split("frc")[1]));
+            //get map of correct team numbers and robot positions
+            HashMap<Integer, DatabaseManager.RobotPosition> correctMatchConfiguration = new HashMap<>();
+            if (teamNums.size() != 6) {
+                Logging.logInfo("Aborting team validation for this match because TBA data is corrupt", true);
+                return true;
+            }
+            for (DatabaseManager.RobotPosition robotPosition : DatabaseManager.RobotPosition.values()) {
+                correctMatchConfiguration.put(Integer.parseInt(teamNums.get(robotPosition.ordinal())), robotPosition);
+            }
+
+            //check the scouting data against this data
+            for (int teamNum : correctMatchConfiguration.keySet()) {
+                DatabaseManager.RobotPosition correctRobotPosition = correctMatchConfiguration.get(teamNum);
+                List<HashMap<String, Object>> scoutingDataForThisPosition = scoutingDataForThisMatch.stream().filter(map -> getIntFromEntryObject(Constants.SQLColumnName.ALLIANCE_POS, map) == correctRobotPosition.ordinal()).toList();
+                if (scoutingDataForThisPosition.size() == 1) {
+                    //then there is only one robot entered for this position
+                    if (getIntFromEntryObject(Constants.SQLColumnName.TEAM_NUM, scoutingDataForThisPosition.get(0)) != teamNum) {
+                        //then the scouting data has the incorrect team number
+                        //notify user and if they want to stop checking team numbers
+                        if (!Constants.askQuestion("Match: " + matchNum + " Position: " + correctRobotPosition.name() + " has the incorrect team entered, continue checking team numbers?")) {
+                            return false;
+                        }
+                    }
+                }else if (scoutingDataForThisPosition.size() > 1) {
+                    //then there are multiple teams entered for the position
+                    Logging.logInfo("Multiple teams are entered for Match: " + matchNum + " Position: " + correctRobotPosition, true);
+                }else {
+                    //there is no scouting data for this team on TBA
+                    if (!Constants.askQuestion("Match: " + matchNum + " Position: " + correctRobotPosition.name() + " has no data, continue checking team numbers?")) {
+                        return  false;
+                    }
+                }
+            }//end for each team in this match
+
+        }catch (NullPointerException | ClassCastException e) {
+            //there is no breakdown or something went wrong so skip validation
+            Logging.logError(e, " skipping team validation for this match becuase TBA is not updated");
+        }
+        return true;
+    }
+
+
+    public boolean selectCompetition() {
+        Logging.logInfo("asking user to select which competition they are at");
+        DataValidationCompetitionChooser chooser = new DataValidationCompetitionChooser();
+        Optional<String> result = chooser.showAndWait();
+        AtomicReference<String> selectedEvent = new AtomicReference<>("");
+        result.ifPresent(selectedEvent::set);
+        currentEventCode = selectedEvent.get();
+        return Objects.equals(currentEventCode, "");
+
+    }
+
+    private void setExpansionAll(TreeItem<Label> treeItem, boolean val) {
+        if (treeItem.getValue().getText().equals("root-item")) {
+            //then we are dealing with the root item
+            treeItem.setExpanded(true);
+        } else {
+            treeItem.setExpanded(val);
+
+        }
+        if (!treeItem.getChildren().isEmpty()) {
+            for (TreeItem<Label> t : treeItem.getChildren()) {
+                setExpansionAll(t, val);
+            }
+        }
+
+
+    }
+
+
 
     private class EditableTreeCell extends TextFieldTreeCell<Label> {
         private final ContextMenu menu = new ContextMenu();
@@ -510,7 +505,7 @@ public class TabController {
                 }else {
                     deletePositionItem(getTreeItem());
                 }
-                refresh();
+
 
 
             });
@@ -558,7 +553,7 @@ public class TabController {
         @Override
         public void cancelEdit() {
             super.cancelEdit();
-            setEditMode(false);
+            //setEditMode(false);
         }
 
         @Override
@@ -605,7 +600,7 @@ public class TabController {
                             timer.schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    setEditMode(false);
+                                    //setEditMode(false);
                                 }
                             }, 10);
                         } catch (SQLException | DuplicateDataException e) {
@@ -629,6 +624,7 @@ public class TabController {
 
     }
 
+
     private static class CustomStringConverter extends StringConverter<Label> {
         Paint paint = Color.PINK;//default, if I see this, something is wrong
         @Override
@@ -645,6 +641,19 @@ public class TabController {
     private int getIntFromEntryObject(Constants.SQLColumnName metric, HashMap<String, Object> entryObject) {
         return Integer.parseInt(((HashMap<String, Object>) entryObject.get(metric.toString()))
                 .get(String.valueOf(Configuration.Datatype.INTEGER.ordinal())).toString());
+    }
+
+    private ArrayList<HashMap<String, Object>> getDataForMatch(int matchNum, JSONArray data) {
+        ArrayList<HashMap<String, Object>> dataForSpecificMatch = new ArrayList<>();
+        data.toList().forEach(o -> {
+            HashMap<String, Object> entryMap = (HashMap<String, Object>) o;
+            int num = getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, entryMap);
+            if (matchNum == num) {
+                dataForSpecificMatch.add(entryMap);
+            }
+
+        });
+        return dataForSpecificMatch;
     }
 
 

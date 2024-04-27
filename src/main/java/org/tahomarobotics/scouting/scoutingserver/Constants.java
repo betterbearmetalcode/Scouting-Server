@@ -4,6 +4,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil.SQLDatatype;
 
 import java.util.ArrayList;
@@ -251,7 +252,9 @@ public class Constants {
         continueDialog.getDialogPane().getButtonTypes().addAll(ButtonType.YES, ButtonType.NO);
         continueDialog.setResultConverter(buttonType -> {return buttonType == ButtonType.YES;});
         Optional<Boolean> result = continueDialog.showAndWait();
-        return result.orElse(false);
+        boolean finalResult = result.orElse(false);
+        Logging.logInfo("Asked question: " + question + " Answer was: " + finalResult);
+        return finalResult;
     }
 
 }
