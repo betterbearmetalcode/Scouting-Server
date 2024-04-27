@@ -3,6 +3,7 @@ package org.tahomarobotics.scouting.scoutingserver;
 import javafx.scene.paint.Color;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.tahomarobotics.scouting.scoutingserver.controller.TabController;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.MatchRecordComparator;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
@@ -17,6 +18,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.StreamCorruptedException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -30,37 +32,6 @@ public class DatabaseManager {
         ScoutingServer.dataCollectionController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ record, Color.GREEN);
 
     }
-
-   /* public static ArrayList<String> parseTeleCommentsToAutoData(String scoutInput) {
-        if (scoutInput.contains(":")) {
-            scoutInput = scoutInput.split(":")[1];
-        }else {
-            scoutInput = "";
-        }
-        ArrayList<String> output = new ArrayList<>();
-        //standardize characters
-        scoutInput = scoutInput.toLowerCase();
-        //if there are any commas, only look at stuff before the comma, this is so the scout can write stuff with out messing up the
-        //scouting server
-        if (scoutInput.contains(",")) {
-            scoutInput = scoutInput.split(",")[0];
-        }
-        //get rid of all characters we dont care about
-        scoutInput = scoutInput.replaceAll("[^pabc12345m]+", "");
-        //check if each note was collected and add the data accordingly
-        Matcher m = Pattern.compile("[pabc12345]m?").matcher(scoutInput);
-        while (m.find()) {
-            if (output.size() < 9) {
-                output.add(m.group());
-            }
-
-        }
-        for (int i = output.size(); i < 9; i++) {
-            output.add("None");
-        }
-
-        return output;
-    }*/
     public static ArrayList<DuplicateDataException> importJSONArrayOfDataObjects(JSONArray data, String activeTable){
         try {
             Configuration.updateConfiguration();
@@ -74,7 +45,12 @@ public class DatabaseManager {
         boolean showErrors = true;
         for (Object object : data) {
             try {
-                SQLUtil.execNoReturn(getSQLStatementFromJSONJata((JSONObject) object, activeTable));
+                SQLUtil.execNoReturn(getSQLStatementFromJSONJata((JSONObject) object, activeTable), false);
+                int matchNum = ((JSONObject) object).getJSONObject(Constants.SQLColumnName.MATCH_NUM.toString()).getInt(String.valueOf(Configuration.Datatype.INTEGER.ordinal()));
+                int teamNum = ((JSONObject) object).getJSONObject(Constants.SQLColumnName.TEAM_NUM.toString()).getInt(String.valueOf(Configuration.Datatype.INTEGER.ordinal()));
+                RobotPosition robotPosition = DatabaseManager.RobotPosition.values()[((JSONObject) object).getJSONObject(Constants.SQLColumnName.ALLIANCE_POS.toString()).getInt(String.valueOf(Configuration.Datatype.INTEGER.ordinal()))];
+                ScoutingServer.dataCollectionController.writeToDataCollectionConsole("Wrote to database: " + activeTable + " Match: " + matchNum + " Team: " + teamNum + "Position: " + robotPosition, Color.GREEN);
+
             } catch (DuplicateDataException e) {
                 duplicates.add(e);
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IllegalStateException |
@@ -187,23 +163,7 @@ public class DatabaseManager {
         return readDatabaseNew(tableName, false);
     }
 
-    public static LinkedList<QRRecord> readDatabase(String tableName) throws IOException {
-        return readDatabase(tableName, "SELECT * FROM \"" + tableName + "\"", SQLUtil.EMPTY_PARAMS, true);
-    }
 
-    public static LinkedList<QRRecord> readDatabase(String tableName, String customStatement, Object[] params, boolean log) {
-        LinkedList<QRRecord> output = new LinkedList<>();
-        try {
-            ArrayList<HashMap<String, Object>> data = SQLUtil.exec(customStatement, params, log);
-            for (HashMap<String, Object> row : data) {
-                //for each row in the sql database
-                output.add(getRecord(row));
-            }
-        } catch (SQLException e) {
-            Logging.logError(e, "failed to read database: " + tableName);
-        }
-        return output;
-    }
 
     public static QRRecord getRecord(HashMap<String, Object> rawData) {
         rawData.putIfAbsent(Constants.SQLColumnName.SHUTTLED.toString(), 0);
@@ -400,32 +360,6 @@ public class DatabaseManager {
         }
 
 
-    }
-
-    public static ArrayList<Match> getUnCorrectedDataFromDatabase(String tableName) throws IOException {
-        LinkedList<QRRecord> rawData = readDatabase(tableName);
-        rawData.sort(new MatchRecordComparator());//this ensures that the data is in order of ascending match and ascending robot position
-        ArrayList<Match> output = new ArrayList<>();
-        if (!rawData.isEmpty()) {
-            int numMatches = rawData.getLast().matchNumber;
-            for (int i  =1; i < numMatches + 1; i++) {
-                //for each match that we have data on
-
-                ArrayList<RobotPositon> robotPositons = new ArrayList<>();
-                final int finalI = i;
-                List<QRRecord> rawRobots = rawData.stream().filter(matchRecord -> matchRecord.matchNumber == finalI).toList();
-                for (QRRecord robot : rawRobots) {
-                    //for each robot in this match
-                    robotPositons.add(new RobotPositon(robot.position, robot.teamNumber, robot.getDataAsList(), robot));
-                }
-                output.add(new Match(i, robotPositons));
-
-            }
-        }else {
-            output = new ArrayList<>();
-        }
-
-        return output;
     }
 
     public static double getAverage(Constants.SQLColumnName column, String teamName, String table, boolean log) throws SQLException {

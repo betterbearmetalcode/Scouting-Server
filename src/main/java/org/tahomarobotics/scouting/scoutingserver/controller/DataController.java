@@ -44,7 +44,7 @@ public class DataController {
             }
             //check if this tab is already open
 
-            TabController controller = new TabController(DatabaseManager.getUnCorrectedDataFromDatabase(selectedTable), selectedTable, tabPane);
+            TabController controller = new TabController(selectedTable, tabPane);
             tabLoader.setController(controller);
 
 

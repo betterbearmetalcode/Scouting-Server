@@ -11,6 +11,7 @@ import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
 import javafx.util.converter.DefaultStringConverter;
+import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
 import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.*;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
@@ -51,7 +52,6 @@ public class TabController {
     public Button exportButton;
     @FXML
     public CheckBox exportNotesCheckbox;
-    private ArrayList<Match> databaseData;
 
     public String tableName;
 
@@ -65,8 +65,7 @@ public class TabController {
     private Optional<JSONArray> tbaDataOptional = Optional.empty();
 
 
-    public TabController(ArrayList<Match> databaseData, String table, TabPane thePane) {
-        this.databaseData = databaseData;
+    public TabController(String table, TabPane thePane) {
         tableName = table;
         pane = thePane;
     }
@@ -87,6 +86,14 @@ public class TabController {
         treeView.setCellFactory(tv -> new TextFieldTreeCell<>(new DefaultStringConverter()) {
 
             @Override
+            public void startEdit() {
+                if (!this.getTreeItem().isLeaf()) {
+                    super.cancelEdit();
+                }
+
+            }
+
+            @Override
             public void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 setTextFill(Color.RED);
@@ -100,13 +107,22 @@ public class TabController {
                     if (selectedProperty().get()) {
                         setTextFill(Color.WHITE);
                     }else {
-                        setTextFill(Color.RED);
+                        String str = item.split("=")[1];
+                        if (Objects.equals(str, "?")) {
+                            setTextFill(Color.BLUE);
+                        }else {
+                            int error = Integer.parseInt(str);
+                            if (Math.abs(error) > Constants.LOW_ERROR_THRESHOLD) {
+                                setTextFill(Color.RED);
+                            }else if (error == 0) {
+                                setTextFill(Color.GREEN);
+                            }else {
+                                setTextFill(Color.ORANGE);
+                            }
+                        }
                     }
-
-/*                    String styleClass = "-fx-text-fill: #ff0000"; // choose style class for item
-                    getStyleClass().add(styleClass);*/
                 }
-            }
+            }//end update item
         });
 
         //init list of events
@@ -301,86 +317,70 @@ public class TabController {
             int arrayIndex = 0;
             int lastMatch = getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, (HashMap<String, Object>)data.get(data.length() - 1));
             for (int matchNum = 1; matchNum <=  lastMatch; matchNum++) {
+                //iterates through all the matches that  we have. There could be some matches that have no data if there is a random entry with a really high match number.
+                //any entry with a match number below 1 will be ingnored, becuase it must be a mistake at that point.
+                ArrayList<HashMap<String, Object>> dataForThisMatch = getDataForMatch(matchNum, data);
+
+                if (dataForThisMatch.isEmpty()) {
+                    continue;
+                }
+                //check that the team numbers in this match correspond with the match schdeule on TBA
+                Optional<HashMap<String, Object>> redAllianceBreakdown = Optional.empty();
+                Optional<HashMap<String, Object>> blueAllianceBreakdown = Optional.empty();
                 if (validateData) {
 
-                    int finalMatchNum = matchNum;
+                    int tempMatchNum = matchNum;
                     Optional<Object> matchTBAData =  new ArrayList<>(tbaDataOptional.get().toList()).stream().filter(o -> {
                         HashMap<String, Object> dataum = (HashMap<String, Object>) o;
-                        String exptectedMatchKey = currentEventCode + "_qm"  + finalMatchNum;
+                        String exptectedMatchKey = currentEventCode + "_qm"  + tempMatchNum;
                         return dataum.get("key").equals(exptectedMatchKey);
                     }).findFirst();
 
 
-                    if (matchTBAData.isPresent()) {
+                    if (matchTBAData.isEmpty()) {
+                        validateData = false;
+                    }else  {
                         //now and only now are we able to validate this match
-                        HashMap<String, Object> matchDatum = (HashMap<String, Object>) matchTBAData.get();
+                        HashMap<String, Object> matchDatum =(HashMap<String, Object>) matchTBAData.get();
+                        //get TBA match score breakdowns for each alliance
+                        HashMap<String, Object> matchScoreBreakdown = (HashMap<String, Object>) matchDatum.get("score_breakdown");
+                        redAllianceBreakdown  = Optional.of((HashMap<String, Object>) matchScoreBreakdown.get("red"));
+                        blueAllianceBreakdown = Optional.of((HashMap<String, Object>) matchScoreBreakdown.get("blue"));
                         if (checkTeamNumbers) {
-                            checkTeamNumbers = checkTeamNumbersForMatch(matchNum, matchDatum, getDataForMatch(matchNum, data));
+                            checkTeamNumbers = checkTeamNumbersForMatch(matchNum, matchDatum, dataForThisMatch);
                         }
                     }
 
                 }
 
-                HashMap<String, Object> entryObject = (HashMap<String, Object>) data.get(arrayIndex);
-
-                int observedMatchNum = getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, entryObject);
-
-                if (observedMatchNum != matchNum) {
-                    //then there are no robots for this match number, or we have tried all of them, but we need to move on
-                    //break out and imcrement the match number we are looking at and see if the first data object matches up then. The data should be sorted.
-                    break;
-                }
-                //now we have asertained that the data entry we are analyzing is actually the match number we think it is.
-                TreeItem<String> matchItem = new TreeItem<>("Match: " + matchNum);
+                //declare the match item
+                TreeItem<String> matchItem = new TreeItem<>();
                 try {
                     matchItem.setExpanded(expainsionStructure.get(matchNum - 1).getKey());
                 }catch (IndexOutOfBoundsException e) {
                     matchItem.setExpanded(false);
                 }
 
-                for (int robotPosition = 0; robotPosition < DatabaseManager.RobotPosition.values().length; robotPosition++) {
-                    int teamNum = getIntFromEntryObject(Constants.SQLColumnName.TEAM_NUM, entryObject);
-                    DatabaseManager.RobotPosition observedPosition = DatabaseManager.getRobotPositionFromNum(getIntFromEntryObject(Constants.SQLColumnName.ALLIANCE_POS, entryObject));
-                    //the json entries will be in order of robot position, so we can assume that if we check for the first one first, it won't show up later and stuff wont be skipped
-                    if (robotPosition == observedPosition.ordinal()) {
-                        TreeItem<String> robotPositionItem = new TreeItem<>(observedPosition.name()  + ": " + teamNum);
-                        try {
-                            robotPositionItem.setExpanded(expainsionStructure.get(matchNum - 1).getValue().get(observedPosition.ordinal()));
-                        }catch (IndexOutOfBoundsException e) {
-                            robotPositionItem.setExpanded(false);
-                        }
-                        //here I know the match num, team num, and robot position. i need to validate data.
-
-                        //add all the data to the robot position item
-                        for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
-                            TreeItem<String> dataPointItem = new TreeItem<>(rawDataMetric.getName()
-                                    + ":" +
-                                    ((HashMap<String, Object>) entryObject.get(rawDataMetric.getName())).get(String.valueOf(rawDataMetric.getDatatype().ordinal())).toString()
-                                    + ":Error=?");
-                            robotPositionItem.getChildren().add(dataPointItem);;
-                        }
-
-                        matchItem.getChildren().add(robotPositionItem);
-                        //we are done taking data from this array entry, move on to the next one
-                        //increment if array index and check if the next one is not the same match
-
-                        if (++arrayIndex == data.length()) {
-                            //we have reached the end of the data, doing the next check will cause an exception
-                            break;
-                        }
-                        if (getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, (HashMap<String, Object>) data.get(arrayIndex)) != matchNum) {
-                            //if the next match number is differnet, the we need to increment the match number and start all over again
-                            //so break out of this loop and do the next loop of the match num loop
-
-                            break;
-                        }
-                        //update the object we are analying with the new array index
-                        entryObject = (HashMap<String, Object>) data.get(arrayIndex);
-
-                    }
 
 
-                }//robot position loop.
+                ArrayList<HashMap<String, Object>> redAllianceData = dataForThisMatch.stream().filter(map -> getIntFromEntryObject(Constants.SQLColumnName.ALLIANCE_POS, map) < 3).collect(Collectors.toCollection(ArrayList::new));
+                ArrayList<HashMap<String, Object>> blueAllianceData = dataForThisMatch.stream().filter(map -> getIntFromEntryObject(Constants.SQLColumnName.ALLIANCE_POS, map) > 2).collect(Collectors.toCollection(ArrayList::new));
+                Optional<Integer> redError = addAlliance(redAllianceData, matchItem, redAllianceBreakdown);
+                Optional<Integer> blueError = addAlliance(blueAllianceData, matchItem, blueAllianceBreakdown);
+                Optional<Integer> entryError = Optional.empty();
+                if (redError.isPresent() && blueError.isPresent()) {
+                    entryError = Optional.of(Math.max(redError.get(), blueError.get()));
+                }else if (redError.isPresent()) {
+                    entryError = redError;
+                }else if (blueError.isPresent()) {
+                    entryError = blueError;
+                }
+
+                String err = "?";
+                if (entryError.isPresent()) {
+                    err = String.valueOf(entryError.get());
+                }
+                matchItem.setValue("Match: " + matchNum + ": Error=" + err);
                 stringRootItem.getChildren().add(matchItem);
             }//match num loop
 
@@ -451,6 +451,109 @@ public class TabController {
         return true;
     }
 
+
+
+
+
+    //adds data for an alliance to a match item and validates it if need be
+    //this method will need to be re-written each year
+    //returns max error found
+    private Optional<Integer> addAlliance(ArrayList<HashMap<String, Object>> scoutingData, TreeItem<String> matchItem, Optional<HashMap<String, Object>> breakdownOptinal) {
+        Optional<Integer> maxErrorOfThisAlliance = Optional.empty();
+        String autoSpeakerError = "?";
+        String autoAmpError = "?";
+        String teleSpeakerError = "?";
+        String teleAmpError = "?";
+        if (breakdownOptinal.isPresent() && (scoutingData.size() == 3)) {
+            maxErrorOfThisAlliance = Optional.of(0);
+            //if we don't have tba data for this match or a full alliance, then we can't validate
+            HashMap<String, Object> breakdown = breakdownOptinal.get();
+
+            int autoSpeakerTrue = (int) breakdown.get("autoSpeakerNoteCount");
+
+            int autoAmpTrue = (int) breakdown.get("autoAmpNoteCount");
+            int teleSpeakerTrue = ((int) breakdown.get("teleopSpeakerNoteAmplifiedCount")) + ((int) breakdown.get("teleopSpeakerNoteCount"));
+            int teleAmpTrue = (int) breakdown.get("teleopAmpNoteCount");
+            int autoSpeakerMeasured =
+                    getIntFromEntryObject(Constants.SQLColumnName.AUTO_SPEAKER, scoutingData.get(0)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.AUTO_SPEAKER, scoutingData.get(1)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.AUTO_SPEAKER, scoutingData.get(2));
+
+            int autoAmpMeasured =
+                    getIntFromEntryObject(Constants.SQLColumnName.AUTO_AMP, scoutingData.get(0)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.AUTO_AMP, scoutingData.get(1)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.AUTO_AMP, scoutingData.get(2));
+
+
+            int teleSpeakerMeasured =
+                    getIntFromEntryObject(Constants.SQLColumnName.TELE_SPEAKER, scoutingData.get(0)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.TELE_SPEAKER, scoutingData.get(1)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.TELE_SPEAKER, scoutingData.get(2)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.SPEAKER_RECEIVED, scoutingData.get(0)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.SPEAKER_RECEIVED, scoutingData.get(1)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.SPEAKER_RECEIVED, scoutingData.get(2));
+
+            int teleAmpMeasured =
+                    getIntFromEntryObject(Constants.SQLColumnName.TELE_AMP, scoutingData.get(0)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.TELE_AMP, scoutingData.get(1)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.TELE_AMP, scoutingData.get(2)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.AMP_RECEIVED, scoutingData.get(0)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.AMP_RECEIVED, scoutingData.get(1)) +
+                    getIntFromEntryObject(Constants.SQLColumnName.AMP_RECEIVED, scoutingData.get(2));
+
+
+            autoSpeakerError = String.valueOf(autoSpeakerMeasured - autoSpeakerTrue);
+            autoAmpError = String.valueOf(autoAmpMeasured - autoAmpTrue);
+            teleSpeakerError = String.valueOf(teleSpeakerMeasured - teleSpeakerTrue);
+            teleAmpError = String.valueOf(teleAmpMeasured - teleAmpTrue);
+            maxErrorOfThisAlliance = Optional.of(findABSMax((autoSpeakerMeasured - autoSpeakerTrue),
+                    (autoAmpMeasured - autoAmpTrue),
+                    (teleSpeakerMeasured - teleSpeakerTrue),
+                    (teleAmpMeasured - teleAmpTrue)));
+        }
+
+        //here use the error values calulated above and set them below
+        for (HashMap<String, Object> scoutingDatum : scoutingData) {
+            DatabaseManager.RobotPosition robotPosition = DatabaseManager.RobotPosition.values()[getIntFromEntryObject(Constants.SQLColumnName.ALLIANCE_POS, scoutingDatum)];
+            int teamNum = getIntFromEntryObject(Constants.SQLColumnName.TEAM_NUM, scoutingDatum);
+            //declare robot position item
+            String err = "?";
+            if (maxErrorOfThisAlliance.isPresent()) {
+                err = String.valueOf(maxErrorOfThisAlliance.get());
+            }
+            TreeItem<String> robotPositionItem = new TreeItem<>(robotPosition.name()  + ": " + teamNum + ": Error=" + err);
+            robotPositionItem.setExpanded(false);
+            //add all the data to the robot position item, only consider raw data metrics that we care about
+            for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
+                String error = "?";
+
+                //some things are inherently correct
+                if (Objects.equals(rawDataMetric.getName(), Constants.SQLColumnName.MATCH_NUM.name()) || Objects.equals(rawDataMetric.getName(), Constants.SQLColumnName.TEAM_NUM.name()) || Objects.equals(rawDataMetric.getName(), Constants.SQLColumnName.ALLIANCE_POS.name()) || Objects.equals(rawDataMetric.getName(), Constants.SQLColumnName.TELE_COMMENTS.name())) {
+                    error = "0";
+                } else if (Objects.equals(rawDataMetric.getName(), Constants.SQLColumnName.AUTO_SPEAKER.name())) {
+                    error = autoSpeakerError;
+                } else if (Objects.equals(rawDataMetric.getName(), Constants.SQLColumnName.AUTO_AMP.name())) {
+                    error = autoAmpError;
+                } else if (Objects.equals(rawDataMetric.getName(), Constants.SQLColumnName.TELE_SPEAKER.name())) {
+                    error = teleSpeakerError;
+                } else if (Objects.equals(rawDataMetric.getName(), Constants.SQLColumnName.TELE_AMP.name())) {
+                    error = teleAmpError;
+                } else if (Objects.equals(rawDataMetric.getName(), Constants.SQLColumnName.SPEAKER_RECEIVED.name())) {
+                    error = teleSpeakerError;
+                } else if (Objects.equals(rawDataMetric.getName(), Constants.SQLColumnName.AMP_RECEIVED.name())) {
+                    error = autoAmpError;
+                }
+                TreeItem<String> dataPointItem = new TreeItem<>(rawDataMetric.getName()
+                        + ":" +
+                        ((HashMap<String, Object>) scoutingDatum.get(rawDataMetric.getName())).get(String.valueOf(rawDataMetric.getDatatype().ordinal())).toString()
+                        + ":Error=" + error);
+                robotPositionItem.getChildren().add(dataPointItem);;
+            }
+            matchItem.getChildren().add(robotPositionItem);
+        }
+        return maxErrorOfThisAlliance;
+
+    }
 
     public boolean selectCompetition() {
         Logging.logInfo("asking user to select which competition they are at");
@@ -557,7 +660,7 @@ public class TabController {
         }
 
         @Override
-        public void commitEdit(Label newLabel) {
+        public void commitEdit(Label newLabel) {/*
             if (this.getTreeItem().isLeaf()) {
                 //given the code in start edit, the newLabel is guarentted to be a numeric leaf item.
                 try {
@@ -617,7 +720,7 @@ public class TabController {
                 System.out.println("Cancelling branch edit");
                 cancelEdit();
             }
-
+*/
 
         }
 
@@ -638,7 +741,7 @@ public class TabController {
         }
     }
 
-    private int getIntFromEntryObject(Constants.SQLColumnName metric, HashMap<String, Object> entryObject) {
+    public static int getIntFromEntryObject(Constants.SQLColumnName metric, HashMap<String, Object> entryObject) {
         return Integer.parseInt(((HashMap<String, Object>) entryObject.get(metric.toString()))
                 .get(String.valueOf(Configuration.Datatype.INTEGER.ordinal())).toString());
     }
@@ -655,7 +758,15 @@ public class TabController {
         });
         return dataForSpecificMatch;
     }
+    private int findABSMax(int... vals) {
+        int max = 0;
 
+        for (int d : vals) {
+            if (Math.abs(d) > max) max = d;
+        }
+
+        return max;
+    }
 
 
 }
