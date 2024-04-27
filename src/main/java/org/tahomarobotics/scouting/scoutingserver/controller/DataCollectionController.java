@@ -191,7 +191,7 @@ public class DataCollectionController {
             handleDuplicates(duplicates);
 
             inputStream.close();
-        } catch (IOException | ParserConfigurationException | SAXException | ConfigFileFormatException e) {
+        } catch (IOException | ConfigFileFormatException e) {
             Logging.logError(e);
         }
     }

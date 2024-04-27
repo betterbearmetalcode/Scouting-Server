@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -155,9 +156,11 @@ public class MiscController {
     public void findTraps(ActionEvent event) {
             //save data
         try {
-            Configuration.updateConfiguration();
-        } catch (ParserConfigurationException | IOException | SAXException | ConfigFileFormatException e) {
-            Logging.logError(e);
+            DatabaseManager.readDatabaseNew("Hopper", true);
+        } catch (ConfigFileFormatException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
     }

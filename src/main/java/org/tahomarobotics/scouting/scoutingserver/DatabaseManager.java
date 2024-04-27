@@ -64,7 +64,7 @@ public class DatabaseManager {
     public static ArrayList<DuplicateDataException> importJSONArrayOfDataObjects(JSONArray data, String activeTable){
         try {
             Configuration.updateConfiguration();
-        } catch (ParserConfigurationException | IOException | SAXException | ConfigFileFormatException e) {
+        } catch (ConfigFileFormatException e) {
            if (!Constants.askQuestion("Unable to update configuration, proceed with current configuration?")) {
                return new ArrayList<>();
            }
@@ -139,8 +139,7 @@ public class DatabaseManager {
         return statementBuilder.toString();
     }
 
-
-    public static JSONArray readDatabaseNew(String tableName) throws SQLException, ConfigFileFormatException, ParserConfigurationException, IOException, SAXException {
+    public static JSONArray readDatabaseNew(String tableName, boolean sorted) throws ConfigFileFormatException, SQLException {
         ArrayList<HashMap<String, Object>> rawList = SQLUtil.exec("SELECT * FROM \"" + tableName + "\"", true);
         JSONArray output = new JSONArray();
         Configuration.updateConfiguration();
@@ -163,7 +162,29 @@ public class DatabaseManager {
             }//end for each sql column
             output.put(rowObject);
         }//end for each row
+
+        if (sorted) {
+            List<Object> sortedOutput = output.toList();
+            sortedOutput.sort((o1, o2) -> {
+                HashMap<String, Object> rowObject1 = (HashMap<String, Object>) o1;
+                HashMap<String, Object> rowObject2 = (HashMap<String, Object>) o2;
+                int match1 = Integer.parseInt(((HashMap<String, Object>)rowObject1.get(Constants.SQLColumnName.MATCH_NUM.toString())).get(String.valueOf(Configuration.Datatype.INTEGER.ordinal())).toString());
+                int match2 = Integer.parseInt(((HashMap<String, Object>)rowObject2.get(Constants.SQLColumnName.MATCH_NUM.toString())).get(String.valueOf(Configuration.Datatype.INTEGER.ordinal())).toString());
+                if (match1 != match2) {
+                    return Integer.compare(match1, match2);
+                }else {
+                    int robotPosition1 = Integer.parseInt(((HashMap<String, Object>)rowObject1.get(Constants.SQLColumnName.ALLIANCE_POS.toString())).get(String.valueOf(Configuration.Datatype.INTEGER.ordinal())).toString());
+                    int robotPosition2 = Integer.parseInt(((HashMap<String, Object>)rowObject2.get(Constants.SQLColumnName.ALLIANCE_POS.toString())).get(String.valueOf(Configuration.Datatype.INTEGER.ordinal())).toString());
+                    return Integer.compare(robotPosition1, robotPosition2);
+                }
+            });
+            return new JSONArray().putAll(sortedOutput);
+        }
         return output;
+    }
+
+    public static JSONArray readDatabaseNew(String tableName) throws SQLException, ConfigFileFormatException {
+        return readDatabaseNew(tableName, false);
     }
 
     public static LinkedList<QRRecord> readDatabase(String tableName) throws IOException {

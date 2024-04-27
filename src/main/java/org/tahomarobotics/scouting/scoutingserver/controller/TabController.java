@@ -17,6 +17,8 @@ import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DataValidationCompetitionChooser;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
 import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
@@ -35,7 +37,7 @@ public class TabController {
 
 
     @FXML
-    private TreeView<Label> treeView;
+    private TreeView<String> treeView;
 
     @FXML
     public TabPane pane;
@@ -52,6 +54,8 @@ public class TabController {
     public String tableName;
 
     private TreeItem<Label> rootItem;
+
+    private TreeItem<String> stringRootItem;
     private JSONArray eventList;
  //   private final ArrayList<Pair<String, String>> otherEvents = new ArrayList<>();
     private String currentEventCode = "";
@@ -65,14 +69,15 @@ public class TabController {
     }
 
     @FXML
-    public void initialize(TreeView<Label> view) {
+    public void initialize(TreeView<String> view) {
         Logging.logInfo("Initializing Tab Controller: " + tableName);
         //init data stuff
         treeView = view;
         rootItem = new TreeItem<>(new Label("root-item"));
+        stringRootItem = new TreeItem<>("root-item");
         setEditMode(false);
         treeView.setShowRoot(false);
-        treeView.setRoot(rootItem);
+        treeView.setRoot(stringRootItem);
         treeView.setOnEditStart(event -> {
             if (!editmode) {
                 setEditMode(true);
@@ -169,7 +174,8 @@ public class TabController {
         } catch (IOException ex) {
             Logging.logError(ex);
         }
-        constructTree(databaseData, false);
+        //constructTree(databaseData, false);
+        udpateDisplay();
     }
 
     @FXML
@@ -211,6 +217,100 @@ public class TabController {
         return true;
 
     }
+
+    private void udpateDisplay() {
+        Logging.logInfo("Updating database: " + tableName);
+        try {
+            Configuration.updateConfiguration();
+        } catch (ConfigFileFormatException e) {
+            Logging.logError(e);
+        }
+        try {
+            JSONArray data = DatabaseManager.readDatabaseNew(tableName, true);
+            //construct a array containing the expansion structure of the database, if there are changes (exceptions), then we can defualt the expansionto false
+            ArrayList<Pair<Boolean, ArrayList<Boolean>>> expainsionStructure = new ArrayList<>();
+            for (TreeItem<Label> matchItem : rootItem.getChildren()) {
+                ArrayList<Boolean> matchExpansion = new ArrayList<>();
+                for (TreeItem<Label> robotItem : matchItem.getChildren()) {
+                    matchExpansion.add(robotItem.isExpanded());
+                }
+                expainsionStructure.add(new Pair<>(matchItem.isExpanded(), matchExpansion));
+            }
+            stringRootItem.getChildren().clear();
+            //for each json object representing a entry in the database, sorted
+            int arrayIndex = 0;
+            int lastMatch = getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, (HashMap<String, Object>)data.get(data.length() - 1));
+            for (int matchNum = 1; matchNum <=  lastMatch; matchNum++) {
+                if (matchNum == 123) {
+                    System.currentTimeMillis();
+                }
+                HashMap<String, Object> entryObject = (HashMap<String, Object>) data.get(arrayIndex);
+
+                int observedMatchNum = getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, entryObject);
+
+                if (observedMatchNum != matchNum) {
+                    //then there are no robots for this match number, or we have tried all of them, but we need to move on
+                    //break out and imcrement the match number we are looking at and see if the first data object matches up then. The data should be sorted.
+                    break;
+                }
+                //now we have asertained that the data entry we are analyzing is actually the match number we think it is.
+                TreeItem<String> matchItem = new TreeItem<>("Match: " + matchNum);
+                try {
+                    matchItem.setExpanded(expainsionStructure.get(matchNum - 1).getKey());
+                }catch (IndexOutOfBoundsException e) {
+                    matchItem.setExpanded(false);
+                }
+
+                for (int robotPosition = 0; robotPosition < DatabaseManager.RobotPosition.values().length; robotPosition++) {
+                    int teamNum = getIntFromEntryObject(Constants.SQLColumnName.TEAM_NUM, entryObject);
+                    DatabaseManager.RobotPosition observedPosition = DatabaseManager.getRobotPositionFromNum(getIntFromEntryObject(Constants.SQLColumnName.ALLIANCE_POS, entryObject));
+                    //the json entries will be in order of robot position, so we can assume that if we check for the first one first, it won't show up later and stuff wont be skipped
+                    if (robotPosition == observedPosition.ordinal()) {
+                        TreeItem<String> robotPositionItem = new TreeItem<>(observedPosition.name()  + ": " + teamNum);
+                        try {
+                            robotPositionItem.setExpanded(expainsionStructure.get(matchNum - 1).getValue().get(observedPosition.ordinal()));
+                        }catch (IndexOutOfBoundsException e) {
+                            robotPositionItem.setExpanded(false);
+                        }
+                        //add all the data to the robot position item
+                        for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
+                            TreeItem<String> dataPointItem = new TreeItem<>(rawDataMetric.getName()
+                                    + ":" +
+                                    ((HashMap<String, Object>) entryObject.get(rawDataMetric.getName())).get(String.valueOf(rawDataMetric.getDatatype().ordinal())).toString()
+                                    + ":Error=UNKNOWN");
+                            robotPositionItem.getChildren().add(dataPointItem);
+                        }
+
+                        matchItem.getChildren().add(robotPositionItem);
+                        //we are done taking data from this array entry, move on to the next one
+                        //increment if array index and check if the next one is not the same match
+
+                        if (++arrayIndex == data.length()) {
+                            //we have reached the end of the data, doing the next check will cause an exception
+                            break;
+                        }
+                        if (getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, (HashMap<String, Object>) data.get(arrayIndex)) != matchNum) {
+                            //if the next match number is differnet, the we need to increment the match number and start all over again
+                            //so break out of this loop and do the next loop of the match num loop
+
+                            break;
+                        }
+                        //update the object we are analying with the new array index
+                        entryObject = (HashMap<String, Object>) data.get(arrayIndex);
+
+                    }
+
+
+                }//robot position loop.
+                stringRootItem.getChildren().add(matchItem);
+            }//match num loop
+
+
+        } catch (SQLException | ConfigFileFormatException e) {
+            Logging.logError(e);
+        }
+    }
+
 
     private void constructTree(ArrayList<Match> matches, boolean switchingToEditMode) {
         Logging.logInfo("Constructing tree");
@@ -337,7 +437,7 @@ public class TabController {
             os.close();
 
 
-        } catch (IOException | SQLException | ConfigFileFormatException | ParserConfigurationException | SAXException e) {
+        } catch (IOException | SQLException | ConfigFileFormatException  e) {
             Logging.logError(e, "Failed to save backup");
         }
 
@@ -367,7 +467,7 @@ public class TabController {
         treeView.setEditable(mode);
         if (mode) {
             //set to edit mode
-            treeView.setCellFactory(param -> new EditableTreeCell(this));
+          //  treeView.setCellFactory(param -> new EditableTreeCell(this));
             validateDataButton.setDisable(true);
             exportButton.setDisable(true);
             editToggle.setSelected(true);
@@ -383,7 +483,8 @@ public class TabController {
             editToggle.setSelected(false);
             editmode = false;
         }
-        constructTree(databaseData, true);
+        //constructTree(databaseData, true);
+        udpateDisplay();
     }
 
     private class EditableTreeCell extends TextFieldTreeCell<Label> {
@@ -540,6 +641,12 @@ public class TabController {
             return new Label(string);
         }
     }
+
+    private int getIntFromEntryObject(Constants.SQLColumnName metric, HashMap<String, Object> entryObject) {
+        return Integer.parseInt(((HashMap<String, Object>) entryObject.get(metric.toString()))
+                .get(String.valueOf(Configuration.Datatype.INTEGER.ordinal())).toString());
+    }
+
 
 
 }

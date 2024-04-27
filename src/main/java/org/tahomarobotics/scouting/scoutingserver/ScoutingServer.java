@@ -85,7 +85,11 @@ public class ScoutingServer extends Application {
         });
         mainStage.show();
 
-
+        try {
+            Configuration.updateConfiguration();
+        } catch (ConfigFileFormatException e) {
+            Logging.logError(e);
+        }
 
         try {
             //set up resources folder if not already created
@@ -140,24 +144,7 @@ public class ScoutingServer extends Application {
     @Override
     public void init() throws Exception {
         Logging.logInfo("Initializing");
-        try {
-            Configuration.updateConfiguration();
-        }catch (Exception e) {
-            Logging.logInfo(e.getMessage());
-            // create a dialog Box
-            JDialog d = new JDialog();
-            // create a label
-            JLabel l = new JLabel("Failed to load configuration file, application will  exit in 10 seconds. \n -> LOG AT: " + Constants.LOG_PATH + " <-");
-            d.add(l);
-            // setsize of dialog
-            d.setSize(1000, 100);
-            d.setLocationRelativeTo(null);
-            // set visibility of dialog
-            d.setVisible(true);
-            Thread.sleep(10000);
-            System.exit(1);
 
-        }
         setAppWidthProperty(Toolkit.getDefaultToolkit().getScreenSize().width * WIDTH_MULTIPLIER);
         setAppHeight(Toolkit.getDefaultToolkit().getScreenSize().height * HEIGHT_MULTIPLIER);
         FXMLLoader mainLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/main-scene.fxml").toURI().toURL());

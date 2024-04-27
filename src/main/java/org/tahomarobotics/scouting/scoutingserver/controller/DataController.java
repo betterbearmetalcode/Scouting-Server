@@ -76,7 +76,7 @@ public class DataController {
 
 
             box.prefHeightProperty().bind(appHeightProperty());
-            TreeView<Label> treeView = (TreeView<Label>) box.getChildren().get(0);
+            TreeView<String> treeView = (TreeView<String>) box.getChildren().get(0);
             treeView.prefHeightProperty().bind(Constants.UIValues.databaseHeightProperty());
             treeView.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
             //pass the tree view to the controller class
