@@ -83,48 +83,7 @@ public class TabController {
         treeView.setEditable(true);
         treeView.setShowRoot(false);
         treeView.setRoot(stringRootItem);
-        treeView.setCellFactory(tv -> new TextFieldTreeCell<>(new DefaultStringConverter()) {
-
-            @Override
-            public void startEdit() {
-                if (!this.getTreeItem().isLeaf()) {
-                    super.cancelEdit();
-                }
-
-            }
-
-            @Override
-            public void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setTextFill(Color.RED);
-
-
-                if (empty) {
-                    setText("");
-                } else {
-                    setText(item);
-                    //make it readable even if the item is selected
-                    if (selectedProperty().get()) {
-                        setTextFill(Color.WHITE);
-                    }else {
-                        String str = item.split("=")[1];
-                        if (Objects.equals(str, "?")) {
-                            setTextFill(Color.BLUE);
-                        }else {
-                            int error = Integer.parseInt(str);
-                            if (Math.abs(error) > Constants.LOW_ERROR_THRESHOLD) {
-                                setTextFill(Color.RED);
-                            }else if (error == 0) {
-                                setTextFill(Color.GREEN);
-                            }else {
-                                setTextFill(Color.ORANGE);
-                            }
-                        }
-                    }
-                }
-            }//end update item
-        });
-
+        treeView.setCellFactory(param -> new EditableTreeCell());
         //init list of events
         try {
             FileInputStream stream = new FileInputStream(Constants.BASE_READ_ONLY_FILEPATH + "/resources/TBAData/eventList.json");
@@ -380,7 +339,7 @@ public class TabController {
                 if (entryError.isPresent()) {
                     err = String.valueOf(entryError.get());
                 }
-                matchItem.setValue("Match: " + matchNum + ": Error=" + err);
+                matchItem.setValue("Match: " + matchNum + " Error=" + err);
                 stringRootItem.getChildren().add(matchItem);
             }//match num loop
 
@@ -521,7 +480,7 @@ public class TabController {
             if (maxErrorOfThisAlliance.isPresent()) {
                 err = String.valueOf(maxErrorOfThisAlliance.get());
             }
-            TreeItem<String> robotPositionItem = new TreeItem<>(robotPosition.name()  + ": " + teamNum + ": Error=" + err);
+            TreeItem<String> robotPositionItem = new TreeItem<>(robotPosition.name()  + ": " + teamNum + " Error=" + err);
             robotPositionItem.setExpanded(false);
             //add all the data to the robot position item, only consider raw data metrics that we care about
             for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
@@ -585,22 +544,24 @@ public class TabController {
 
 
 
-    private class EditableTreeCell extends TextFieldTreeCell<Label> {
-        private final ContextMenu menu = new ContextMenu();
-        private final TabController controller;
-        public EditableTreeCell(TabController c) {
-            super(new CustomStringConverter());
-            controller = c;
-            MenuItem renameItem = new MenuItem("Edit");
-            MenuItem deleteItem = new MenuItem("Delete");
-            menu.getItems().addAll(renameItem, deleteItem);
+    private class EditableTreeCell extends TextFieldTreeCell<String> {
 
-            renameItem.setOnAction(arg0 -> startEdit());
+        private String oldStringBeingEdited = "";
+        private final ContextMenu menu = new ContextMenu();
+        public EditableTreeCell() {
+            super(new DefaultStringConverter());
+            MenuItem editItem = new MenuItem("Edit");
+            MenuItem deleteItem = new MenuItem("Delete");
+            menu.getItems().addAll(editItem, deleteItem);
+
+            editItem.setOnAction(arg0 -> startEdit());
             deleteItem.setOnAction(event -> {
-                if (getTreeItem().getParent() == rootItem) {
+                if (!Constants.askQuestion("Are you sure you want to delete this?")) {
+                    return;
+                }
+                if (getTreeItem().getParent() == stringRootItem) {
                     //then this is a match item
-                    System.out.println("match item");
-                    for (TreeItem<Label> positionItem : getTreeItem().getChildren()) {
+                    for (TreeItem<String> positionItem : getTreeItem().getChildren()) {
                         deletePositionItem(positionItem);
                     }
                 }else if (getTreeItem().isLeaf()){
@@ -608,16 +569,13 @@ public class TabController {
                 }else {
                     deletePositionItem(getTreeItem());
                 }
-
-
-
             });
         }
 
-        private void deletePositionItem(TreeItem<Label> positionItem) {
-            String teamNum = positionItem.getValue().getText().split(" ")[1];
+        private void deletePositionItem(TreeItem<String> positionItem) {
+            String teamNum = positionItem.getValue().split(" ")[1];
 
-            String match = positionItem.getParent().getValue().getText().split(" ")[1];
+            String match = positionItem.getParent().getValue().split(" ")[1];
             try {
                 SQLUtil.execNoReturn("DELETE FROM \"" + tableName + "\" WHERE " + Constants.SQLColumnName.MATCH_NUM.name() + "=? AND " + Constants.SQLColumnName.TEAM_NUM.name() + "=?", new Object[]{match, teamNum}, true);
 
@@ -626,120 +584,132 @@ public class TabController {
             }
         }
 
+
         @Override
-        public void updateItem(Label item, boolean empty) {
+        public void startEdit() {
+            if (!this.getTreeItem().isLeaf()) {
+                super.cancelEdit();
+            }else {
+                Optional<DataMetric> dataMetricOptinal = Configuration.getMetric(getText().split(":")[0]);
+                if (dataMetricOptinal.isEmpty()) {
+                    cancelEdit();
+                }else if ((Objects.equals(dataMetricOptinal.get().getName(), Constants.SQLColumnName.MATCH_NUM.name())) || (Objects.equals(dataMetricOptinal.get().getName(), Constants.SQLColumnName.TEAM_NUM.name())) || (Objects.equals(dataMetricOptinal.get().getName(), Constants.SQLColumnName.ALLIANCE_POS.name()))) {
+                    //then this is one of the data metrics we don't want to be able to edit because they are essential to the nature and identification of the entry
+                    cancelEdit();
+                }else {
+                    oldStringBeingEdited = getText();
+                    super.startEdit();
+                    ((TextField) getGraphic()).setText(oldStringBeingEdited.split(":")[1]);
+                }
+            }
+
+        }
+
+        @Override
+        public void updateItem(String item, boolean empty) {
             super.updateItem(item, empty);
+            setTextFill(Color.PINK);//should never see this
             if (!isEditing()) {
                 setContextMenu(menu);
             }
-        }
-        @Override
-        public void startEdit() {
-            if (this.getTreeItem().isLeaf()) {
-                String name = this.getTreeItem().getValue().getText().split(":")[0];
-                if ((Objects.equals(name, Constants.SQLColumnName.ALLIANCE_POS.toString().replaceAll("_", " ").toLowerCase())) || (Objects.equals(name, Constants.SQLColumnName.TEAM_NUM.toString().replaceAll("_", " ").toLowerCase())) ||(Objects.equals(name, Constants.SQLColumnName.MATCH_NUM.toString().replaceAll("_", " ").toLowerCase()))  || (Objects.equals(name, Constants.SQLColumnName.TELE_COMMENTS.toString().replaceAll("_", " ").toLowerCase())) ) {
-                    //then this is a comment
-                    cancelEdit();
-                    Logging.logInfo("This data cannot be edited", true);
 
-
+            if (empty) {
+                setText("");
+            } else {
+                setText(item);
+                //make it readable even if the item is selected
+                if (selectedProperty().get()) {
+                    setTextFill(Color.WHITE);
+                }else if (!item.contains("=")) {
+                    setTextFill(Color.BLUE);
                 }else {
-                    super.startEdit();
+                    String str = item.split("=")[1];
+                    if (Objects.equals(str, "?")) {
+                        setTextFill(Color.BLUE);
+                    }else {
+                        int error = Integer.parseInt(str);
+                        if (Math.abs(error) > Constants.LOW_ERROR_THRESHOLD) {
+                            setTextFill(Color.RED);
+                        }else if (error == 0) {
+                            setTextFill(Color.GREEN);
+                        }else {
+                            setTextFill(Color.ORANGE);
+                        }
+                    }
                 }
-
-            }else {
-                super.cancelEdit();
             }
+        }//end update item
 
-        }
 
         @Override
         public void cancelEdit() {
             super.cancelEdit();
-            //setEditMode(false);
+            oldStringBeingEdited = "";
         }
 
         @Override
-        public void commitEdit(Label newLabel) {/*
+        public void commitEdit(String newString) {
             if (this.getTreeItem().isLeaf()) {
-                //given the code in start edit, the newLabel is guarentted to be a numeric leaf item.
-                try {
-                    //see if they actually entered a number
-                    Integer.valueOf(newLabel.getText());
-                }catch (NumberFormatException e) {
+                TreeItem<String> dataItem = this.getTreeItem();
+                TreeItem<String> robotItem = dataItem.getParent();
+                TreeItem<String> matchItem = robotItem.getParent();
+
+                //figure out which data metric we are dealing with
+                Optional<DataMetric> dataMetric = Configuration.getMetric(oldStringBeingEdited.split(":")[0]);
+                if (dataMetric.isEmpty()) {
+                    //idk how this could happen
+                    Logging.logInfo("Cancelling edit because data metric was not found", true);
                     cancelEdit();
-                    Logging.logInfo("This needs to be a number, cancelling edit", true);
-
                 }
-                TreeItem<Label> dataItem = this.getTreeItem();
-                TreeItem<Label> robotItem = dataItem.getParent();
-                TreeItem<Label> matchItem = robotItem.getParent();
+                String[] tokens = oldStringBeingEdited.split(":");
+                tokens[1] = newString;
+                try {
+                    //validate input
+                    switch (dataMetric.get().getDatatype()) {
 
-                //figure out what the new string should be
-                String[] tokens = dataItem.getValue().getText().split(":");
-                tokens[1] = newLabel.getText();
+                        case INTEGER -> {
+                            Integer.parseInt(tokens[1]);
+                        }
+                        case BOOLEAN -> {
+                            if ((Integer.parseInt(tokens[1]) != 1) && (Integer.parseInt(tokens[1]) != 0)) {
+                                throw new NumberFormatException();
+                            }
+                        }
+                    }
+                }catch (NumberFormatException e) {
+                    Logging.logInfo("Please enter valid input", true);
+                    return;
+                }
+
                 StringBuilder builder = new StringBuilder();
                 for (String token : tokens) {
                     builder.append(token).append(":");
                 }
-                String newString = builder.substring(0, builder.toString().length() - 1);
-                super.commitEdit(new Label(newString));
-                int matchNum = Integer.parseInt(matchItem.getValue().getText().split(" ")[1]);
-                int teamNum = Integer.parseInt(robotItem.getValue().getText().split(" ")[1]);
-                Match match = databaseData.stream().filter(match1 -> match1.matchNumber() == matchNum).findFirst().get();
-                RobotPositon robotPositon = match.robotPositons().stream().filter(robot1 -> robot1.teamNumber() == teamNum).findFirst().get();
-                robotPositon.data().replaceAll(dataPoint -> {
-                    if (Objects.equals(dataPoint.getName().replaceAll("_", " ").toLowerCase(), tokens[0])) {
-                        //then this is the datapoint we are looking for
-                        DataPoint newData = new DataPoint(newString);
-                        StringBuilder statementBuilder = new StringBuilder();
-                        statementBuilder.append("UPDATE \"").append(tableName).append("\" ");
-                        statementBuilder.append("SET ").append(newData.getName()).append("=?");
-                        statementBuilder.append(" WHERE ").append(Constants.SQLColumnName.TEAM_NUM).append("=?");
-                        statementBuilder.append(" AND ").append(Constants.SQLColumnName.MATCH_NUM).append("=?");
-                        try {
-                            SQLUtil.execNoReturn(statementBuilder.toString(), new String[] {newLabel.getText(), String.valueOf(teamNum), String.valueOf(matchNum)}, true);
-                            Timer timer = new Timer();
-                            timer.schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    //setEditMode(false);
-                                }
-                            }, 10);
-                        } catch (SQLException | DuplicateDataException e) {
-                            Logging.logError(e, "Error updatingSQLDatabase");
-                            cancelEdit();
-                            return dataPoint;
-                        }
-                        return newData;
-                    }else {
-                        return dataPoint;
-                    }
-                });
+                String newStringTodisplay = builder.substring(0, builder.toString().length() - 1);
+                int matchNum = Integer.parseInt(matchItem.getValue().split(" ")[1]);
+                int teamNum = Integer.parseInt(robotItem.getValue().split(" ")[1]);
+                //then this is the datapoint we are looking for
+                StringBuilder statementBuilder = new StringBuilder();
+                statementBuilder.append("UPDATE \"").append(tableName).append("\" ");
+                statementBuilder.append("SET ").append(dataMetric.get().getName()).append("=?");
+                statementBuilder.append(" WHERE ").append(Constants.SQLColumnName.TEAM_NUM).append("=?");
+                statementBuilder.append(" AND ").append(Constants.SQLColumnName.MATCH_NUM).append("=?");
+                try {
+                    SQLUtil.execNoReturn(statementBuilder.toString(), new String[] {newString, String.valueOf(teamNum), String.valueOf(matchNum)}, true);
+                    super.commitEdit(newStringTodisplay);
+                } catch (SQLException | DuplicateDataException e) {
+                    Logging.logError(e, "Error updatingSQLDatabase");
+                    cancelEdit();
+                }
+
             }else {
-                System.out.println("Cancelling branch edit");
                 cancelEdit();
             }
-*/
-
         }
 
 
     }
 
-
-    private static class CustomStringConverter extends StringConverter<Label> {
-        Paint paint = Color.PINK;//default, if I see this, something is wrong
-        @Override
-        public String toString(javafx.scene.control.Label object) {
-            return object.getText();
-        }
-
-        @Override
-        public javafx.scene.control.Label fromString(String string) {
-            return new Label(string);
-        }
-    }
 
     public static int getIntFromEntryObject(Constants.SQLColumnName metric, HashMap<String, Object> entryObject) {
         return Integer.parseInt(((HashMap<String, Object>) entryObject.get(metric.toString()))
@@ -765,7 +735,7 @@ public class TabController {
             if (Math.abs(d) > max) max = d;
         }
 
-        return max;
+        return Math.abs(max);
     }
 
 
