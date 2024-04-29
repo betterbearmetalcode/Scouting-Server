@@ -6,14 +6,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
-import javafx.util.StringConverter;
 import javafx.util.converter.DefaultStringConverter;
-import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
 import org.json.JSONArray;
-import org.tahomarobotics.scouting.scoutingserver.*;
+import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.Exporter;
+import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
@@ -21,9 +21,6 @@ import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DataValidationCompetitionChooser;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
-import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
-import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
-import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.OperationAbortedByUserException;
@@ -32,18 +29,12 @@ import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class TabController {
+public class TabController extends TreeView<String> {
 
 
-    @FXML
-    private TreeView<String> treeView;
 
-    @FXML
-    public TabPane pane;
     @FXML
     public ToggleButton editToggle;
     @FXML
@@ -67,23 +58,20 @@ public class TabController {
 
     public TabController(String table, TabPane thePane) {
         tableName = table;
-        pane = thePane;
     }
 
 
 
-    @FXML
     public void initialize(TreeView<String> view) {
         Logging.logInfo("Initializing Tab Controller: " + tableName);
         //init data stuff
-        treeView = view;
         rootItem = new TreeItem<>(new Label("root-item"));
         stringRootItem = new TreeItem<>("root-item");
 
-        treeView.setEditable(true);
-        treeView.setShowRoot(false);
-        treeView.setRoot(stringRootItem);
-        treeView.setCellFactory(param -> new EditableTreeCell());
+        this.setEditable(true);
+        this.setShowRoot(false);
+        this.setRoot(stringRootItem);
+        this.setCellFactory(param -> new EditableTreeCell());
         //init list of events
         try {
             FileInputStream stream = new FileInputStream(Constants.BASE_READ_ONLY_FILEPATH + "/resources/TBAData/eventList.json");

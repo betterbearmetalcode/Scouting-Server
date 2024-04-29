@@ -1,13 +1,12 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
-import javafx.scene.control.*;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.TableChooserDialog;
@@ -24,16 +23,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.tahomarobotics.scouting.scoutingserver.Constants.UIValues.*;
 
-public class DataController {
+public class MainTabPaneController {
     public Button newTabButton;
-    @FXML
-    private  TabPane tabPane;
+
 
 
     public static List<TabController> controllers = new LinkedList<>();
 
-    @FXML
-    public void makeNewTab(ActionEvent event) {
+    public static void makeNewTab(TabPane tabPane) {
         try {
 
             FXMLLoader tabLoader = new FXMLLoader(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/FXML/data-tab-anchor-pane.fxml").toURI().toURL());
@@ -94,7 +91,7 @@ public class DataController {
 
     }
 
-    private String getSelectedTableFromUser() {
+    private static String getSelectedTableFromUser() {
         try {
             TableChooserDialog dialog = new TableChooserDialog(SQLUtil.getTableNames());
             Optional<String> result = dialog.showAndWait();

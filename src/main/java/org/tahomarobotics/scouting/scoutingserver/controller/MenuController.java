@@ -1,20 +1,10 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
-import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
-import org.tahomarobotics.scouting.scoutingserver.util.Logging;
-
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 
 public class MenuController extends VBox {
 
-    public enum SCENES {
+  /*  public enum SCENES {
         MAIN_MENU,
         DATA_COLLECTION,
         DATA_CORRECTION,
@@ -68,7 +58,7 @@ public class MenuController extends VBox {
             ScoutingServer.currentScene = SCENES.DATA_CORRECTION;
         }
     }
-/*
+*//*
     @FXML
     public void developerToolsButton(ActionEvent event) {
         AtomicReference<Boolean> selectedEvent = new AtomicReference<>(false);
@@ -101,7 +91,7 @@ public class MenuController extends VBox {
                 ScoutingServer.currentScene = ScoutingServer.SCENES.MAIN_MENU;
             }
         }
-    }*/
+    }*//*
     @FXML
     public void openCharts(ActionEvent event) {
         if (ScoutingServer.currentScene != SCENES.CHARTS) {
@@ -129,7 +119,7 @@ public class MenuController extends VBox {
             ScoutingServer.currentScene = SCENES.AUTO_HEATMAPS;
         }
     }
-
+*/
 
 
 }
