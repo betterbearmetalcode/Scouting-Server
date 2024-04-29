@@ -35,20 +35,10 @@ public class TabController extends TreeView<String> {
 
 
 
-    @FXML
-    public ToggleButton editToggle;
-    @FXML
-    public Button validateDataButton;
-    @FXML
-    public Button exportButton;
-    @FXML
-    public CheckBox exportNotesCheckbox;
-
     public String tableName;
 
-    private TreeItem<Label> rootItem;
 
-    private TreeItem<String> stringRootItem;
+    private TreeItem<String> rootItem;
     private JSONArray eventList;
 
     private String currentEventCode = "";
@@ -56,21 +46,16 @@ public class TabController extends TreeView<String> {
     private Optional<JSONArray> tbaDataOptional = Optional.empty();
 
 
-    public TabController(String table, TabPane thePane) {
+    public TabController(String table) {
         tableName = table;
-    }
 
-
-
-    public void initialize(TreeView<String> view) {
         Logging.logInfo("Initializing Tab Controller: " + tableName);
         //init data stuff
-        rootItem = new TreeItem<>(new Label("root-item"));
-        stringRootItem = new TreeItem<>("root-item");
+        rootItem = new TreeItem<>("root-item");
 
         this.setEditable(true);
         this.setShowRoot(false);
-        this.setRoot(stringRootItem);
+        this.setRoot(rootItem);
         this.setCellFactory(param -> new EditableTreeCell());
         //init list of events
         try {
@@ -84,9 +69,8 @@ public class TabController extends TreeView<String> {
         }
 
         updateDisplay(false);
-
-
     }
+
 
     @FXML
     public void export(Event event) {
@@ -124,7 +108,7 @@ public class TabController extends TreeView<String> {
         //code here  will only run if exporter was successfully initialized
         ArrayList<ArrayList<String>> data = new ArrayList<>();
         try {
-            data = exporter.export(exportNotesCheckbox.isSelected());
+            data = exporter.export();
         } catch (SQLException e) {
             Logging.logError(e, "failed to generate exported data");
         }
@@ -183,7 +167,7 @@ public class TabController extends TreeView<String> {
         } catch (SQLException | DuplicateDataException e) {
             Logging.logError(e);
         }
-        stringRootItem.getChildren().clear();
+        rootItem.getChildren().clear();
         updateDisplay(false);
     }
 
@@ -246,16 +230,16 @@ public class TabController extends TreeView<String> {
             JSONArray data = DatabaseManager.readDatabaseNew(tableName, true);
             //construct a array containing the expansion structure of the database, if there are changes (exceptions), then we can defualt the expansionto false
             ArrayList<Pair<Boolean, ArrayList<Boolean>>> expainsionStructure = new ArrayList<>();
-            for (TreeItem<Label> matchItem : rootItem.getChildren()) {
+            for (TreeItem<String> matchItem : rootItem.getChildren()) {
                 ArrayList<Boolean> matchExpansion = new ArrayList<>();
-                for (TreeItem<Label> robotItem : matchItem.getChildren()) {
+                for (TreeItem<String> robotItem : matchItem.getChildren()) {
                     matchExpansion.add(robotItem.isExpanded());
                 }
                 expainsionStructure.add(new Pair<>(matchItem.isExpanded(), matchExpansion));
             }
-            stringRootItem.getChildren().clear();
+            rootItem.getChildren().clear();
             if (data.isEmpty()) {
-                stringRootItem.getChildren().add(new TreeItem<>("No Data..."));
+                rootItem.getChildren().add(new TreeItem<>("No Data..."));
                 return;
             }
             //for validation
@@ -328,7 +312,7 @@ public class TabController extends TreeView<String> {
                     err = String.valueOf(entryError.get());
                 }
                 matchItem.setValue("Match: " + matchNum + " Error=" + err);
-                stringRootItem.getChildren().add(matchItem);
+                rootItem.getChildren().add(matchItem);
             }//match num loop
 
 
@@ -513,8 +497,8 @@ public class TabController extends TreeView<String> {
 
     }
 
-    private void setExpansionAll(TreeItem<Label> treeItem, boolean val) {
-        if (treeItem.getValue().getText().equals("root-item")) {
+    private void setExpansionAll(TreeItem<String> treeItem, boolean val) {
+        if (treeItem.getValue().equals("root-item")) {
             //then we are dealing with the root item
             treeItem.setExpanded(true);
         } else {
@@ -522,7 +506,7 @@ public class TabController extends TreeView<String> {
 
         }
         if (!treeItem.getChildren().isEmpty()) {
-            for (TreeItem<Label> t : treeItem.getChildren()) {
+            for (TreeItem<String> t : treeItem.getChildren()) {
                 setExpansionAll(t, val);
             }
         }
@@ -547,7 +531,7 @@ public class TabController extends TreeView<String> {
                 if (!Constants.askQuestion("Are you sure you want to delete this?")) {
                     return;
                 }
-                if (getTreeItem().getParent() == stringRootItem) {
+                if (getTreeItem().getParent() == rootItem) {
                     //then this is a match item
                     for (TreeItem<String> positionItem : getTreeItem().getChildren()) {
                         deletePositionItem(positionItem);

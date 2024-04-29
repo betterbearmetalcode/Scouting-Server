@@ -47,7 +47,7 @@ public class Exporter {
     }
 
 
-    public ArrayList<ArrayList<String>> export(boolean exportNotes) throws SQLException {
+    public ArrayList<ArrayList<String>> export() throws SQLException {
         ArrayList<ArrayList<String>> output = new ArrayList<>();
         //add title row to export
         ArrayList<String> titleRow = new ArrayList<>();
@@ -81,26 +81,23 @@ public class Exporter {
 
 
         }//end for ecah match
-        //export notes if appropriate
-        if (exportNotes) {
-            for (HashMap<String, Object> map : teamsScouted) {
-                int teamNum = (int) map.get(Constants.SQLColumnName.TEAM_NUM.toString());
-                if (teamsToSkip.contains(teamNum)) {
-                    continue;
-                }
-                ArrayList<HashMap<String, Object>> teamsMatches = SQLUtil.exec("SELECT " + Constants.SQLColumnName.TELE_COMMENTS + " FROM \"" + tableName + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{String.valueOf(teamNum)}, false);
-                ArrayList<String> row = new ArrayList<>();
-                row.add(String.valueOf(teamNum));
-                for (HashMap<String, Object> teamsMatch : teamsMatches) {
-                    try {
-                        row.add(teamsMatch.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().split(":")[2].replace("No Comments", ""));
-
-                    }catch (Exception e) {
-                        row.add(teamsMatch.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().replace("No Comments", ""));
-                    }
-                }
-                output.add(row);
+        for (HashMap<String, Object> map : teamsScouted) {
+            int teamNum = (int) map.get(Constants.SQLColumnName.TEAM_NUM.toString());
+            if (teamsToSkip.contains(teamNum)) {
+                continue;
             }
+            ArrayList<HashMap<String, Object>> teamsMatches = SQLUtil.exec("SELECT " + Constants.SQLColumnName.TELE_COMMENTS + " FROM \"" + tableName + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{String.valueOf(teamNum)}, false);
+            ArrayList<String> row = new ArrayList<>();
+            row.add(String.valueOf(teamNum));
+            for (HashMap<String, Object> teamsMatch : teamsMatches) {
+                try {
+                    row.add(teamsMatch.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().split(":")[2].replace("No Comments", ""));
+
+                }catch (Exception e) {
+                    row.add(teamsMatch.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().replace("No Comments", ""));
+                }
+            }
+            output.add(row);
         }
         return output;
 

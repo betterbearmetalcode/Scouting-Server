@@ -7,7 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.tahomarobotics.scouting.scoutingserver.controller.DataCollectionController;
-import org.tahomarobotics.scouting.scoutingserver.controller.MainTabPaneController;
+import org.tahomarobotics.scouting.scoutingserver.controller.MainTabPane;
 import org.tahomarobotics.scouting.scoutingserver.controller.MasterController;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
@@ -17,6 +17,8 @@ import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileForm
 
 import java.io.File;
 import java.sql.SQLException;
+
+import static org.tahomarobotics.scouting.scoutingserver.Constants.UIValues.*;
 
 public class ScoutingServer extends Application {
 
@@ -43,6 +45,8 @@ public class ScoutingServer extends Application {
     public static VBox root = new VBox();
 
 
+    private  static MainTabPane mainTabPane;
+
     public static DataCollectionController dataCollectionController = new DataCollectionController();
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -56,6 +60,8 @@ public class ScoutingServer extends Application {
         mainStage.setOnCloseRequest(event -> {
             ServerUtil.setServerStatus(false);
         });
+        mainStage.setHeight(getAppHeight());
+        mainStage.setWidth(getAppWidth());
         mainStage.show();
 
         try {
@@ -98,38 +104,39 @@ public class ScoutingServer extends Application {
             System.exit(1);
         }
 
-
+        mainStage.widthProperty().addListener((observable, oldValue, newValue) -> {setAppWidthProperty(newValue.doubleValue()); resize(); });
+        mainStage.heightProperty().addListener((observable, oldValue, newValue) -> {setAppHeight(newValue.doubleValue());resize(); });
 
     }
 
-/*    public static void setCurrentScene(Scene scene) {
-        double oldWidth = getAppWidth();
-        double oldHeight = getAppHeight();
-        mainStage.setScene(scene);
-        mainStage.setWidth(oldWidth);
-        mainStage.setHeight(oldHeight);
-
-    }*/
 
     @Override
     public void init() throws Exception {
         Logging.logInfo("Initializing");
         setUpMenuBar();
 
-        TabPane mainTabPane = new TabPane();
-        Tab newTabTab = new Tab();
-        Button newTabButton = new Button("+");
-        newTabButton.setStyle("-fx-background-color:  #f4f4f4");
-        newTabButton.setOnAction(event -> MainTabPaneController.makeNewTab(mainTabPane));
-        newTabTab.setGraphic(newTabButton);
-        newTabTab.setClosable(false);
-
-        mainTabPane.getTabs().add(newTabTab);
+        mainTabPane = new MainTabPane();
         root.getChildren().add(mainTabPane);
-
         mainScene = new Scene(root);
 
     }
+
+    private static void resize() {
+        resize(getAppWidth(), getAppHeight());
+
+    }
+
+    private static void resize(double appWidth, double appHeight) {
+        root.setPrefSize(appWidth, appHeight);
+        Constants.UIValues.setSplitWidthProperty(appWidth - MIN_HAMBURGER_MENU_SIZE);
+        Constants.UIValues.setHalfsplitWidthProperty((appWidth - MIN_HAMBURGER_MENU_SIZE)/2);
+        Constants.UIValues.setMainScrollPaneHeightProperty(appHeight - MIN_MAIN_BUTTON_BAR_HEIGHT);
+        Constants.UIValues.setCollectionScrollPaneHeightProperty(appHeight - MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT);
+        Constants.UIValues.setDatabaseHeightProperty(appHeight- MIN_MAIN_BUTTON_BAR_HEIGHT - MIN_MAIN_BUTTON_BAR_HEIGHT);
+//        root.resize(appWidth, appHeight);
+
+    }
+
 
     private static void setUpMenuBar() {
         //file menu

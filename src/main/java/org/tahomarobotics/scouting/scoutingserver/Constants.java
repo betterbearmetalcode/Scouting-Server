@@ -7,6 +7,7 @@ import javafx.scene.control.Dialog;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil.SQLDatatype;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -135,7 +136,8 @@ public class Constants {
         public static final double WIDTH_MULTIPLIER = .75;
         @SuppressWarnings("SuspiciousNameCombination")
         public static final double HEIGHT_MULTIPLIER = WIDTH_MULTIPLIER;
-       // public static  double APP_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height * HEIGHT_MULTIPLIER;
+        public static  double APP_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height * HEIGHT_MULTIPLIER;
+        public static  double APP_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width * WIDTH_MULTIPLIER;
         public static final int MIN_HAMBURGER_MENU_SIZE = 155;
 
         public static final int MIN_MAIN_BUTTON_BAR_HEIGHT = 50;
@@ -221,6 +223,7 @@ public class Constants {
         }
 
         public static void setAppHeight(double value) {
+            System.out.println("Setting app Height to: " + value);
             Constants.UIValues.appHeightProperty.set(value);
         }
 
@@ -243,6 +246,8 @@ public class Constants {
         public static final DoubleProperty buttonBarHeightProperty = new SimpleDoubleProperty();
         static {
             buttonBarHeightProperty.set(UIValues.MIN_MAIN_BUTTON_BAR_HEIGHT);
+            setAppHeight(APP_HEIGHT);
+            setAppWidthProperty(APP_WIDTH);
         }
     }
     public static boolean askQuestion(String question) {
