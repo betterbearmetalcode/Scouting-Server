@@ -1,5 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -38,6 +40,7 @@ public class TabController extends TreeView<String> {
     public String tableName;
 
 
+    private StringProperty titleProperty = new SimpleStringProperty();
     private TreeItem<String> rootItem;
     private JSONArray eventList;
 
@@ -48,7 +51,7 @@ public class TabController extends TreeView<String> {
 
     public TabController(String table) {
         tableName = table;
-
+        titleProperty.set(table);
         Logging.logInfo("Initializing Tab Controller: " + tableName);
         //init data stuff
         rootItem = new TreeItem<>("root-item");
@@ -72,7 +75,6 @@ public class TabController extends TreeView<String> {
     }
 
 
-    @FXML
     public void export(Event event) {
         Logging.logInfo("Exporting");
         //first gather the nessacary data from tba to export and check to make sure
@@ -133,21 +135,20 @@ public class TabController extends TreeView<String> {
         }
     }
 
-    @FXML
     public void expandAll(Event e) {
         Logging.logInfo("Expanding Tree");
         setExpansionAll(rootItem, true);
 
     }
 
-    @FXML
+
     public void collapseAll() {
         Logging.logInfo("Collapsing Tree");
         setExpansionAll(rootItem, false);
     }
 
 
-    @FXML
+
     public void validateDataButtonHandler(ActionEvent event) {
         if (tbaDataOptional.isEmpty()) {
             Logging.logInfo("No TBA Data, so cannont validate. Click update to update.", true);
@@ -156,7 +157,7 @@ public class TabController extends TreeView<String> {
         updateDisplay(true);
     }
 
-    @FXML
+
     public void clearDatabase() {
         if (!Constants.askQuestion("Are you sure you want to clear database " + tableName + "?")) {
             return;
@@ -171,7 +172,7 @@ public class TabController extends TreeView<String> {
         updateDisplay(false);
     }
 
-    @FXML
+
     public void updateTBAData() {
         Logging.logInfo("UpdatingTBAData");
         if (selectCompetition()) {
@@ -181,7 +182,7 @@ public class TabController extends TreeView<String> {
         tbaDataOptional = APIUtil.getEventMatches(currentEventCode);
 
     }
-    @FXML
+
     public void saveJSONBackup(ActionEvent event) {
         Logging.logInfo("Making JSON Backup of " + tableName);
 
@@ -708,6 +709,10 @@ public class TabController extends TreeView<String> {
         }
 
         return Math.abs(max);
+    }
+
+    public StringProperty getTitleProperty() {
+        return titleProperty;
     }
 
 

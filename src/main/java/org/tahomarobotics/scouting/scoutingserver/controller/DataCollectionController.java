@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.tahomarobotics.scouting.scoutingserver.DatabaseManager.handleDuplicates;
+
 
 public class DataCollectionController {
     public static String activeTable = "";
@@ -72,40 +74,9 @@ public class DataCollectionController {
     }
 
 
-    //this is an event handler
-    @FXML
-    public void importJSON(ActionEvent event) {
-        try {
-            FileChooser chooser = new FileChooser();
-            chooser.setTitle("Select JSON File");
-            chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-            chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
-            importJSONFile(chooser.showOpenDialog(ScoutingServer.mainStage.getOwner()));
-
-
-        } catch (IOException e) {
-            Logging.logError(e);
-        }
-
-    }
-
-    private void importJSONFile(File selectedFile) throws IOException {
-        if (selectedFile == null) {
-            return;
-        }
-        if (!selectedFile.exists()) {
-            return;
-        }
-        FileInputStream inputStream = new FileInputStream(selectedFile);
-        JSONArray object = new JSONArray(new String(inputStream.readAllBytes()));
-        ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONArrayOfDataObjects(object, activeTable);
-        handleDuplicates(duplicates);
-        inputStream.close();
-    }
 
 
 
-    @FXML
     public void loadCSV(ActionEvent event) {
         FileChooser chooser = new FileChooser();
         File selectedFile = chooser.showOpenDialog(ScoutingServer.mainStage.getOwner());
@@ -207,7 +178,7 @@ public class DataCollectionController {
     }
 
     @FXML
-    public void importDuplicateDataBackup(ActionEvent event) {
+/*    public void importDuplicateDataBackup(ActionEvent event) {
         Logging.logInfo("Importing duplicate data backup");
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/duplicateDataBackups"));
@@ -218,7 +189,7 @@ public class DataCollectionController {
             Logging.logError(e);
         }
 
-    }
+    }*/
 
     public void setActiveTable(String s) {
         activeTable = s;
@@ -253,37 +224,7 @@ public class DataCollectionController {
 
     }
 
-    public static void handleDuplicates(ArrayList<DuplicateDataException> duplicates) {
-        if (duplicates.isEmpty()) {
-            return;
-        }
-        Platform.runLater(() -> {
-            //this method has to use noteA duplicate data handler to go through all the duplicates and generate noteA list of records which should be added
-            //then for each of these records, all the ones in the database that have the same match and team number are deleted and re added
-            DuplicateDataResolvedDialog dialog = new DuplicateDataResolvedDialog(duplicates);
-            Optional<ArrayList<DatabaseManager.QRRecord>> recordToAdd = dialog.showAndWait();
-            recordToAdd.ifPresent(qrRecords -> {
-                for (DatabaseManager.QRRecord qrRecord : qrRecords) {
-                    //first delete the old record from the database that caused the duplicate then add the one we want to add
-                    try {
-                        SQLUtil.execNoReturn("DELETE FROM \"" + activeTable + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=? AND " + Constants.SQLColumnName.MATCH_NUM + "=?", new Object[]{String.valueOf(qrRecord.teamNumber()), String.valueOf(qrRecord.matchNumber())}, true);
-                    } catch (SQLException | DuplicateDataException e) {
-                        Logging.logError(e);
-                    }
-                    try {
-                        DatabaseManager.storeQrRecord(qrRecord, activeTable);
-                    } catch (DuplicateDataException e) {
-                        Logging.logInfo("Gosh dang it, got duplicate data again after trying to resolve duplicate data, just giving up now", true);
-                    } catch (SQLException e) {
-                        Logging.logError(e);
-                    }
 
-                }
-            });
-        });
-
-
-    }
 
 
 

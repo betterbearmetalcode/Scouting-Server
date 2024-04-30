@@ -28,24 +28,13 @@ public class ScoutingServer extends Application {
     public static Scene mainScene;
 
 
-    public static Scene dataCorrectionScene;
-
-    public static Scene dataCollectionScene;
-
-    public static Scene dataScene;
-
     public static Stage mainStage;
 
-    public static Scene chartsScene;
-
-    public static Scene miscScene;
-
-    public static Scene autoHeatmapScene;
 
     public static VBox root = new VBox();
 
 
-    private  static MainTabPane mainTabPane;
+    public static MainTabPane mainTabPane;
 
     public static DataCollectionController dataCollectionController = new DataCollectionController();
 
@@ -100,7 +89,7 @@ public class ScoutingServer extends Application {
             Logging.logError(e, "Unable to initialize internal folders, click ok to exit app. Try running as administrator");
             System.exit(1);
         } catch (SQLException e) {
-            Logging.logError(e, "Failed to create sql database, app cannot function without it click ok to exit");
+            Logging.logError(e, "Failed to create sql database, the app cannot function without it. Click ok to exit");
             System.exit(1);
         }
 
@@ -142,9 +131,9 @@ public class ScoutingServer extends Application {
         //file menu
         Menu fileMenu = new Menu("File");
         MenuItem newItem = new MenuItem("New");
-        newItem.setOnAction(event -> MasterController.createDatabase());
+        newItem.setOnAction(event -> MasterController.newThing());
         MenuItem openItem = new MenuItem("Open");
-        openItem.setOnAction(event -> MasterController.openJSONFileInDatabase());
+        openItem.setOnAction(event -> MasterController.openJSONFileIntoDatabase());
         MenuItem saveItem = new MenuItem("Save");
         saveItem.setOnAction(event -> MasterController.saveCurrentDatabase());
         MenuItem saveAsItem = new MenuItem("Save As");

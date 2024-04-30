@@ -3,31 +3,28 @@ package org.tahomarobotics.scouting.scoutingserver.controller;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.paint.Color;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.GenericTabContent;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.NewItemDialog;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.RenameableTab;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.TableChooserDialog;
 
-import java.awt.*;
+import java.awt.Toolkit;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MainTabPane extends TabPane{
     private final Tab newTabTab = new Tab();
     private final Button newTabButton;
 
-    public List<TabController> controllers = new LinkedList<>();
+    public List<GenericTabContent> tabContents = new ArrayList<>();
     public MainTabPane() {
         super();
         newTabButton = new Button("+");
-        newTabButton.setOnAction(event -> addTab());
+        newTabButton.setOnAction(event -> addTab(new NewItemDialog().showAndWait()));
         newTabTab.setGraphic(newTabButton);
         newTabTab.setClosable(false);
         this.prefHeightProperty().bind(Constants.UIValues.appHeightProperty());
@@ -37,25 +34,23 @@ public class MainTabPane extends TabPane{
     }
 
 
-    public void addTab() {
+    //called when the new tab button is clicked
+    public void addTab(Optional<GenericTabContent> tabContent) {
 
-        //get selected table name or competition from user
-        String selectedTable = getSelectedTableFromUser();
-        if (Objects.equals(selectedTable, "")) {
+
+        if (tabContent.isEmpty()) {
             return;
         }
+        RenameableTab tab = new RenameableTab(tabContent.get().nameProperty());
+        tab.setId(tabContent.get().nameProperty().get());
 
-
-        Tab tab = new Tab();
-        tab.setText(selectedTable);
-        tab.setId(selectedTable);
-        TabController controller =  new TabController(selectedTable);
-        tab.setContent(controller);
+        tab.setContent(tabContent.get().getContent());
         tab.setClosable(true);
+
         tab.setOnClosed(event1 -> {
-            for (TabController c : controllers) {
-                if (Objects.equals(tab.getId(), c.tableName)) {
-                    controllers.remove(c);
+            for (GenericTabContent c : tabContents) {
+                if (Objects.equals(tab.getId(), c.nameProperty().get())) {
+                    tabContents.remove(c);
                     break;
                 }
             }
@@ -66,8 +61,8 @@ public class MainTabPane extends TabPane{
 
         getTabs().add(getTabs().size() - 1, tab);
         getSelectionModel().select(tab);
-        controllers.add(controller);
-        controller.updateDisplay(false);
+        tabContents.add(tabContent.get());
+        tabContent.get().updateDisplay();
 
     }
 
@@ -89,12 +84,9 @@ public class MainTabPane extends TabPane{
     }
 
     public void refreshTabs() {
-        for (TabController controller : controllers) {
-            controller.updateDisplay(false);
+        for (GenericTabContent controller : tabContents) {
+            controller.updateDisplay();
         }
     }
-
-
-
 
 }

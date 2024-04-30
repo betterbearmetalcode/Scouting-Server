@@ -1,16 +1,21 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
+import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.DuplicateDataResolvedDialog;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -20,6 +25,52 @@ public class DatabaseManager {
     public static void storeQrRecord(QRRecord record, String tablename) throws DuplicateDataException, SQLException {
         SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + record.getDataForSQL() + ")",new Object[]{}, false, record);
         ScoutingServer.dataCollectionController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ record, Color.GREEN);
+
+    }
+
+    private void importJSONFile(File selectedFile) throws IOException {
+        if (selectedFile == null) {
+            return;
+        }
+        if (!selectedFile.exists()) {
+            return;
+        }
+        FileInputStream inputStream = new FileInputStream(selectedFile);
+        JSONArray object = new JSONArray(new String(inputStream.readAllBytes()));
+        ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONArrayOfDataObjects(object, activeTable);
+        handleDuplicates(duplicates);
+        inputStream.close();
+    }
+
+    public static void handleDuplicates(ArrayList<DuplicateDataException> duplicates) {
+        if (duplicates.isEmpty()) {
+            return;
+        }
+        Platform.runLater(() -> {
+            //this method has to use noteA duplicate data handler to go through all the duplicates and generate noteA list of records which should be added
+            //then for each of these records, all the ones in the database that have the same match and team number are deleted and re added
+            DuplicateDataResolvedDialog dialog = new DuplicateDataResolvedDialog(duplicates);
+            Optional<ArrayList<DatabaseManager.QRRecord>> recordToAdd = dialog.showAndWait();
+            recordToAdd.ifPresent(qrRecords -> {
+                for (DatabaseManager.QRRecord qrRecord : qrRecords) {
+                    //first delete the old record from the database that caused the duplicate then add the one we want to add
+                    try {
+                        SQLUtil.execNoReturn("DELETE FROM \"" + activeTable + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=? AND " + Constants.SQLColumnName.MATCH_NUM + "=?", new Object[]{String.valueOf(qrRecord.teamNumber()), String.valueOf(qrRecord.matchNumber())}, true);
+                    } catch (SQLException | DuplicateDataException e) {
+                        Logging.logError(e);
+                    }
+                    try {
+                        DatabaseManager.storeQrRecord(qrRecord, activeTable);
+                    } catch (DuplicateDataException e) {
+                        Logging.logInfo("Gosh dang it, got duplicate data again after trying to resolve duplicate data, just giving up now", true);
+                    } catch (SQLException e) {
+                        Logging.logError(e);
+                    }
+
+                }
+            });
+        });
+
 
     }
     public static ArrayList<DuplicateDataException> importJSONArrayOfDataObjects(JSONArray data, String activeTable){
@@ -228,13 +279,6 @@ public class DatabaseManager {
 
             }
         }
-    }
-
-    public enum EndgamePosition {
-        NONE,
-        PARKED,
-        CLIMBED,
-        HARMONIZED
     }
 
 

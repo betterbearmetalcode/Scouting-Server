@@ -13,6 +13,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import static org.tahomarobotics.scouting.scoutingserver.DatabaseManager.handleDuplicates;
+
 public class DataTransferClient extends Thread {
 
 
@@ -48,7 +50,7 @@ public class DataTransferClient extends Thread {
             }
             Logging.logInfo("storing data, time elapsed: " + (System.currentTimeMillis() - start));
             ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONArrayOfDataObjects(new JSONArray(builder.toString()), DataCollectionController.activeTable);
-            DataCollectionController.handleDuplicates(duplicates);
+            handleDuplicates(duplicates);
 
             Logging.logInfo("data is" + builder);
             Logging.logInfo("Closing client Connection");

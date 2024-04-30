@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.sql.SQLException;
@@ -57,8 +58,8 @@ public class TableChooserDialog extends Dialog<String> {
                     return "";
                 }else {
                     try {
-                        SQLUtil.addTableIfNotExists(listView.getSelectionModel().getSelectedItem(), SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
-                    } catch (SQLException | DuplicateDataException e) {
+                        SQLUtil.addTableIfNotExists(listView.getSelectionModel().getSelectedItem());
+                    } catch (SQLException | DuplicateDataException | ConfigFileFormatException e) {
                         Logging.logError(e, "Failed to create table");
                         return "";
                     }
@@ -95,10 +96,10 @@ public class TableChooserDialog extends Dialog<String> {
                 }
 
 
-                SQLUtil.addTableIfNotExists(name, SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
+                SQLUtil.addTableIfNotExists(name);
                 listView.getItems().add(name);
 
-            } catch (SQLException | DuplicateDataException e) {
+            } catch (SQLException | DuplicateDataException | ConfigFileFormatException e) {
                 Logging.logError(e);
             }
         });

@@ -11,6 +11,7 @@ import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.util.Chart;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.sql.SQLException;
@@ -134,8 +135,8 @@ public class ChartCreatorDialog extends Dialog<Chart> {
             try {
                 String name = "New Database";
                 listView.getItems().add(name);
-                SQLUtil.addTableIfNotExists(name, SQLUtil.createTableSchem(Constants.RAW_TABLE_SCHEMA));
-            } catch (SQLException | DuplicateDataException e) {
+                SQLUtil.addTableIfNotExists(name);
+            } catch (SQLException | DuplicateDataException | ConfigFileFormatException e) {
                 Logging.logError(e);
             }
         });

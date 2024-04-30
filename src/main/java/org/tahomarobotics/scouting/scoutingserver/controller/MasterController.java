@@ -1,24 +1,38 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
+import javafx.stage.FileChooser;
+import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 public class MasterController {
     
     //this class in intended to recieve method calls from all over the app and distribute those method calls to 
     //more speacalized controllers
-    
-    public static void createDatabase() {
-        Logging.logInfo("Creating Database");
+
+
+    //called when file>new is clicked, or the plus tab button is clicked
+    public static void newThing() {
+        Logging.logInfo("Creating something new");
         
     }
 
-    public static void openJSONFileInDatabase() {
+    public static void openJSONFileIntoDatabase() {
         Logging.logInfo("Opening JSON File Database");
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select JSON File");
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+        ScoutingServer.mainTabPane.addTab(Optional.of(new DatabaseViewerTabContent(chooser.showOpenDialog(ScoutingServer.mainStage.getOwner()))));
+
+
     }
 
     public static void saveCurrentDatabase() {

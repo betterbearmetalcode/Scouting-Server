@@ -2,6 +2,9 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.sql.*;
@@ -13,10 +16,29 @@ public class SQLUtil {
     public static final Object[] EMPTY_PARAMS = {};
 
 
-    public static void addTableIfNotExists(String tableName, String schema) throws SQLException, IllegalArgumentException, DuplicateDataException {
-        String statement = "CREATE TABLE IF NOT EXISTS \"" + tableName + "\"(" + schema + ", PRIMARY KEY (" + Constants.SQLColumnName.MATCH_NUM + ", " + Constants.SQLColumnName.TEAM_NUM  + "))";
+    public static void addTableIfNotExists(String tableName) throws SQLException, IllegalArgumentException, DuplicateDataException, ConfigFileFormatException {
+        //first update configuration to ensure config file is read and then read the config file and use its columns to generate a SQL table that matches them
+        Configuration.updateConfiguration();
+        StringBuilder schema = new StringBuilder("(");
+        for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
+            schema.append(rawDataMetric.getName()).append(" ");
+            switch (rawDataMetric.getDatatype()) {
+
+                case INTEGER, BOOLEAN -> {
+                    schema.append("INTEGER,");
+                }
+                case STRING -> {
+                    schema.append("TEXT, ");
+                }
+            }
+        }
+        schema.replace(schema.length() - 2, schema.length(), "");
+        schema.append(", PRIMARY KEY (").append(Constants.SQLColumnName.MATCH_NUM).append(", ").append(Constants.SQLColumnName.TEAM_NUM).append("))");
+        String statement = "CREATE TABLE IF NOT EXISTS \"" + tableName + "\"" + schema;
+        
         execNoReturn(statement);
     }
+
 
     private static void setParam(PreparedStatement statement, Integer index, Object param) throws SQLException {
         if (param instanceof String) {
@@ -128,16 +150,7 @@ public class SQLUtil {
 
     }
 
-    public static String createTableSchem(ArrayList<Constants.ColumnType> columns) {//the input is noteA hashmap of all the colums for noteA table, the key is the column name and the value is the database name
 
-        StringBuilder builder = new StringBuilder();
-        for (Constants.ColumnType type : columns) {
-            builder.append(type.name().toString());
-            builder.append(" ").append(type.datatype().toString()).append(", ");
-        }
-        String str = builder.toString();
-        return str.substring(0, str.length() - 2);
-    }
 
     public static ArrayList<String> getTableNames() throws SQLException {
         ArrayList<String> output = new ArrayList<>();
@@ -153,6 +166,7 @@ public class SQLUtil {
     }
 
 
+    //deals with primary key constraint violations
     private static void handleDuplicateData(String statement, DatabaseManager.QRRecord newRecord) throws DuplicateDataException {
         String[] tokens = statement.split("\\(")[1].replaceAll(" ", "").split(",");
         String matchNum = tokens[0];

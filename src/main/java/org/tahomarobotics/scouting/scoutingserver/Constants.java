@@ -83,42 +83,6 @@ public class Constants {
     public static final int SHUTTLED_NOTE_THRESHOLD = 2;//threshold which determines if the amount of shuttled notes in this match ought to be accounted for
 
 
-    public static final ArrayList<ColumnType> RAW_TABLE_SCHEMA = new ArrayList<>(List.of(
-            new ColumnType(SQLColumnName.MATCH_NUM, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.TEAM_NUM, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.ALLIANCE_POS, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.AUTO_SPEAKER, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.AUTO_AMP, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.AUTO_SPEAKER_MISSED, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.AUTO_AMP_MISSED, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.NOTE_1, SQLDatatype.TEXT),
-            new ColumnType(SQLColumnName.NOTE_2, SQLDatatype.TEXT),
-            new ColumnType(SQLColumnName.NOTE_3, SQLDatatype.TEXT),
-            new ColumnType(SQLColumnName.NOTE_4, SQLDatatype.TEXT),
-            new ColumnType(SQLColumnName.NOTE_5, SQLDatatype.TEXT),
-            new ColumnType(SQLColumnName.NOTE_6, SQLDatatype.TEXT),
-            new ColumnType(SQLColumnName.NOTE_7, SQLDatatype.TEXT),
-            new ColumnType(SQLColumnName.NOTE_8, SQLDatatype.TEXT),
-            new ColumnType(SQLColumnName.NOTE_9, SQLDatatype.TEXT),
-            new ColumnType(SQLColumnName.A_STOP, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.SHUTTLED, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.TELE_SPEAKER, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.TELE_AMP, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.TELE_TRAP, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.TELE_SPEAKER_MISSED, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.TELE_AMP_MISSED, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.SPEAKER_RECEIVED, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.AMP_RECEIVED, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.LOST_COMMS, SQLDatatype.INTEGER),
-            new ColumnType(SQLColumnName.TELE_COMMENTS, SQLDatatype.TEXT)
-
-    ));
-
-
-    public record ColumnType(SQLColumnName name, SQLDatatype datatype) {
-    }
-
-
     public static final int AUTO_AMP_NOTE_POINTS = 2;
     public static final int AUTO_SPEAKER_NOTE_POINTS = 5;
 
@@ -128,9 +92,6 @@ public class Constants {
 
 
     public static int LOW_ERROR_THRESHOLD = 3;
-    public static final String DEVELOPER_PASSWORD = "2046devPass";
-
-    public static boolean devUnlocked = false;
     public static class UIValues {
 
         public static final double WIDTH_MULTIPLIER = .75;

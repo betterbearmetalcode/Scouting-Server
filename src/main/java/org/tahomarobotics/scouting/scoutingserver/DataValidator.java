@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class DataValidator {
 
-
+/*
     public static  ArrayList<Match> validateData(String eventCode, ArrayList<Match> databaseData) {
 
             ArrayList<Match> output = new ArrayList<>();
@@ -226,6 +226,6 @@ public class DataValidator {
 
 
 
-    }
+    }*/
 
 }
