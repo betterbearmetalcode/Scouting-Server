@@ -1,23 +1,30 @@
 package org.tahomarobotics.scouting.scoutingserver.util.exceptions;
 
+import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 
 public class DuplicateDataException extends Exception {
 
-    private DatabaseManager.QRRecord oldData;
-    private DatabaseManager.QRRecord newData;
-    public DuplicateDataException(String message, Throwable err, DatabaseManager.QRRecord oldRecord, DatabaseManager.QRRecord newRecord) {
+    private final JSONObject oldData;
+    private final JSONObject newData;
+    private final String tableName;
+    public DuplicateDataException(String message, Throwable err, JSONObject oldData, JSONObject newData, String tblName) {
         super(message, err);
-        this.oldData = oldRecord;
-        this.newData = newRecord;
+        this.oldData = oldData;
+        this.newData = newData;
+        this.tableName = tblName;
     }
 
 
-    public DatabaseManager.QRRecord getOldData() {
+    public JSONObject getOldData() {
         return oldData;
     }
 
-    public DatabaseManager.QRRecord getNewData() {
+    public JSONObject getNewData() {
         return newData;
+    }
+
+    public String getTableName() {
+        return tableName;
     }
 }

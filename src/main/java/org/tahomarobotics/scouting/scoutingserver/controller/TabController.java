@@ -4,7 +4,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.paint.Color;
@@ -187,7 +186,7 @@ public class TabController extends TreeView<String> {
         Logging.logInfo("Making JSON Backup of " + tableName);
 
         try {
-            JSONArray dataArray = DatabaseManager.readDatabaseNew(tableName);
+            JSONArray dataArray = DatabaseManager.readDatabase(tableName);
             FileChooser chooser = new FileChooser();
             chooser.setTitle("Save Backup");
             chooser.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -228,7 +227,7 @@ public class TabController extends TreeView<String> {
             validateData = false;
         }
         try {
-            JSONArray data = DatabaseManager.readDatabaseNew(tableName, true);
+            JSONArray data = DatabaseManager.readDatabase(tableName, true);
             //construct a array containing the expansion structure of the database, if there are changes (exceptions), then we can defualt the expansionto false
             ArrayList<Pair<Boolean, ArrayList<Boolean>>> expainsionStructure = new ArrayList<>();
             for (TreeItem<String> matchItem : rootItem.getChildren()) {
@@ -477,7 +476,7 @@ public class TabController extends TreeView<String> {
                 }
                 TreeItem<String> dataPointItem = new TreeItem<>(rawDataMetric.getName()
                         + ":" +
-                        ((HashMap<String, Object>) scoutingDatum.get(rawDataMetric.getName())).get(String.valueOf(rawDataMetric.getDatatype().ordinal())).toString()
+                        ((HashMap<String, Object>) scoutingDatum.get(rawDataMetric.getName())).get(rawDataMetric.getDatatypeAsString()).toString()
                         + ":Error=" + error);
                 robotPositionItem.getChildren().add(dataPointItem);;
             }

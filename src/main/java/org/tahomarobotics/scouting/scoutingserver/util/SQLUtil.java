@@ -1,7 +1,9 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
+import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
@@ -62,7 +64,7 @@ public class SQLUtil {
         execNoReturn(statement, params, log, null);
     }
 
-    public static void execNoReturn(String statement, Object[] params, boolean log, DatabaseManager.QRRecord record) throws SQLException, IllegalArgumentException, DuplicateDataException {
+    public static void execNoReturn(String statement, Object[] params, boolean log, JSONObject entryBeingAdded) throws SQLException, IllegalArgumentException, DuplicateDataException {
         try {
             PreparedStatement toExec = connection.prepareStatement(statement);
             Integer count = 1;
@@ -79,7 +81,7 @@ public class SQLUtil {
 
         } catch (SQLException e){
             if (e.getMessage().startsWith("[SQLITE_CONSTRAINT_PRIMARYKEY]")) {
-                handleDuplicateData(statement, record);
+                handleDuplicateData(statement, entryBeingAdded);
 
             }else {
                 connection.rollback();
@@ -144,11 +146,11 @@ public class SQLUtil {
         connection.setAutoCommit(false);
     }
 
-    public enum SQLDatatype {
+/*    public enum SQLDatatype {
         INTEGER,
         TEXT
 
-    }
+    }*/
 
 
 
@@ -166,22 +168,33 @@ public class SQLUtil {
     }
 
 
-    //deals with primary key constraint violations
-    private static void handleDuplicateData(String statement, DatabaseManager.QRRecord newRecord) throws DuplicateDataException {
-        String[] tokens = statement.split("\\(")[1].replaceAll(" ", "").split(",");
-        String matchNum = tokens[0];
-        String teamNum = tokens[1];
+    //this method is called when data is being added to the database and there is a primary key violation
+    //that means that in the database there is already a row with a match and team number identical to that which we are trying to add.
+    //the new data is not added and this method is called.
+    //the purpose is to generage duplicate data exceptions which are thrown
+    //then these exceptions are caught and if nesscary, depending on the context of the original call the user is asked to
+    //decide which row they want in the database and the old one is deleted and the one they want is added.
+    //however that resolving process is done elsewere becuase the execNoReturn method is called for more than just adding data
+
+    //therefore, the data being added object is the new data and this method has to obtain the old data and constuct a duplicate data exception
+    private static void handleDuplicateData(String statement, JSONObject dataBeingAdded) throws DuplicateDataException {
+        //sometimes it gets passed like this, idk
+        if (dataBeingAdded == null) {
+            return;
+        }
+        String teamNum = String.valueOf(DatabaseViewerTabContent.getIntFromEntryJSONObject(Constants.SQLColumnName.MATCH_NUM, dataBeingAdded));
+        String matchNum = String.valueOf(DatabaseViewerTabContent.getIntFromEntryJSONObject(Constants.SQLColumnName.MATCH_NUM, dataBeingAdded));
         String tableName = statement.split("INTO ")[1].split("\"")[1].replaceAll("\"", "");
         //first check if the new and old data is the same, if it is, then do nothing, if its different, then throw noteA duolicate data exception with both the new and old records
         try {
             ArrayList<HashMap<String, Object>> oldMap = SQLUtil.exec("SELECT * FROM \"" + tableName + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=? AND " + Constants.SQLColumnName.MATCH_NUM + "=?", new Object[]{teamNum, matchNum}, true );
-            if (newRecord != null) {
-                //record should not be null if called by method storing data
-                DatabaseManager.QRRecord oldRecord = DatabaseManager.getRecord(oldMap.get(0));
-                if (!newRecord.equals(oldRecord)) {
-                    //if they are not the same then we need to throw a duplicate data exception
-                    throw new DuplicateDataException("Duplicate Data Detected", new SQLException(statement), oldRecord, newRecord);
-                }
+            if (oldMap.isEmpty()) {
+                return;
+            }
+            JSONObject oldJSONObject = DatabaseManager.getJSONDatum(oldMap.get(0));
+            if (!(oldJSONObject == dataBeingAdded)) {
+                //if they are not the same then we need to throw a duplicate data exception
+                throw new DuplicateDataException("Duplicate Data Detected", new SQLException(statement), oldJSONObject, dataBeingAdded, tableName);
             }
         } catch (SQLException e) {
             Logging.logError(e);

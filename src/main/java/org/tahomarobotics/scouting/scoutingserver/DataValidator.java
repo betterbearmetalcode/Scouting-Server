@@ -1,15 +1,5 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
-import org.json.JSONArray;
-import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.Logging;
-import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
-import org.tahomarobotics.scouting.scoutingserver.util.data.Match;
-import org.tahomarobotics.scouting.scoutingserver.util.data.RobotPositon;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class DataValidator {
 
 /*

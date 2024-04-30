@@ -6,10 +6,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.UI.DuplicateDataResolvedDialog;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.DuplicateDataResolverDialog;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
-import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
@@ -19,16 +19,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
+
 public class DatabaseManager {
 
-    //the king of storage methods, all the data storage methods eventually call this one, it is the final leg of the chain
-    public static void storeQrRecord(QRRecord record, String tablename) throws DuplicateDataException, SQLException {
-        SQLUtil.execNoReturn("INSERT INTO \"" + tablename + "\" VALUES (" + record.getDataForSQL() + ")",new Object[]{}, false, record);
-        ScoutingServer.dataCollectionController.writeToDataCollectionConsole("Wrote data to Database " + tablename + ": "+ record, Color.GREEN);
 
-    }
 
-    private void importJSONFile(File selectedFile) throws IOException {
+    public static void importJSONFile(File selectedFile, String activeTable) throws IOException {
         if (selectedFile == null) {
             return;
         }
@@ -47,32 +43,33 @@ public class DatabaseManager {
             return;
         }
         Platform.runLater(() -> {
-            //this method has to use noteA duplicate data handler to go through all the duplicates and generate noteA list of records which should be added
-            //then for each of these records, all the ones in the database that have the same match and team number are deleted and re added
-            DuplicateDataResolvedDialog dialog = new DuplicateDataResolvedDialog(duplicates);
-            Optional<ArrayList<DatabaseManager.QRRecord>> recordToAdd = dialog.showAndWait();
-            recordToAdd.ifPresent(qrRecords -> {
-                for (DatabaseManager.QRRecord qrRecord : qrRecords) {
+            //this method has to use a duplicate data handler to go through all the duplicates and generate a list of entryies which should be added
+            //then for each of these emtries, all the ones in the database that have the same match and team number are deleted and re added
+            DuplicateDataResolverDialog dialog = new DuplicateDataResolverDialog(duplicates);
+            Optional<ArrayList<JSONObject>> dataToAdd = dialog.showAndWait();
+            String tableName = duplicates.get(0).getTableName();
+            dataToAdd.ifPresent(jsonObjects -> {
+                for (JSONObject jsonObject: jsonObjects) {
                     //first delete the old record from the database that caused the duplicate then add the one we want to add
                     try {
-                        SQLUtil.execNoReturn("DELETE FROM \"" + activeTable + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=? AND " + Constants.SQLColumnName.MATCH_NUM + "=?", new Object[]{String.valueOf(qrRecord.teamNumber()), String.valueOf(qrRecord.matchNumber())}, true);
-                    } catch (SQLException | DuplicateDataException e) {
-                        Logging.logError(e);
-                    }
-                    try {
-                        DatabaseManager.storeQrRecord(qrRecord, activeTable);
-                    } catch (DuplicateDataException e) {
-                        Logging.logInfo("Gosh dang it, got duplicate data again after trying to resolve duplicate data, just giving up now", true);
+                        SQLUtil.execNoReturn("DELETE FROM \"" + tableName + "\" WHERE " +
+                                Constants.SQLColumnName.TEAM_NUM + "=? AND " +
+                                Constants.SQLColumnName.MATCH_NUM + "=?",
+                                new Object[]{DatabaseViewerTabContent.getIntFromEntryJSONObject(Constants.SQLColumnName.TEAM_NUM, jsonObject),
+                                        DatabaseViewerTabContent.getIntFromEntryJSONObject(Constants.SQLColumnName.MATCH_NUM, jsonObject)}, true);
                     } catch (SQLException e) {
                         Logging.logError(e);
+                    } catch (DuplicateDataException ignored) {
                     }
-
                 }
+
+                DatabaseManager.importJSONArrayOfDataObjects(new JSONArray(jsonObjects), tableName);
             });
         });
 
 
     }
+    //the king of storage methods, all the data storage methods eventually call this one, it is the final leg of the chain
     public static ArrayList<DuplicateDataException> importJSONArrayOfDataObjects(JSONArray data, String activeTable){
         try {
             Configuration.updateConfiguration();
@@ -86,11 +83,10 @@ public class DatabaseManager {
         boolean showErrors = true;
         for (Object object : data) {
             try {
-                SQLUtil.execNoReturn(getSQLStatementFromJSONJata((JSONObject) object, activeTable), false);
+                SQLUtil.execNoReturn(getSQLStatementFromJSONJata((JSONObject) object, activeTable), SQLUtil.EMPTY_PARAMS, false, (JSONObject) object);
                 int matchNum = ((JSONObject) object).getJSONObject(Constants.SQLColumnName.MATCH_NUM.toString()).getInt(String.valueOf(Configuration.Datatype.INTEGER.ordinal()));
                 int teamNum = ((JSONObject) object).getJSONObject(Constants.SQLColumnName.TEAM_NUM.toString()).getInt(String.valueOf(Configuration.Datatype.INTEGER.ordinal()));
                 RobotPosition robotPosition = DatabaseManager.RobotPosition.values()[((JSONObject) object).getJSONObject(Constants.SQLColumnName.ALLIANCE_POS.toString()).getInt(String.valueOf(Configuration.Datatype.INTEGER.ordinal()))];
-                ScoutingServer.dataCollectionController.writeToDataCollectionConsole("Wrote to database: " + activeTable + " Match: " + matchNum + " Team: " + teamNum + "Position: " + robotPosition, Color.GREEN);
 
             } catch (DuplicateDataException e) {
                 duplicates.add(e);
@@ -100,7 +96,6 @@ public class DatabaseManager {
                 if (numErrors >= 3 && showErrors) {
                     showErrors = Constants.askQuestion("There have been " + numErrors + " errors so far in this import, continue showing alerts?");
                 }
-                ScoutingServer.dataCollectionController.writeToDataCollectionConsole("Failed to construct import datum", Color.RED);
                 if (showErrors) {
                     Logging.logError(e, "Failed to import datum");
                 }
@@ -123,7 +118,7 @@ public class DatabaseManager {
             if (potentialMetric == null) {
                 //then this metric was not provided, but have no fear, defaults exist!
                 potentialMetric = new JSONObject();
-                potentialMetric.put(String.valueOf(rawDataMetric.getDatatype().ordinal()), rawDataMetric.getDefaultValue());
+                potentialMetric.put(rawDataMetric.getDatatypeAsString(), rawDataMetric.getDefaultValue());
             }
 
             if (potentialMetric.keySet().size() != 1) {
@@ -156,7 +151,7 @@ public class DatabaseManager {
         return statementBuilder.toString();
     }
 
-    public static JSONArray readDatabaseNew(String tableName, boolean sorted) throws ConfigFileFormatException, SQLException {
+    public static JSONArray readDatabase(String tableName, boolean sorted) throws ConfigFileFormatException, SQLException {
         ArrayList<HashMap<String, Object>> rawList = SQLUtil.exec("SELECT * FROM \"" + tableName + "\"", true);
         JSONArray output = new JSONArray();
         Configuration.updateConfiguration();
@@ -170,7 +165,7 @@ public class DatabaseManager {
                 Optional<DataMetric> optionalMetric = Configuration.getMetric(sqlColumnName);
                 //try and use this metric to ascertain the datatype, otherwise, just assume its a string
                 if (optionalMetric.isPresent()) {
-                    dataCarrier.put(String.valueOf(optionalMetric.get().getDatatype().ordinal()), rawRow.get(sqlColumnName));
+                    dataCarrier.put(optionalMetric.get().getDatatypeAsString(), rawRow.get(sqlColumnName));
                 }else {
                     //assume string if all else fails
                     dataCarrier.put("1",  rawRow.get(sqlColumnName).toString());
@@ -200,43 +195,25 @@ public class DatabaseManager {
         return output;
     }
 
-    public static JSONArray readDatabaseNew(String tableName) throws SQLException, ConfigFileFormatException {
-        return readDatabaseNew(tableName, false);
+    public static JSONArray readDatabase(String tableName) throws SQLException, ConfigFileFormatException {
+        return readDatabase(tableName, false);
     }
 
 
+    public static JSONObject getJSONDatum(HashMap<String, Object> rawData) {
+        //given a SQl row, construct the JSON Datum
+        JSONObject output = new JSONObject();
+        for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
+            if (rawData.containsKey(rawDataMetric.getName())) {
+                //if the data we want is actually in the SQL database
+                JSONObject dataCarrier = new JSONObject();
+                dataCarrier.put(rawDataMetric.getDatatypeAsString(), rawData.get(rawDataMetric.getName()).toString());
+                output.put(rawDataMetric.getName(), dataCarrier);
+            }
 
-    public static QRRecord getRecord(HashMap<String, Object> rawData) {
-        rawData.putIfAbsent(Constants.SQLColumnName.SHUTTLED.toString(), 0);
-        rawData.putIfAbsent(Constants.SQLColumnName.A_STOP.toString(), 0);
-        return new QRRecord(
-                (int) rawData.get(Constants.SQLColumnName.MATCH_NUM.toString()),
-                (int) rawData.get(Constants.SQLColumnName.TEAM_NUM.toString()),
-                getRobotPositionFromNum((int) rawData.get(Constants.SQLColumnName.ALLIANCE_POS.toString())),
-                (int) rawData.get(Constants.SQLColumnName.AUTO_SPEAKER.toString()),
-                (int) rawData.get(Constants.SQLColumnName.AUTO_AMP.toString()),
-                (int) rawData.get(Constants.SQLColumnName.AUTO_SPEAKER_MISSED.toString()),
-                (int) rawData.get(Constants.SQLColumnName.AUTO_AMP_MISSED.toString()),
-                rawData.get(Constants.SQLColumnName.NOTE_1.toString()).toString(),
-                rawData.get(Constants.SQLColumnName.NOTE_2.toString()).toString(),
-                rawData.get(Constants.SQLColumnName.NOTE_3.toString()).toString(),
-                rawData.get(Constants.SQLColumnName.NOTE_4.toString()).toString(),
-                rawData.get(Constants.SQLColumnName.NOTE_5.toString()).toString(),
-                rawData.get(Constants.SQLColumnName.NOTE_6.toString()).toString(),
-                rawData.get(Constants.SQLColumnName.NOTE_7.toString()).toString(),
-                rawData.get(Constants.SQLColumnName.NOTE_8.toString()).toString(),
-                rawData.get(Constants.SQLColumnName.NOTE_9.toString()).toString(),
-                (int) rawData.get(Constants.SQLColumnName.A_STOP.toString()),
-                (int)rawData.get(Constants.SQLColumnName.SHUTTLED.toString()),
-                (int) rawData.get(Constants.SQLColumnName.TELE_SPEAKER.toString()),
-                (int) rawData.get(Constants.SQLColumnName.TELE_AMP.toString()),
-                (int) rawData.get(Constants.SQLColumnName.TELE_TRAP.toString()),
-                (int) rawData.get(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString()),
-                (int) rawData.get(Constants.SQLColumnName.TELE_AMP_MISSED.toString()),
-                (int) rawData.getOrDefault(Constants.SQLColumnName.SPEAKER_RECEIVED.toString(), 0),
-                (int) rawData.getOrDefault(Constants.SQLColumnName.AMP_RECEIVED.toString(), 0),
-                (int) rawData.get(Constants.SQLColumnName.LOST_COMMS.toString()),
-                (String) rawData.get(Constants.SQLColumnName.TELE_COMMENTS.toString()));
+
+        }
+        return output;
     }
 
 
@@ -282,119 +259,6 @@ public class DatabaseManager {
     }
 
 
-
-    public record QRRecord(int matchNumber,
-                           int teamNumber,
-                           RobotPosition position,
-                           int autoSpeaker,
-                           int autoAmp,
-                           int autoSpeakerMissed,
-                           int autoAmpMissed,
-                           String note1,
-                           String note2,
-                           String note3,
-                           String note4,
-                           String note5,
-                           String note6,
-                           String note7,
-                           String note8,
-                           String note9,
-                           int aStop,
-                           int shuttled,
-                           int teleSpeaker,
-                           int teleAmp,
-                           int teleTrap,
-                           int teleSpeakerMissed,
-                           int teleAmpMissed,
-                           int speakerReceived,
-                           int ampReceived,
-                           int lostComms,
-                           String teleNotes
-    ) {
-
-        public LinkedList<DataPoint<String>> getDataAsList(boolean includeAutoNotes)  {
-            LinkedList<DataPoint<String>> output = new LinkedList<>();
-            output.add(new DataPoint<>(Constants.SQLColumnName.MATCH_NUM.toString(), String.valueOf(matchNumber)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.TEAM_NUM.toString(), String.valueOf(teamNumber)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.ALLIANCE_POS.toString(), String.valueOf(position.ordinal())));
-            output.add(new DataPoint<>(Constants.SQLColumnName.AUTO_SPEAKER.toString(), String.valueOf(autoSpeaker)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.AUTO_AMP.toString(), String.valueOf(autoAmp)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.AUTO_SPEAKER_MISSED.toString(), String.valueOf(autoSpeakerMissed)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.AUTO_AMP_MISSED.toString(), String.valueOf(autoAmpMissed)));
-
-            if (includeAutoNotes) {
-                output.add(new DataPoint<>(Constants.SQLColumnName.NOTE_1.toString(), note1));
-                output.add(new DataPoint<>(Constants.SQLColumnName.NOTE_2.toString(), note2));
-                output.add(new DataPoint<>(Constants.SQLColumnName.NOTE_3.toString(), note3));
-                output.add(new DataPoint<>(Constants.SQLColumnName.NOTE_4.toString(), note4));
-                output.add(new DataPoint<>(Constants.SQLColumnName.NOTE_5.toString(), note5));
-                output.add(new DataPoint<>(Constants.SQLColumnName.NOTE_6.toString(), note6));
-                output.add(new DataPoint<>(Constants.SQLColumnName.NOTE_7.toString(), note7));
-                output.add(new DataPoint<>(Constants.SQLColumnName.NOTE_8.toString(), note8));
-                output.add(new DataPoint<>(Constants.SQLColumnName.NOTE_9.toString(), note9));
-            }
-
-            output.add(new DataPoint<>(Constants.SQLColumnName.A_STOP.toString(), String.valueOf(aStop)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.SHUTTLED.toString(), String.valueOf(shuttled)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.TELE_SPEAKER.toString(), String.valueOf(teleSpeaker)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.TELE_AMP.toString(), String.valueOf(teleAmp)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.TELE_TRAP.toString(), String.valueOf(teleTrap)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString(), String.valueOf(teleSpeakerMissed)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.TELE_AMP_MISSED.toString(), String.valueOf(teleAmpMissed)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.SPEAKER_RECEIVED.toString(), String.valueOf(speakerReceived)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.AMP_RECEIVED.toString(), String.valueOf(ampReceived)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.LOST_COMMS.toString(), String.valueOf(lostComms)));
-            output.add(new DataPoint<>(Constants.SQLColumnName.TELE_COMMENTS.toString(), "\""  + teleNotes + "\""));
-
-
-            return output;
-        }
-
-        //for exporting
-        public LinkedList<DataPoint<String>> getDataAsList() {
-           return getDataAsList(true);
-        }
-
-        public String getDataForSQL() {
-            return matchNumber + ", " +
-                    teamNumber + ", " +
-                    position.ordinal() + ", " +
-                    autoSpeaker + ", " +
-                    autoAmp + ", " +
-                    autoSpeakerMissed + ", " +
-                    autoAmpMissed + ", " +
-                    "\"" + note1 + "\", " +
-                    "\"" + note2 + "\", " +
-                    "\"" + note3 + "\", " +
-                    "\"" + note4 + "\", " +
-                    "\"" + note5 + "\", " +
-                    "\"" + note6 + "\", " +
-                    "\"" + note7 + "\", " +
-                    "\"" + note8 + "\", " +
-                    "\"" + note9 + "\", " +
-                    aStop + ", " +
-                    shuttled + ", " +
-                    teleSpeaker + ", " +
-                    teleAmp + ", " +
-                    teleTrap + ", " +
-                    teleSpeakerMissed + ", " +
-                    teleAmpMissed + ", " +
-                    speakerReceived + ", " +
-                    ampReceived + ", " +
-                    lostComms + ", " +
-                    "\"" + teleNotes + "\"";
-        }
-
-        public String getQRString() {
-            StringBuilder qrBuilder = new StringBuilder();
-            for (DataPoint<String> dataPoint : this.getDataAsList(false)) {
-                qrBuilder.append(dataPoint.getValue().replaceAll("\"", "")).append(Constants.QR_DATA_DELIMITER);
-            }
-            return  qrBuilder.substring(0, qrBuilder.toString().length() - 1);
-        }
-
-
-    }
 
     public static double getAverage(Constants.SQLColumnName column, String teamName, String table, boolean log) throws SQLException {
         ArrayList<HashMap<String, Object>> raw = SQLUtil.exec("SELECT " + column + " FROM \"" + table + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{teamName}, log);

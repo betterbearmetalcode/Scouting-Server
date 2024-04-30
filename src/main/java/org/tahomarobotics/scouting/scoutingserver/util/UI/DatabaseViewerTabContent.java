@@ -1,9 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver.util.UI;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -12,11 +9,11 @@ import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import javafx.util.converter.DefaultStringConverter;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.Exporter;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
-import org.tahomarobotics.scouting.scoutingserver.controller.TabController;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
@@ -83,10 +80,12 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 SQLUtil.execNoReturn("DROP TABLE IF EXISTS '" + tableName + "'");
                 SQLUtil.addTableIfNotExists(tableName);
                 if (data.isPresent()) {
-
+                    DatabaseManager.importJSONFile(data.get(), tableName);
                 }
-            } catch (DuplicateDataException | ConfigFileFormatException | SQLException e) {
-                throw new RuntimeException(e);
+            } catch (ConfigFileFormatException | SQLException | IOException | DuplicateDataException e) {
+                Logging.logError(e);
+                //duplicate data is not handled here because the import json file methond does not throw duplicate data exception, only
+                //the drop table and create new table statements are causing it, in which case, we don't care, it won't happen.
             }
 
             //init data stuff
@@ -224,7 +223,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             Logging.logInfo("Making JSON Backup of " + tabName.get());
 
             try {
-                JSONArray dataArray = DatabaseManager.readDatabaseNew(tableName);
+                JSONArray dataArray = DatabaseManager.readDatabase(tableName);
                 FileChooser chooser = new FileChooser();
                 chooser.setTitle("Save Backup");
                 chooser.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -266,7 +265,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 validateData = false;
             }
             try {
-                JSONArray data = DatabaseManager.readDatabaseNew(tableName, true);
+                JSONArray data = DatabaseManager.readDatabase(tableName, true);
                 //construct a array containing the expansion structure of the database, if there are changes (exceptions), then we can defualt the expansionto false
                 ArrayList<Pair<Boolean, ArrayList<Boolean>>> expainsionStructure = new ArrayList<>();
                 for (TreeItem<String> matchItem : rootItem.getChildren()) {
@@ -285,7 +284,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 boolean checkTeamNumbers = true;
                 //for each json object representing a entry in the database, sorted
                 int arrayIndex = 0;
-                int lastMatch = getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, (HashMap<String, Object>)data.get(data.length() - 1));
+                int lastMatch = getIntFromEntryMap(Constants.SQLColumnName.MATCH_NUM, (HashMap<String, Object>)data.get(data.length() - 1));
                 for (int matchNum = 1; matchNum <=  lastMatch; matchNum++) {
                     //iterates through all the matches that  we have. There could be some matches that have no data if there is a random entry with a really high match number.
                     //any entry with a match number below 1 will be ingnored, becuase it must be a mistake at that point.
@@ -333,8 +332,8 @@ public class DatabaseViewerTabContent extends GenericTabContent{
 
 
 
-                    ArrayList<HashMap<String, Object>> redAllianceData = dataForThisMatch.stream().filter(map -> getIntFromEntryObject(Constants.SQLColumnName.ALLIANCE_POS, map) < 3).collect(Collectors.toCollection(ArrayList::new));
-                    ArrayList<HashMap<String, Object>> blueAllianceData = dataForThisMatch.stream().filter(map -> getIntFromEntryObject(Constants.SQLColumnName.ALLIANCE_POS, map) > 2).collect(Collectors.toCollection(ArrayList::new));
+                    ArrayList<HashMap<String, Object>> redAllianceData = dataForThisMatch.stream().filter(map -> getIntFromEntryMap(Constants.SQLColumnName.ALLIANCE_POS, map) < 3).collect(Collectors.toCollection(ArrayList::new));
+                    ArrayList<HashMap<String, Object>> blueAllianceData = dataForThisMatch.stream().filter(map -> getIntFromEntryMap(Constants.SQLColumnName.ALLIANCE_POS, map) > 2).collect(Collectors.toCollection(ArrayList::new));
                     Optional<Integer> redError = addAlliance(redAllianceData, matchItem, redAllianceBreakdown);
                     Optional<Integer> blueError = addAlliance(blueAllianceData, matchItem, blueAllianceBreakdown);
                     Optional<Integer> entryError = Optional.empty();
@@ -393,10 +392,10 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 //check the scouting data against this data
                 for (int teamNum : correctMatchConfiguration.keySet()) {
                     DatabaseManager.RobotPosition correctRobotPosition = correctMatchConfiguration.get(teamNum);
-                    List<HashMap<String, Object>> scoutingDataForThisPosition = scoutingDataForThisMatch.stream().filter(map -> getIntFromEntryObject(Constants.SQLColumnName.ALLIANCE_POS, map) == correctRobotPosition.ordinal()).toList();
+                    List<HashMap<String, Object>> scoutingDataForThisPosition = scoutingDataForThisMatch.stream().filter(map -> getIntFromEntryMap(Constants.SQLColumnName.ALLIANCE_POS, map) == correctRobotPosition.ordinal()).toList();
                     if (scoutingDataForThisPosition.size() == 1) {
                         //then there is only one robot entered for this position
-                        if (getIntFromEntryObject(Constants.SQLColumnName.TEAM_NUM, scoutingDataForThisPosition.get(0)) != teamNum) {
+                        if (getIntFromEntryMap(Constants.SQLColumnName.TEAM_NUM, scoutingDataForThisPosition.get(0)) != teamNum) {
                             //then the scouting data has the incorrect team number
                             //notify user and if they want to stop checking team numbers
                             if (!Constants.askQuestion("Match: " + matchNum + " Position: " + correctRobotPosition.name() + " has the incorrect team entered, continue checking team numbers?")) {
@@ -445,31 +444,31 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 int teleSpeakerTrue = ((int) breakdown.get("teleopSpeakerNoteAmplifiedCount")) + ((int) breakdown.get("teleopSpeakerNoteCount"));
                 int teleAmpTrue = (int) breakdown.get("teleopAmpNoteCount");
                 int autoSpeakerMeasured =
-                        getIntFromEntryObject(Constants.SQLColumnName.AUTO_SPEAKER, scoutingData.get(0)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.AUTO_SPEAKER, scoutingData.get(1)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.AUTO_SPEAKER, scoutingData.get(2));
+                        getIntFromEntryMap(Constants.SQLColumnName.AUTO_SPEAKER, scoutingData.get(0)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.AUTO_SPEAKER, scoutingData.get(1)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.AUTO_SPEAKER, scoutingData.get(2));
 
                 int autoAmpMeasured =
-                        getIntFromEntryObject(Constants.SQLColumnName.AUTO_AMP, scoutingData.get(0)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.AUTO_AMP, scoutingData.get(1)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.AUTO_AMP, scoutingData.get(2));
+                        getIntFromEntryMap(Constants.SQLColumnName.AUTO_AMP, scoutingData.get(0)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.AUTO_AMP, scoutingData.get(1)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.AUTO_AMP, scoutingData.get(2));
 
 
                 int teleSpeakerMeasured =
-                        getIntFromEntryObject(Constants.SQLColumnName.TELE_SPEAKER, scoutingData.get(0)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.TELE_SPEAKER, scoutingData.get(1)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.TELE_SPEAKER, scoutingData.get(2)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.SPEAKER_RECEIVED, scoutingData.get(0)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.SPEAKER_RECEIVED, scoutingData.get(1)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.SPEAKER_RECEIVED, scoutingData.get(2));
+                        getIntFromEntryMap(Constants.SQLColumnName.TELE_SPEAKER, scoutingData.get(0)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.TELE_SPEAKER, scoutingData.get(1)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.TELE_SPEAKER, scoutingData.get(2)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.SPEAKER_RECEIVED, scoutingData.get(0)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.SPEAKER_RECEIVED, scoutingData.get(1)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.SPEAKER_RECEIVED, scoutingData.get(2));
 
                 int teleAmpMeasured =
-                        getIntFromEntryObject(Constants.SQLColumnName.TELE_AMP, scoutingData.get(0)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.TELE_AMP, scoutingData.get(1)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.TELE_AMP, scoutingData.get(2)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.AMP_RECEIVED, scoutingData.get(0)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.AMP_RECEIVED, scoutingData.get(1)) +
-                                getIntFromEntryObject(Constants.SQLColumnName.AMP_RECEIVED, scoutingData.get(2));
+                        getIntFromEntryMap(Constants.SQLColumnName.TELE_AMP, scoutingData.get(0)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.TELE_AMP, scoutingData.get(1)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.TELE_AMP, scoutingData.get(2)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.AMP_RECEIVED, scoutingData.get(0)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.AMP_RECEIVED, scoutingData.get(1)) +
+                                getIntFromEntryMap(Constants.SQLColumnName.AMP_RECEIVED, scoutingData.get(2));
 
 
                 autoSpeakerError = String.valueOf(autoSpeakerMeasured - autoSpeakerTrue);
@@ -484,8 +483,8 @@ public class DatabaseViewerTabContent extends GenericTabContent{
 
             //here use the error values calulated above and set them below
             for (HashMap<String, Object> scoutingDatum : scoutingData) {
-                DatabaseManager.RobotPosition robotPosition = DatabaseManager.RobotPosition.values()[getIntFromEntryObject(Constants.SQLColumnName.ALLIANCE_POS, scoutingDatum)];
-                int teamNum = getIntFromEntryObject(Constants.SQLColumnName.TEAM_NUM, scoutingDatum);
+                DatabaseManager.RobotPosition robotPosition = DatabaseManager.RobotPosition.values()[getIntFromEntryMap(Constants.SQLColumnName.ALLIANCE_POS, scoutingDatum)];
+                int teamNum = getIntFromEntryMap(Constants.SQLColumnName.TEAM_NUM, scoutingDatum);
                 //declare robot position item
                 String err = "?";
                 if (maxErrorOfThisAlliance.isPresent()) {
@@ -515,7 +514,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                     }
                     TreeItem<String> dataPointItem = new TreeItem<>(rawDataMetric.getName()
                             + ":" +
-                            ((HashMap<String, Object>) scoutingDatum.get(rawDataMetric.getName())).get(String.valueOf(rawDataMetric.getDatatype().ordinal())).toString()
+                            ((HashMap<String, Object>) scoutingDatum.get(rawDataMetric.getName())).get(rawDataMetric.getDatatypeAsString()).toString()
                             + ":Error=" + error);
                     robotPositionItem.getChildren().add(dataPointItem);;
                 }
@@ -722,16 +721,24 @@ public class DatabaseViewerTabContent extends GenericTabContent{
         }
 
 
-        public static int getIntFromEntryObject(Constants.SQLColumnName metric, HashMap<String, Object> entryObject) {
+        public static int getIntFromEntryMap(Constants.SQLColumnName metric, HashMap<String, Object> entryObject) {
             return Integer.parseInt(((HashMap<String, Object>) entryObject.get(metric.toString()))
                     .get(String.valueOf(Configuration.Datatype.INTEGER.ordinal())).toString());
         }
+
+    public static int getIntFromEntryJSONObject(Constants.SQLColumnName metric, JSONObject entryObject) {
+        return entryObject.getJSONObject(metric.toString()).getInt(String.valueOf(Configuration.Datatype.INTEGER.ordinal()));
+    }
+
+    public static int getIntFromEntryJSONObject(DataMetric metric, JSONObject entryObject) {
+        return entryObject.getJSONObject(metric.getName()).getInt(String.valueOf(Configuration.Datatype.INTEGER.ordinal()));
+    }
 
         private ArrayList<HashMap<String, Object>> getDataForMatch(int matchNum, JSONArray data) {
             ArrayList<HashMap<String, Object>> dataForSpecificMatch = new ArrayList<>();
             data.toList().forEach(o -> {
                 HashMap<String, Object> entryMap = (HashMap<String, Object>) o;
-                int num = getIntFromEntryObject(Constants.SQLColumnName.MATCH_NUM, entryMap);
+                int num = getIntFromEntryMap(Constants.SQLColumnName.MATCH_NUM, entryMap);
                 if (matchNum == num) {
                     dataForSpecificMatch.add(entryMap);
                 }

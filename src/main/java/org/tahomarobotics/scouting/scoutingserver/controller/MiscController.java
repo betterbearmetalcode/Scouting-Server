@@ -153,7 +153,7 @@ public class MiscController {
     public void findTraps(ActionEvent event) {
             //save data
         try {
-            DatabaseManager.readDatabaseNew("Hopper", true);
+            DatabaseManager.readDatabase("Hopper", true);
         } catch (ConfigFileFormatException e) {
             throw new RuntimeException(e);
         } catch (SQLException e) {

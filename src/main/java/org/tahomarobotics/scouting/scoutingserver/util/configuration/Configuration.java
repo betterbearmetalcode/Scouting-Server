@@ -96,13 +96,13 @@ public class Configuration {
                             } catch (NumberFormatException ignored) {
 
                             }
-                            rawDataMetrics.add(new DataMetric<>(dataType, name, validateable, val));
+                            rawDataMetrics.add(new DataMetric(dataType, name, validateable, val));
                         }
                         case STRING -> {
-                            rawDataMetrics.add(new DataMetric<>(dataType, name, validateable, defaultValueNode.getTextContent()));
+                            rawDataMetrics.add(new DataMetric(dataType, name, validateable, defaultValueNode.getTextContent()));
                         }
                         case BOOLEAN -> {
-                            rawDataMetrics.add(new DataMetric<>(dataType, name, validateable, defaultValueNode.getTextContent().equalsIgnoreCase("true")));
+                            rawDataMetrics.add(new DataMetric(dataType, name, validateable, defaultValueNode.getTextContent().equalsIgnoreCase("true")));
                         }
                     }
 

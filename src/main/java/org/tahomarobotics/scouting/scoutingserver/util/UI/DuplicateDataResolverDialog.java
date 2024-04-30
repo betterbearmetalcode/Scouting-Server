@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DataPoint;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
@@ -18,17 +20,17 @@ import java.util.ArrayList;
 import java.util.Date;
 
 //returns list of records to add
-public class DuplicateDataResolvedDialog extends Dialog<ArrayList<DatabaseManager.QRRecord>>{
+public class DuplicateDataResolverDialog extends Dialog<ArrayList<JSONObject>>{
 
     ArrayList<CheckBox> checkBoxes = new ArrayList<>();
-    public DuplicateDataResolvedDialog(ArrayList<DuplicateDataException> duplicates) {
+    public DuplicateDataResolverDialog(ArrayList<DuplicateDataException> duplicates) {
         this.setTitle("Select Data to Keep");
         this.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 
 
         Button toggleAllButton = new Button("Toggle All");
         toggleAllButton.setOnAction(event -> checkBoxes.forEach(checkBox -> checkBox.setSelected(!checkBox.isSelected())));
-        VBox mainBox = new VBox(new Label("Choose whether to overwrite old data with new data or not"));
+        VBox mainBox = new VBox(new Label("Some of the data you are trying to add had entrys with the same match and team number already in the database. For each entry, choose whether to keep the old data or overwrite it with the new data."));
         mainBox.getChildren().add(toggleAllButton);
         mainBox.getChildren().add(getVbox(duplicates));
         this.getDialogPane().setContent(new ScrollPane(mainBox));
@@ -36,7 +38,7 @@ public class DuplicateDataResolvedDialog extends Dialog<ArrayList<DatabaseManage
         this.getDialogPane().prefHeightProperty().bind(Constants.UIValues.appHeightProperty());
         this.getDialogPane().setPrefWidth(400);
         this.setResultConverter(param -> {
-            ArrayList<DatabaseManager.QRRecord> output = new ArrayList<>();
+            ArrayList<JSONObject> output = new ArrayList<>();
             for (int i = 0; i < duplicates.size(); i++) {
                 if (checkBoxes.get(i).isSelected()) {
                     //if its selected, the we want to overwrite and should use the new data
@@ -47,19 +49,11 @@ public class DuplicateDataResolvedDialog extends Dialog<ArrayList<DatabaseManage
             return output;
         });
 
-        //save noteA backup json of all data just in case the user screws up and delete stuff
-        JSONObject backup = new JSONObject();
-        for (DatabaseManager.RobotPosition position : DatabaseManager.RobotPosition.values()) {
-            JSONArray positionArray = new JSONArray();
-            for (DuplicateDataException duplicate : duplicates) {
-                if (duplicate.getOldData().position() == position) {
-                    positionArray.put(duplicate.getOldData().getQRString());
-                }
-                if (duplicate.getNewData().position() == position) {
-                    positionArray.put(duplicate.getNewData().getQRString());
-                }
-            }
-            backup.put(position.name(), positionArray);
+        //save a backup json of all data just in case the user screws up and delete stuff
+        JSONArray backup = new JSONArray();
+        for (DuplicateDataException duplicate : duplicates) {
+            backup.put(duplicate.getOldData());
+            backup.put(duplicate.getNewData());
         }
 
 
@@ -86,7 +80,10 @@ public class DuplicateDataResolvedDialog extends Dialog<ArrayList<DatabaseManage
             CheckBox checkBox = new CheckBox("Overwrite?");
             checkBox.setSelected(true);
             checkBoxes.add(checkBox);
-            HBox box = new HBox(getTree(duplicate),new VBox(checkBox, new Label("Match: " + duplicate.getOldData().matchNumber()), new Label("Team: " + duplicate.getOldData().teamNumber()), new Label("Position" + duplicate.getOldData().position().name())) );
+            HBox box = new HBox(getTree(duplicate),new VBox(checkBox,
+                    new Label("Match: " + DatabaseViewerTabContent.getIntFromEntryJSONObject(Constants.SQLColumnName.MATCH_NUM, duplicate.getOldData())),
+                    new Label("Team: " + DatabaseViewerTabContent.getIntFromEntryJSONObject(Constants.SQLColumnName.TEAM_NUM, duplicate.getOldData())),
+                    new Label("Position" + DatabaseManager.getRobotPositionFromNum(DatabaseViewerTabContent.getIntFromEntryJSONObject(Constants.SQLColumnName.ALLIANCE_POS, duplicate.getOldData())))));
             box.setPrefHeight(125);
            vbox.getChildren().add(box);
         }
@@ -101,16 +98,15 @@ public class DuplicateDataResolvedDialog extends Dialog<ArrayList<DatabaseManage
         root.setExpanded(true);
         treeView.setShowRoot(false);
         TreeItem<String> oldItem = new TreeItem<>();
-        for (DataPoint dataPoint : duplicate.getOldData().getDataAsList()) {
-            oldItem.getChildren().add(new TreeItem<>(dataPoint.toString()));
-        }
         oldItem.setValue("Old Data");
-        root.getChildren().add(oldItem);
         TreeItem<String> newItem = new TreeItem<>();
-        for (DataPoint dataPoint : duplicate.getNewData().getDataAsList()) {
-            newItem.getChildren().add(new TreeItem<>(dataPoint.toString()));
-        }
         newItem.setValue("New Data");
+        for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
+            oldItem.getChildren().add(new TreeItem<>(rawDataMetric.getName() + ": " + duplicate.getOldData().opt(rawDataMetric.getDatatypeAsString())));
+            newItem.getChildren().add(new TreeItem<>(rawDataMetric.getName() + ": " + duplicate.getNewData().opt(rawDataMetric.getDatatypeAsString())));
+        }
+
+        root.getChildren().add(oldItem);
         root.getChildren().add(newItem);
         treeView.setRoot(root);
         return treeView;

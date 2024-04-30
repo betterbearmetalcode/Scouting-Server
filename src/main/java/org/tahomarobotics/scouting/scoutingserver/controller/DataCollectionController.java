@@ -17,7 +17,6 @@ import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.UI.DuplicateDataResolvedDialog;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.TableChooserDialog;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
@@ -50,7 +49,6 @@ public class DataCollectionController {
     public Button serverButton;
 
 
-    @FXML
     private void initialize() {
         selectedDatabaseLabel.setText("No Database Selected");
         jsonImprt.setDisable(true);
@@ -58,23 +56,6 @@ public class DataCollectionController {
         ScoutingServer.dataCollectionController = this;
         ServerUtil.setServerStatus(false);
     }
-
-
-
-    @FXML
-    public void selectTargetTable(ActionEvent event) {
-        try {
-            TableChooserDialog dialog = new TableChooserDialog(SQLUtil.getTableNames());
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(selectedDatabaseLabel::setText);
-            result.ifPresent(this::setActiveTable);
-        } catch (SQLException e) {
-            Logging.logError(e);
-        }
-    }
-
-
-
 
 
     public void loadCSV(ActionEvent event) {
@@ -167,7 +148,6 @@ public class DataCollectionController {
 
 
 
-    @FXML
     public void toggleServerStatus(ActionEvent event) {
         ServerUtil.setServerStatus(!ServerUtil.isServerThreadRunning());
         if (ServerUtil.isServerThreadRunning()) {
@@ -177,7 +157,6 @@ public class DataCollectionController {
         }
     }
 
-    @FXML
 /*    public void importDuplicateDataBackup(ActionEvent event) {
         Logging.logInfo("Importing duplicate data backup");
         FileChooser chooser = new FileChooser();
@@ -200,27 +179,10 @@ public class DataCollectionController {
     }
 
 
-    public void logScan(boolean successful, String qrData) {
-        String str = successful?"Successfully scanned Qr code: " + qrData:"Failed to scan Qr code";
-        Logging.logInfo("tried to scan qr code: succesful=" + successful);
 
-        writeToDataCollectionConsole(str, successful?Color.GREEN:Color.RED);
-
-
-    }
-
-    @FXML
     public void clearConsole(ActionEvent event) {
         Logging.logInfo("Clearing data collection console");
         imageViewBox.getChildren().clear();
-
-    }
-    public void writeToDataCollectionConsole(String str, Color color) {
-        Platform.runLater(() -> {
-            Label l = new Label(str);
-            l.setTextFill(color);
-            imageViewBox.getChildren().add(l);
-        });
 
     }
 
