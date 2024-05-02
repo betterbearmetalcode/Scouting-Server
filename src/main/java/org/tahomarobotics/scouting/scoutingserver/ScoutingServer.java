@@ -1,9 +1,12 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -150,7 +153,14 @@ public class ScoutingServer extends Application {
 
     private static void setUpButtonBar() {
         HBox buttonBarBox = new HBox();
-
+        Button saveButton = new Button();
+        File iamgeFile = new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/save-icon.png");
+        Image image = new Image(iamgeFile.toURI().toString());
+        ImageView iamgeView = new ImageView();
+        iamgeView.setImage(image);
+        saveButton.setGraphic(iamgeView);
+        saveButton.setOnAction(event -> MasterController.saveCurrentDatabase());
+        buttonBarBox.getChildren().add(saveButton);
 
         root.getChildren().add(buttonBarBox);
     }

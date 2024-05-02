@@ -5,7 +5,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
-import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil.SQLDatatype;
 
 import java.awt.*;
 import java.util.ArrayList;

@@ -314,7 +314,9 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                     //iterates through all the matches that  we have. There could be some matches that have no data if there is a random entry with a really high match number.
                     //any entry with a match number below 1 will be ingnored, becuase it must be a mistake at that point.
                     ArrayList<HashMap<String, Object>> dataForThisMatch = getDataForMatch(matchNum, data);
-
+                    if (matchNum == 40) {
+                    System.out.println();
+                    }
                     if (dataForThisMatch.isEmpty()) {
                         continue;
                     }
@@ -824,7 +826,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             int max = 0;
 
             for (int d : vals) {
-                if (Math.abs(d) > max) max = d;
+                if (Math.abs(d) > max) max = Math.abs(d);
             }
 
             return Math.abs(max);
