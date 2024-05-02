@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.tahomarobotics.scouting.scoutingserver.controller.DataCollectionController;
@@ -22,6 +23,26 @@ import static org.tahomarobotics.scouting.scoutingserver.Constants.UIValues.*;
 
 public class ScoutingServer extends Application {
 
+
+    /*
+    notes
+    have a settings page with the following settings
+    if a team number is inconsistent with the match schedule should we validate that entry or mark it as unknown
+    when exporting do we skip overloaded datapoints
+    warn if importing data with all default values
+    -------
+    when validationg matches which are over or under loaded will be skipped
+    make unused tables be deleted so they don't clog up the database.
+
+
+
+    buttons i need
+    validate-no dialog popping up, just validate
+    export
+    text field to set the competiton and data validation threshold for a database
+    open button
+
+     */
 
 
   //  public static MenuController.SCENES currentScene;
@@ -103,7 +124,7 @@ public class ScoutingServer extends Application {
     public void init() throws Exception {
         Logging.logInfo("Initializing");
         setUpMenuBar();
-
+        setUpButtonBar();
         mainTabPane = new MainTabPane();
         root.getChildren().add(mainTabPane);
         mainScene = new Scene(root);
@@ -126,6 +147,13 @@ public class ScoutingServer extends Application {
 
     }
 
+
+    private static void setUpButtonBar() {
+        HBox buttonBarBox = new HBox();
+
+
+        root.getChildren().add(buttonBarBox);
+    }
 
     private static void setUpMenuBar() {
         //file menu

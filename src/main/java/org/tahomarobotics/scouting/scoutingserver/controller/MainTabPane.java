@@ -17,19 +17,12 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MainTabPane extends TabPane{
-    private final Tab newTabTab = new Tab();
-    private final Button newTabButton;
 
     public List<GenericTabContent> tabContents = new ArrayList<>();
     public MainTabPane() {
         super();
-        newTabButton = new Button("+");
-        newTabButton.setOnAction(event -> addTab(new NewItemDialog().showAndWait()));
-        newTabTab.setGraphic(newTabButton);
-        newTabTab.setClosable(false);
         this.prefHeightProperty().bind(Constants.UIValues.appHeightProperty());
         this.prefWidthProperty().bind(Constants.UIValues.appWidtProperty());
-        this.getTabs().add(newTabTab);
 
     }
 
@@ -59,7 +52,7 @@ public class MainTabPane extends TabPane{
         setTabMaxHeight(Toolkit.getDefaultToolkit().getScreenSize().height);
 
 
-        getTabs().add(getTabs().size() - 1, tab);
+        getTabs().add(tab);
         getSelectionModel().select(tab);
         tabContents.add(tabContent.get());
         tabContent.get().updateDisplay();

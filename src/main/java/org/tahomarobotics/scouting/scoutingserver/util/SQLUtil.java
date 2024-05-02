@@ -1,5 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
@@ -35,7 +36,7 @@ public class SQLUtil {
             }
         }
         schema.replace(schema.length() - 2, schema.length(), "");
-        schema.append(", PRIMARY KEY (").append(Constants.SQLColumnName.MATCH_NUM).append(", ").append(Constants.SQLColumnName.TEAM_NUM).append("))");
+        schema.append(")");
         String statement = "CREATE TABLE IF NOT EXISTS \"" + tableName + "\"" + schema;
         
         execNoReturn(statement);
@@ -64,7 +65,7 @@ public class SQLUtil {
         execNoReturn(statement, params, log, null);
     }
 
-    public static void execNoReturn(String statement, Object[] params, boolean log, JSONObject entryBeingAdded) throws SQLException, IllegalArgumentException, DuplicateDataException {
+    public static void execNoReturn(String statement, Object[] params, boolean log, JSONArray arrayBeingAdded) throws SQLException, IllegalArgumentException, DuplicateDataException {
         try {
             PreparedStatement toExec = connection.prepareStatement(statement);
             Integer count = 1;
@@ -80,16 +81,8 @@ public class SQLUtil {
             }
 
         } catch (SQLException e){
-            if (e.getMessage().startsWith("[SQLITE_CONSTRAINT_PRIMARYKEY]")) {
-                handleDuplicateData(statement, entryBeingAdded);
-
-            }else {
-                connection.rollback();
-                throw new SQLException("\"Executed sql Query:" + statement + "\\nRolling Back Transaction\"", e);
-
-            }
-
-
+            connection.rollback();
+            throw new SQLException("\"Executed sql Query:" + statement + "\\nRolling Back Transaction\"", e);
         }
     }
 
@@ -177,7 +170,7 @@ public class SQLUtil {
     //however that resolving process is done elsewere becuase the execNoReturn method is called for more than just adding data
 
     //therefore, the data being added object is the new data and this method has to obtain the old data and constuct a duplicate data exception
-    private static void handleDuplicateData(String statement, JSONObject dataBeingAdded) throws DuplicateDataException {
+   /* private static void handleDuplicateData(String statement, JSONObject dataBeingAdded) throws DuplicateDataException {
         //sometimes it gets passed like this, idk
         if (dataBeingAdded == null) {
             return;
@@ -200,6 +193,6 @@ public class SQLUtil {
             Logging.logError(e);
             //at this point whatever, just skip it
         }
-    }
+    }*/
 
 }

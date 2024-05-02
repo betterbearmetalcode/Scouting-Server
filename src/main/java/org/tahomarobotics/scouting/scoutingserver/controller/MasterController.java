@@ -4,6 +4,7 @@ import javafx.stage.FileChooser;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.NewItemDialog;
 
 import java.awt.*;
 import java.io.File;
@@ -21,7 +22,7 @@ public class MasterController {
     //called when file>new is clicked, or the plus tab button is clicked
     public static void newThing() {
         Logging.logInfo("Creating something new");
-        
+        ScoutingServer.mainTabPane.addTab(new NewItemDialog().showAndWait());
     }
 
     public static void openJSONFileIntoDatabase() {
@@ -30,7 +31,11 @@ public class MasterController {
         chooser.setTitle("Select JSON File");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
         chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
-        ScoutingServer.mainTabPane.addTab(Optional.of(new DatabaseViewerTabContent(chooser.showOpenDialog(ScoutingServer.mainStage.getOwner()))));
+        File selectedFile = chooser.showOpenDialog(ScoutingServer.mainStage.getOwner());
+        if (selectedFile == null) {
+            return;
+        }
+        ScoutingServer.mainTabPane.addTab(Optional.of(new DatabaseViewerTabContent(selectedFile)));
 
 
     }

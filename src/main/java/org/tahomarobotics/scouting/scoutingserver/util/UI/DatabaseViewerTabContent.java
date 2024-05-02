@@ -1,13 +1,21 @@
 package org.tahomarobotics.scouting.scoutingserver.util.UI;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import javafx.util.converter.DefaultStringConverter;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
@@ -32,8 +40,16 @@ import java.util.stream.Collectors;
 
 public class DatabaseViewerTabContent extends GenericTabContent{
 
-    private final TreeView<String> content = new TreeView<>();
+    private final VBox content = new VBox();
+    private final TreeView<String> treeView = new TreeView<>();
 
+    private final HBox buttonBar = new HBox();
+
+    private final TextField autoCompletionField = new TextField();
+    private final  Spinner<Integer> dataValidationThresholdSpinner = new Spinner<>();
+
+    //this must be updated each year, see getButtonBarMethod
+    private  ArrayList<Pair<String, String>> events;
 
     @Override
     public Node getContent() {
@@ -88,25 +104,45 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 //the drop table and create new table statements are causing it, in which case, we don't care, it won't happen.
             }
 
+            //gui
+            setUpButtonBar();
+
             //init data stuff
             rootItem = new TreeItem<>("root-item");
 
-            content.setEditable(true);
-            content.setShowRoot(false);
-            content.setRoot(rootItem);
-            content.setCellFactory(param -> new EditableTreeCell());
+            treeView.setEditable(true);
+            treeView.setShowRoot(false);
+            treeView.setRoot(rootItem);
+            treeView.setCellFactory(param -> new EditableTreeCell());
+            JSONArray eventList = new JSONArray();
             //init list of events
             try {
                 FileInputStream stream = new FileInputStream(Constants.BASE_READ_ONLY_FILEPATH + "/resources/TBAData/eventList.json");
                 eventList = new JSONArray(new String(stream.readAllBytes()));
                 stream.close();
-            } catch (FileNotFoundException e) {
-                Logging.logError(e, "Could Not Find list of Competitions");
-            } catch (IOException e) {
-                Logging.logError(e, "Whooop de doo, another IO exception, I guess your just screwed now,-C.H");
+            }catch (IOException e) {
+                Logging.logError(e, "Whooop de doo, another IO exception, I guess your just screwed now,-C.H, try closing things and dont delete the resources folder and maybe restart the app and/or your computer if competitons aren't showing up this is probably why, this will probably never show up, but I kind of hope it does because it would be funny and I sat here typing noteA unessacarily long error message for no good reason");
             }
 
+
+            ArrayList<String> options = new ArrayList<>();
+            events = new ArrayList<>();
+            for (Object o : eventList.toList()) {
+                HashMap<String, String> comp = (HashMap<String, String>) o;
+                events.add(new Pair<>(comp.get("key"), comp.get("name")));
+                options.add(comp.get("name"));
+            }
+
+            TextFields.bindAutoCompletion(autoCompletionField, options);
+
             updateDisplay(false);
+            content.getChildren().add(treeView);
+            content.setSpacing(10);
+            content.prefHeightProperty().bind(Constants.UIValues.appHeightProperty());
+            content.prefHeightProperty().bind(Constants.UIValues.appHeightProperty());
+            treeView.prefHeightProperty().bind(Constants.UIValues.appHeightProperty());
+            treeView.prefWidthProperty().bind(Constants.UIValues.appWidtProperty());
+
         }
 
 
@@ -121,14 +157,14 @@ public class DatabaseViewerTabContent extends GenericTabContent{
 
             //gather TBA data
             //first figure out which competition we are at
-            if ("".equals(currentEventCode)) {
+/*            if ("".equals(currentEventCode)) {
                 //if no event code has been selected
                 if (selectCompetition()) {
                     //if the selection fails or is canceled etc
                     Logging.logInfo("Export Aborted");
                     return;
                 }
-            }
+            }*/
             //gather TBA data and prepare a list of teams who are at the comp
             Exporter exporter;
             try {
@@ -206,17 +242,6 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             }
             rootItem.getChildren().clear();
             updateDisplay(false);
-        }
-
-
-        public void updateTBAData() {
-            Logging.logInfo("UpdatingTBAData");
-            if (selectCompetition()) {
-                tbaDataOptional = Optional.empty();
-                return;
-            }
-            tbaDataOptional = APIUtil.getEventMatches(currentEventCode);
-
         }
 
         public void saveJSONBackup(ActionEvent event) {
@@ -524,7 +549,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
 
         }
 
-        public boolean selectCompetition() {
+/*        public boolean selectCompetition() {
             Logging.logInfo("asking user to select which competition they are at");
             DataValidationCompetitionChooser chooser = new DataValidationCompetitionChooser();
             Optional<String> result = chooser.showAndWait();
@@ -533,7 +558,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             currentEventCode = selectedEvent.get();
             return Objects.equals(currentEventCode, "");
 
-        }
+        }*/
 
         private void setExpansionAll(TreeItem<String> treeItem, boolean val) {
             if (treeItem.getValue().equals("root-item")) {
@@ -553,6 +578,55 @@ public class DatabaseViewerTabContent extends GenericTabContent{
         }
 
 
+        private void setUpButtonBar() {
+                //data validation competition selector
+                autoCompletionField.setPromptText("Select Competition");
+                autoCompletionField.setPrefWidth(150);
+                buttonBar.getChildren().add(autoCompletionField);
+
+                dataValidationThresholdSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1,10,3));
+                dataValidationThresholdSpinner.setPrefWidth(65);
+                buttonBar.getChildren().addAll(new Label("Error Threshold: "), dataValidationThresholdSpinner);
+
+                Button validateButton = new Button();
+                File iamgeFile = new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/validation-icon.png");
+                Image image = new Image(iamgeFile.toURI().toString());
+                ImageView iamgeView = new ImageView();
+                iamgeView.setImage(image);
+                validateButton.setGraphic(iamgeView);
+                validateButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent e) {
+                        Constants.LOW_ERROR_THRESHOLD = dataValidationThresholdSpinner.getValue();
+                        String result = autoCompletionField.getText();
+                        boolean success = true;
+                        if (!Objects.equals(result, "")) {
+                            //if they actuall selected something
+                            Optional<Pair<String, String>> event = events.stream().filter(s -> s.getValue().equals(result)).findFirst();
+                            if (event.isPresent()) {
+                                currentEventCode = event.get().getKey();
+                                tbaDataOptional = APIUtil.getEventMatches(currentEventCode);
+                                updateDisplay(true);
+                            }else {
+                                success = false;
+                            }
+
+                        }else {
+                            success = false;
+                        }
+
+                        if (!success) {
+                            Logging.logInfo("Failed to validate data, please ensure you have internet and have selected a competiton", true);
+                        }
+                    }
+                });
+                buttonBar.getChildren().add(validateButton);
+
+            content.getChildren().add(buttonBar);
+                buttonBar.setSpacing(10);
+                buttonBar.setAlignment(Pos.CENTER_LEFT);
+
+        }
 
         private class EditableTreeCell extends TextFieldTreeCell<String> {
 

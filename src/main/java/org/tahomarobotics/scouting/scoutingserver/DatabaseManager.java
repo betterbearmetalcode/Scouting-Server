@@ -1,7 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.application.Platform;
-import javafx.scene.paint.Color;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
@@ -70,7 +69,20 @@ public class DatabaseManager {
 
     }
     //the king of storage methods, all the data storage methods eventually call this one, it is the final leg of the chain
+
+    //this is mostly just me tryin to figure out how i'm going to code this less to explanin the code, but i won't delete it
+    //need  a method to add data efficiently, reliably, and resolving duplicate data
+    //we get the data we are trying to add the the table we are trying to add it to.
+    //SQL querys take anywhere from like 6ms to 34ms (populating all of hopper data)
+    //so doing hundreds of sql statements for ecah line of the datahbase is infeasble.
+    //however if you try and add all the data at once, it there is any problem like duplicate data
+    //none gets added.
+    //the solution is this: do not have any constraints on the tables when we are trying to add data to them.
+    //we will just accept the fact that there could be duplicate data, but when validating just mark matches that are not
+    //over or underloaded as unknown and move on.
+
     public static ArrayList<DuplicateDataException> importJSONArrayOfDataObjects(JSONArray data, String activeTable){
+
         try {
             Configuration.updateConfiguration();
         } catch (ConfigFileFormatException e) {
@@ -79,40 +91,29 @@ public class DatabaseManager {
            }
         }
         ArrayList<DuplicateDataException> duplicates = new ArrayList<>();
-        int numErrors = 0;
-        boolean showErrors = true;
+        StringBuilder statementBuilder = new StringBuilder("INSERT INTO \"" + activeTable + "\" VALUES ");
         for (Object object : data) {
-            try {
-                SQLUtil.execNoReturn(getSQLStatementFromJSONJata((JSONObject) object, activeTable), SQLUtil.EMPTY_PARAMS, false, (JSONObject) object);
-                int matchNum = ((JSONObject) object).getJSONObject(Constants.SQLColumnName.MATCH_NUM.toString()).getInt(String.valueOf(Configuration.Datatype.INTEGER.ordinal()));
-                int teamNum = ((JSONObject) object).getJSONObject(Constants.SQLColumnName.TEAM_NUM.toString()).getInt(String.valueOf(Configuration.Datatype.INTEGER.ordinal()));
-                RobotPosition robotPosition = DatabaseManager.RobotPosition.values()[((JSONObject) object).getJSONObject(Constants.SQLColumnName.ALLIANCE_POS.toString()).getInt(String.valueOf(Configuration.Datatype.INTEGER.ordinal()))];
+            statementBuilder.append(getValuesStatementFromJSONJata((JSONObject) object, activeTable)).append(", ");
+        }
+        statementBuilder.replace(statementBuilder.toString().length() - 2, statementBuilder.length()  -1, "");
+        try {
 
-            } catch (DuplicateDataException e) {
-                duplicates.add(e);
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IllegalStateException |
-                     SQLException e) {
-                numErrors++;
-                if (numErrors >= 3 && showErrors) {
-                    showErrors = Constants.askQuestion("There have been " + numErrors + " errors so far in this import, continue showing alerts?");
-                }
-                if (showErrors) {
-                    Logging.logError(e, "Failed to import datum");
-                }
-
-            }
-
+            SQLUtil.execNoReturn(statementBuilder.toString(), SQLUtil.EMPTY_PARAMS, false, data);
+        } catch (DuplicateDataException e) {
+            duplicates.add(e);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IllegalStateException |
+                 SQLException e) {
+            Logging.logError(e, "Failed to import datum");
 
         }
         return duplicates;
     }
 
-    public static String getSQLStatementFromJSONJata(JSONObject datum, String tableName) {
-        StringBuilder statementBuilder = new StringBuilder("INSERT INTO \"" + tableName + "\" VALUES (");
+    public static String getValuesStatementFromJSONJata(JSONObject datum, String tableName) {
+        StringBuilder statementbuilder = new StringBuilder();
+        statementbuilder.append("(");
+
         //for each data metric the scouting server is configured to care about add it into the database or handle duplicates
-        if (Objects.equals(((JSONObject) datum.get("TEAM_NUM")).get("0").toString(), "1403")) {
-            System.out.print("");
-        }
         for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
             JSONObject potentialMetric = datum.optJSONObject(rawDataMetric.getName());//json object which represents the datatype and value for this metric
             if (potentialMetric == null) {
@@ -139,16 +140,16 @@ public class DatabaseManager {
             switch (rawDataMetric.getDatatype()) {
 
                 case INTEGER, BOOLEAN -> {
-                    statementBuilder.append(potentialMetric.get(key)).append(", ");
+                    statementbuilder.append(potentialMetric.get(key)).append(", ");
                 }
                 case STRING -> {
-                    statementBuilder.append("\"").append(potentialMetric.get(key)).append("\" , ");
+                    statementbuilder.append("\"").append(potentialMetric.get(key)).append("\" , ");
                 }
             }
         }
-        statementBuilder.replace(statementBuilder.toString().length() - 2, statementBuilder.length()  -1, "");
-        statementBuilder.append(")");
-        return statementBuilder.toString();
+        statementbuilder.replace(statementbuilder.toString().length() - 2, statementbuilder.length()  -1, "");
+        statementbuilder.append(")");
+        return statementbuilder.toString();
     }
 
     public static JSONArray readDatabase(String tableName, boolean sorted) throws ConfigFileFormatException, SQLException {

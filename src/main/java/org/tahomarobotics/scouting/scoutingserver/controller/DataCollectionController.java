@@ -1,12 +1,10 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import org.json.CDL;
 import org.json.JSONArray;
@@ -17,7 +15,6 @@ import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.UI.TableChooserDialog;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
@@ -29,7 +26,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 
 import static org.tahomarobotics.scouting.scoutingserver.DatabaseManager.handleDuplicates;
 
@@ -131,7 +127,7 @@ public class DataCollectionController {
                     dataToImport.put(rawDataMetric.getName(), finalDataCarryingaObject);
                 }
                 try {
-                    SQLUtil.execNoReturn(DatabaseManager.getSQLStatementFromJSONJata(dataToImport, activeTable));
+                    SQLUtil.execNoReturn(DatabaseManager.getValuesStatementFromJSONJata(dataToImport, activeTable));
                 } catch (DuplicateDataException e) {
                     duplicates.add(e);
                 } catch (SQLException e) {
