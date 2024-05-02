@@ -15,7 +15,7 @@ The reason the datatype is represented as a number instead of “Integer” etc.
 	If you want to add different data metrics, all you have to do is add more stuff to the outer json objects. If for some reason other datatypes are required, there are more integers out there. If the protocol is updated, old data can be read if some of the old data metrics are still present in the new protocol. The ones which are in both transfer fine, if something is removed, then it will be ignored by the new version, and if something is added, a default value can be supplied from the configuration file.
 
 
-Example of two data entries, for worlds division data there would be around 750. 
+Example of two data entries, for worlds division data there would be around 750, use code view to see formatted version
 
 [
  {
