@@ -1,8 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -33,6 +31,7 @@ public class ScoutingServer extends Application {
     if a team number is inconsistent with the match schedule should we validate that entry or mark it as unknown
     when exporting do we skip overloaded datapoints
     warn if importing data with all default values
+    data transfer port
     -------
     when validationg matches which are over or under loaded will be skipped
     make unused tables be deleted so they don't clog up the database.
@@ -60,7 +59,33 @@ public class ScoutingServer extends Application {
 
     public static MainTabPane mainTabPane;
 
+    //menubar components
+    private static final Menu fileMenu = new Menu("File");
+    private static final MenuItem newItem = new MenuItem("New");
+    private static final MenuItem openItem = new MenuItem("Open");
+    private static final MenuItem saveItem = new MenuItem("Save");
+    private static final MenuItem saveAsItem = new MenuItem("Save As");
+    private static final MenuItem saveAllItem = new MenuItem("SaveAll");
+    //data mstatic enu
+    private static final Menu dataMenu = new Menu("Data");
+    private static final MenuItem dataTransferItem = new MenuItem("Start Data Transfer Server");
+    private static final MenuItem jsonImportItem = new MenuItem("Import JSON");
+    private static final MenuItem csvImportItem = new MenuItem("Import CSV");
+    private static final MenuItem validateItem = new MenuItem("Validate");
+    private static final MenuItem mergeDatabaseItem = new MenuItem("Merge Database");
+      //all static game specific?
+    private static final Menu toolsMenu = new Menu("Tools");
+    private static final MenuItem autoHeatmapItem = new MenuItem("Create Auto Heatmap");//not supported rn
+    private static final MenuItem findTrapsItem = new MenuItem("Find Traps");
+    private static final MenuItem stratScoutingScheduleButton = new MenuItem("Generate Strat Scouting Schedule");
+    private static final Menu helpMenu = new Menu("Help");
+    private static final MenuItem helpItem = new MenuItem("Open Documentation");
+    private static final MenuItem openEmotionalSupportItem = new MenuItem("Emotional Support");//rickroll shh -Caleb
+
+    private static final Button saveButton = new Button();
     public static DataCollectionController dataCollectionController = new DataCollectionController();
+
+
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
@@ -73,6 +98,7 @@ public class ScoutingServer extends Application {
         mainStage.setOnCloseRequest(event -> {
             ServerUtil.setServerStatus(false);
         });
+
         mainStage.setHeight(getAppHeight());
         mainStage.setWidth(getAppWidth());
         mainStage.show();
@@ -153,65 +179,88 @@ public class ScoutingServer extends Application {
 
     private static void setUpButtonBar() {
         HBox buttonBarBox = new HBox();
-        Button saveButton = new Button();
+        buttonBarBox.setSpacing(10);
+        Button newButton = new Button();
+        File newImageFile = new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/new-icon.png");
+        Image newImage = new Image(newImageFile.toURI().toString());
+        ImageView newImageView = new ImageView();
+        newImageView.setImage(newImage);
+        newButton.setGraphic(newImageView);
+        newButton.setOnAction(event -> MasterController.newThing());
+        newButton.setTooltip(new Tooltip("New File"));
+        buttonBarBox.getChildren().add(newButton);
+
+        Button openButton = new Button();
+        openButton.setTooltip(new Tooltip("Open File"));
+        File openImageFile = new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/open-icon.png");
+        Image openImage = new Image(openImageFile.toURI().toString());
+        ImageView openImageView = new ImageView();
+        openImageView.setImage(openImage);
+        openButton.setGraphic(openImageView);
+        openButton.setOnAction(event -> MasterController.openJSONFileIntoDatabase());
+        buttonBarBox.getChildren().add(openButton);
+
+
+
         File iamgeFile = new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/save-icon.png");
         Image image = new Image(iamgeFile.toURI().toString());
         ImageView iamgeView = new ImageView();
         iamgeView.setImage(image);
+        saveButton.setTooltip(new Tooltip("Save"));
+        saveButton.setDisable(true);
         saveButton.setGraphic(iamgeView);
-        saveButton.setOnAction(event -> MasterController.saveCurrentDatabase());
+        saveButton.setOnAction(event -> MasterController.saveCurrentTab());
         buttonBarBox.getChildren().add(saveButton);
 
         root.getChildren().add(buttonBarBox);
     }
 
-    private static void setUpMenuBar() {
+    private void setUpMenuBar() {
         //file menu
-        Menu fileMenu = new Menu("File");
-        MenuItem newItem = new MenuItem("New");
+
         newItem.setOnAction(event -> MasterController.newThing());
-        MenuItem openItem = new MenuItem("Open");
+
         openItem.setOnAction(event -> MasterController.openJSONFileIntoDatabase());
-        MenuItem saveItem = new MenuItem("Save");
-        saveItem.setOnAction(event -> MasterController.saveCurrentDatabase());
-        MenuItem saveAsItem = new MenuItem("Save As");
-        saveAsItem.setOnAction(event -> MasterController.saveCurrentDatabaseAs());
-        MenuItem saveAllItem = new MenuItem("SaveAll");
-        saveAllItem.setOnAction(event -> MasterController.saveAllOpenDatabases());
+
+        saveItem.setDisable(true);
+        saveItem.setOnAction(event -> MasterController.saveCurrentTab());
+        saveAsItem.setDisable(true);
+        saveAsItem.setOnAction(event -> MasterController.saveCurrentTabAs());
+
+        saveAllItem.setDisable(true);
+        saveAllItem.setOnAction(event -> MasterController.saveAllTabs());
         fileMenu.getItems().addAll(newItem, openItem, saveItem, saveAsItem, saveAllItem);
 
-        //data menu
-        Menu dataMenu = new Menu("Data");
 
-        MenuItem dataTransferItem = new MenuItem("Start Data Transfer Server");
+
+
         dataTransferItem.setOnAction(event -> dataTransferItem.setText(MasterController.toggleDataTransferServer()));
-        MenuItem jsonImportItem = new MenuItem("Import JSON");
+
         jsonImportItem.setOnAction(event -> MasterController.addJSONFile());
-        MenuItem csvImportItem = new MenuItem("Import CSV");
+
         csvImportItem.setOnAction(event -> MasterController.addCSVFile());
-        MenuItem validateItem = new MenuItem("Validate");
+
         validateItem.setOnAction(event -> MasterController.validateDatabase());
-        MenuItem mergeDatabaseItem = new MenuItem("Merge Database");
+
         mergeDatabaseItem.setOnAction(event -> MasterController.mergeDatabases());
         dataMenu.getItems().addAll(dataTransferItem, jsonImportItem, csvImportItem, validateItem, mergeDatabaseItem);
+        setEnablingForDataMenu(false);//these need a database tab content tab to be open
 
         //tools menu
-        //all game specific?
-        Menu toolsMenu = new Menu("Tools");
-        MenuItem autoHeatmapItem = new MenuItem("Create Auto Heatmap");//not supported rn
+
+
         autoHeatmapItem.setDisable(true);//:(
-        MenuItem findTrapsItem = new MenuItem("Find Traps");
+
         findTrapsItem.setOnAction(event -> MasterController.findTraps());
-        MenuItem stratScoutingScheduleButton = new MenuItem("Generate Strat Scouting Schedule");
+
         stratScoutingScheduleButton.setOnAction(event -> MasterController.genenerateStratScoutingSchedule());
         toolsMenu.getItems().addAll(autoHeatmapItem, findTrapsItem, stratScoutingScheduleButton);
 
 
         //help menu
-        Menu helpMenu = new Menu("Help");
-        MenuItem helpItem = new MenuItem("Open Documentation");
+
         helpItem.setOnAction(event -> MasterController.openDocumentation());
-        MenuItem openEmotionalSupportItem = new MenuItem("Emotional Support");//rickroll shh -Caleb
+
         openEmotionalSupportItem.setOnAction(event -> MasterController.rickrollUser());
         helpMenu.getItems().addAll(helpItem, openEmotionalSupportItem);
         MenuBar menuBar = new MenuBar();
@@ -220,6 +269,20 @@ public class ScoutingServer extends Application {
         root.getChildren().add(menuBar);
     }
 
+    public static void setEnablingForDataMenu(boolean val) {
+        dataTransferItem.setDisable(!val);
+        jsonImportItem.setDisable(!val);
+        csvImportItem.setDisable(!val);
+        validateItem.setDisable(!val);
+        mergeDatabaseItem.setDisable(!val);
+    }
+
+    public static void setEnablingForSaveButtons(boolean val) {
+        saveItem.setDisable(!val);
+        saveAsItem.setDisable(!val);
+        saveAllItem.setDisable(!val);
+        saveButton.setDisable(!val);
+    }
 
     public static void main(String[] args) {
         launch();

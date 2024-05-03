@@ -7,8 +7,6 @@ import javafx.scene.control.Dialog;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class Constants {
@@ -25,6 +23,11 @@ public class Constants {
     public static final String QR_DATA_DELIMITER = "/";
 
     public static final int WIRED_DATA_TRANSFER_PORT = 45482;
+
+    public enum TabType {
+        DATABASE_VIEWER,
+        CHART
+    }
 
     public enum SQLColumnName {
         MATCH_NUM,

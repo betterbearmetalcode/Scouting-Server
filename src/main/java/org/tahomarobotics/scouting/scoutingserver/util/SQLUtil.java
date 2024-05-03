@@ -1,10 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
-import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
-import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;

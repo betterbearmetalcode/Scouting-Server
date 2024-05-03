@@ -1,7 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver.util.exceptions;
 
 import org.json.JSONObject;
-import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 
 public class DuplicateDataException extends Exception {
 

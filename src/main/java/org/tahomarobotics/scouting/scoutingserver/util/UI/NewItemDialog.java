@@ -1,30 +1,8 @@
 package org.tahomarobotics.scouting.scoutingserver.util.UI;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.tahomarobotics.scouting.scoutingserver.Constants;
-import org.tahomarobotics.scouting.scoutingserver.util.Chart;
-import org.tahomarobotics.scouting.scoutingserver.util.Logging;
-import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
-
-import javax.swing.*;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.regex.Pattern;
-
-import static org.tahomarobotics.scouting.scoutingserver.Constants.SQLColumnName.*;
 
 public class NewItemDialog extends Dialog<GenericTabContent> {
 

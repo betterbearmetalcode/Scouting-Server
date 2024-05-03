@@ -1,7 +1,6 @@
 package org.tahomarobotics.scouting.scoutingserver.util.UI;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -14,7 +13,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import javafx.util.converter.DefaultStringConverter;
-import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,6 +20,7 @@ import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.Exporter;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
+import org.tahomarobotics.scouting.scoutingserver.controller.MasterController;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
@@ -33,23 +32,26 @@ import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataE
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.OperationAbortedByUserException;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class DatabaseViewerTabContent extends GenericTabContent{
 
     private final VBox content = new VBox();
-    private final TreeView<String> treeView = new TreeView<>();
 
     private final HBox buttonBar = new HBox();
 
+    private final Button validateButton = new Button();
     private final TextField autoCompletionField = new TextField();
     private final  Spinner<Integer> dataValidationThresholdSpinner = new Spinner<>();
 
     //this must be updated each year, see getButtonBarMethod
-    private  ArrayList<Pair<String, String>> events;
+    private final ArrayList<Pair<String, String>> events;
 
     @Override
     public Node getContent() {
@@ -61,20 +63,114 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             updateDisplay(false);
     }
 
+    @Override
+    public Constants.TabType getTabType() {
+        return Constants.TabType.DATABASE_VIEWER;
+    }
+
+    @Override
+    public void save() {
+        Logging.logInfo("Saving " + tabName.get());
 
 
+        JSONArray dataArray = DatabaseManager.readDatabase(tableName);
+        File selectedFile;
+        boolean needToPickFile = true;
+        if (contentFileLocation.isPresent()) {
+            File potentialFile = contentFileLocation.get();
+            if (potentialFile.exists() && potentialFile.isFile()) {
+                if (potentialFile.getName().endsWith(".json")) {
+                    needToPickFile = false;
+                }
+            }else if (contentFileLocation.get().createNewFile()) {
+                needToPickFile = false;
+            }
+        }
+        if (needToPickFile) {
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Save Backup");
+            chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + ".json");
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
+            selectedFile  = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+        }else {
+            selectedFile = contentFileLocation.get();
+        }
+
+        //maybe, but better safe than sorry
+        if (selectedFile == null) {
+            Logging.logError(new Exception(), "Could not get a file to save the database at");
+            return;
+        }
+        //save backup of file
+        Path copied = Paths.get(Constants.BASE_APP_DATA_FILEPATH + "/resources/tempBackup" + System.currentTimeMillis() + ".json");
+        Path originalPath = selectedFile.toPath();
+        try {
+            Files.copy(originalPath, copied);
+        } catch (IOException e) {
+            Logging.logInfo("Failed to save backup before saving database, will just risk corrupting the users data");
+        }
+
+        try {
+            FileOutputStream os = new FileOutputStream(selectedFile);
+            os.write(dataArray.toString(1).getBytes());
+            os.flush();
+            os.close();
+        } catch (IOException e) {
+            Logging.logError(e, "Failed to save database, will try and restore backup");
+            Path copied = Paths.get(Constants.BASE_APP_DATA_FILEPATH + "/resources/tempBackup" + System.currentTimeMillis() + ".json");
+            try {
+                Files.copy(originalPath, copied);
+            } catch (IOException e) {
+                Logging.logInfo("Failed to save backup before saving database, will just risk corrupting the users data");
+            }
+        }
+
+        contentFileLocation = Optional.of(selectedFile);
+    }
+
+    @Override
+    public void saveAs() {
+        Logging.logInfo("Saving " + tabName.get() +  "As new File");
+
+        try {
+            JSONArray dataArray = DatabaseManager.readDatabase(tableName);
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Save Database");
+            chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            chooser.setInitialFileName(tabName.get());
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
+            File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+            if (selectedFile == null) {
+                return;
+            }
+            if (!selectedFile.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                selectedFile.createNewFile();
+            }
+            FileOutputStream os = new FileOutputStream(selectedFile);
+            os.write(dataArray.toString(1).getBytes());
+            os.flush();
+            os.close();
 
 
-        //this is NOT the same as the tab name shown. The tab name represents the file this would be saved to
+        } catch (IOException | SQLException | ConfigFileFormatException e) {
+            Logging.logError(e, "Failed to save as new file");
+        }
+    }
+
+
+    //this is NOT the same as the tab name shown. The tab name represents the file this would be saved to
         //in the user's eyes the tab is a file that they opened, or created and havent saved yet. The user can save this tab to a file.
         //the SQL table is used internall for data manipulation and this is the table name
         //to ensure tables are unique, the timestamp is used as the table name.
         public String tableName;
 
         private final TreeItem<String> rootItem;
-        private JSONArray eventList;
 
         private String currentEventCode = "";
+
+
 
         private Optional<JSONArray> tbaDataOptional = Optional.empty();
 
@@ -87,7 +183,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
         }
 
         public DatabaseViewerTabContent(String tabName, Optional<File> data) {
-            super(tabName);
+            super(tabName, data);
             Logging.logInfo("Initializing Database view Tab Content for tab: " + tabName);
             tableName = String.valueOf(System.currentTimeMillis());//see above long comment
 
@@ -110,6 +206,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             //init data stuff
             rootItem = new TreeItem<>("root-item");
 
+            TreeView<String> treeView = new TreeView<>();
             treeView.setEditable(true);
             treeView.setShowRoot(false);
             treeView.setRoot(rootItem);
@@ -142,6 +239,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             content.prefHeightProperty().bind(Constants.UIValues.appHeightProperty());
             treeView.prefHeightProperty().bind(Constants.UIValues.appHeightProperty());
             treeView.prefWidthProperty().bind(Constants.UIValues.appWidtProperty());
+
 
         }
 
@@ -207,27 +305,6 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             }
         }
 
-        public void expandAll() {
-            Logging.logInfo("Expanding Tree");
-            setExpansionAll(rootItem, true);
-
-        }
-
-
-        public void collapseAll() {
-            Logging.logInfo("Collapsing Tree");
-            setExpansionAll(rootItem, false);
-        }
-
-
-
-        public void validateDataButtonHandler() {
-            if (tbaDataOptional.isEmpty()) {
-                Logging.logInfo("No TBA Data, so cannont validate. Click update to update.", true);
-                return;
-            }
-            updateDisplay(true);
-        }
 
 
         public void clearDatabase() {
@@ -243,38 +320,6 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             rootItem.getChildren().clear();
             updateDisplay(false);
         }
-
-        public void saveJSONBackup(ActionEvent event) {
-            Logging.logInfo("Making JSON Backup of " + tabName.get());
-
-            try {
-                JSONArray dataArray = DatabaseManager.readDatabase(tableName);
-                FileChooser chooser = new FileChooser();
-                chooser.setTitle("Save Backup");
-                chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-                chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + ".json");
-                chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
-                File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
-                if (selectedFile == null) {
-                    return;
-                }
-                if (!selectedFile.exists()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    selectedFile.createNewFile();
-                }
-                FileOutputStream os = new FileOutputStream(selectedFile);
-                // os.write(output.toString(1).getBytes());
-                os.write(dataArray.toString(1).getBytes());
-                os.flush();
-                os.close();
-
-
-            } catch (IOException | SQLException | ConfigFileFormatException e) {
-                Logging.logError(e, "Failed to save backup");
-            }
-
-        }
-
 
 
 
@@ -314,9 +359,6 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                     //iterates through all the matches that  we have. There could be some matches that have no data if there is a random entry with a really high match number.
                     //any entry with a match number below 1 will be ingnored, becuase it must be a mistake at that point.
                     ArrayList<HashMap<String, Object>> dataForThisMatch = getDataForMatch(matchNum, data);
-                    if (matchNum == 40) {
-                    System.out.println();
-                    }
                     if (dataForThisMatch.isEmpty()) {
                         continue;
                     }
@@ -590,45 +632,56 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 dataValidationThresholdSpinner.setPrefWidth(65);
                 buttonBar.getChildren().addAll(new Label("Error Threshold: "), dataValidationThresholdSpinner);
 
-                Button validateButton = new Button();
-                File iamgeFile = new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/validation-icon.png");
-                Image image = new Image(iamgeFile.toURI().toString());
-                ImageView iamgeView = new ImageView();
-                iamgeView.setImage(image);
-                validateButton.setGraphic(iamgeView);
-                validateButton.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent e) {
-                        Constants.LOW_ERROR_THRESHOLD = dataValidationThresholdSpinner.getValue();
-                        String result = autoCompletionField.getText();
-                        boolean success = true;
-                        if (!Objects.equals(result, "")) {
-                            //if they actuall selected something
-                            Optional<Pair<String, String>> event = events.stream().filter(s -> s.getValue().equals(result)).findFirst();
-                            if (event.isPresent()) {
-                                currentEventCode = event.get().getKey();
-                                tbaDataOptional = APIUtil.getEventMatches(currentEventCode);
-                                updateDisplay(true);
-                            }else {
-                                success = false;
-                            }
 
-                        }else {
-                            success = false;
-                        }
+                setValidateButtonGraphic(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/validation-icon.png"));
 
-                        if (!success) {
-                            Logging.logInfo("Failed to validate data, please ensure you have internet and have selected a competiton", true);
-                        }
-                    }
-                });
+                validateButton.setOnAction(e -> validateData());
                 buttonBar.getChildren().add(validateButton);
+
+
+                Button exportButton = new Button();
+                exportButton.setTooltip(new Tooltip("Export File"));
+                File exportImageFile = new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/export-icon.png");
+                Image exportImage = new Image(exportImageFile.toURI().toString());
+                ImageView exportImageView = new ImageView();
+                exportImageView.setImage(exportImage);
+                exportButton.setGraphic(exportImageView);
+                exportButton.setOnAction(event -> MasterController.export());
+                buttonBar.getChildren().add(exportButton);
+
 
             content.getChildren().add(buttonBar);
                 buttonBar.setSpacing(10);
                 buttonBar.setAlignment(Pos.CENTER_LEFT);
 
+
+
         }
+
+        public void validateData() {
+            Constants.LOW_ERROR_THRESHOLD = dataValidationThresholdSpinner.getValue();
+            String result = autoCompletionField.getText();
+            boolean success = true;
+            if (!Objects.equals(result, "")) {
+                //if they actuall selected something
+                Optional<Pair<String, String>> event = events.stream().filter(s -> s.getValue().equals(result)).findFirst();
+                if (event.isPresent()) {
+                    currentEventCode = event.get().getKey();
+                    tbaDataOptional = APIUtil.getEventMatches(currentEventCode);
+                    updateDisplay(true);
+                }else {
+                    success = false;
+                }
+
+            }else {
+                success = false;
+            }
+
+            if (!success) {
+                Logging.logInfo("Failed to validate data, please ensure you have internet and have selected a competiton", true);
+            }
+        }
+
 
         private class EditableTreeCell extends TextFieldTreeCell<String> {
 
@@ -664,7 +717,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 String match = positionItem.getParent().getValue().split(" ")[1];
                 try {
                     SQLUtil.execNoReturn("DELETE FROM \"" + tableName + "\" WHERE " + Constants.SQLColumnName.MATCH_NUM.name() + "=? AND " + Constants.SQLColumnName.TEAM_NUM.name() + "=?", new Object[]{match, teamNum}, true);
-
+                    setNeedsSavingProperty(true);
                 } catch (SQLException | DuplicateDataException e) {
                     Logging.logError(e, "Failed to delete datapoint");
                 }
@@ -783,6 +836,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                     try {
                         SQLUtil.execNoReturn(statementBuilder.toString(), new String[] {newString, String.valueOf(teamNum), String.valueOf(matchNum)}, true);
                         super.commitEdit(newStringTodisplay);
+                        setNeedsSavingProperty(true);
                     } catch (SQLException | DuplicateDataException e) {
                         Logging.logError(e, "Error updatingSQLDatabase");
                         cancelEdit();
@@ -833,5 +887,11 @@ public class DatabaseViewerTabContent extends GenericTabContent{
         }
 
 
+        private void setValidateButtonGraphic(File file) {
+            Image image = new Image(file.toURI().toString());
+            ImageView iamgeView = new ImageView();
+            iamgeView.setImage(image);
+            validateButton.setGraphic(iamgeView);
+        }
 
 }

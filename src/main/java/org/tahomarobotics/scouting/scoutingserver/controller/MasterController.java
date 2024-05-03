@@ -1,9 +1,13 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
+import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.GenericTabContent;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.NewItemDialog;
 
 import java.awt.*;
@@ -12,6 +16,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class MasterController {
     
@@ -40,16 +45,22 @@ public class MasterController {
 
     }
 
-    public static void saveCurrentDatabase() {
-        Logging.logInfo("Saving current database");
+    public static void saveCurrentTab() {
+        Logging.logInfo("Saving current tab");
+        Optional<GenericTabContent> selectedTabContent = ScoutingServer.mainTabPane.getSelectedTabContent();
+        selectedTabContent.ifPresent(GenericTabContent::save);
+
     }
 
-    public static void saveCurrentDatabaseAs() {
-        Logging.logInfo("Saving current database to new file");
+    public static void saveCurrentTabAs() {
+        Logging.logInfo("Saving current tab to new file");
+        Optional<GenericTabContent> selectedTabContent = ScoutingServer.mainTabPane.getSelectedTabContent();
+        selectedTabContent.ifPresent(GenericTabContent::saveAs);
     }
 
-    public static void saveAllOpenDatabases() {
-        Logging.logInfo("saving all open databases");
+    public static void saveAllTabs() {
+        Logging.logInfo("saving all open tabs");
+        ScoutingServer.mainTabPane.tabContents.forEach(GenericTabContent::save);
     }
 
     //returns new name of item
@@ -68,6 +79,20 @@ public class MasterController {
 
     public static void validateDatabase() {
         Logging.logInfo("Validating database");
+        Tab selectedTab = ScoutingServer.mainTabPane.getSelectionModel().getSelectedItem();
+        if (selectedTab == null || selectedTab.getId() == null) {
+            return;
+        }
+        //the user should only be able to press this button if the selected tab is a database, but just as a failsafe.
+        //maybe the code could accidentally call this at the wrong time
+        if (Constants.TabType.valueOf(selectedTab.getId()) == Constants.TabType.DATABASE_VIEWER) {
+            Optional<GenericTabContent> contentOptional = ScoutingServer.mainTabPane.getTabContent(((Label) selectedTab.getGraphic()).getText());
+            if (contentOptional.isEmpty()) {
+                return;
+            }
+            DatabaseViewerTabContent content = (DatabaseViewerTabContent) contentOptional.get();
+            content.validateData();
+        }
     }
 
     public static void mergeDatabases() {
@@ -96,5 +121,9 @@ public class MasterController {
                 Logging.logError(e);
             }
         }
+    }
+
+    public static void export() {
+        Logging.logInfo("Exporting");
     }
 }
