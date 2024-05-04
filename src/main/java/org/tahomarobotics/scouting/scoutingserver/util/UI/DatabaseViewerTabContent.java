@@ -72,20 +72,29 @@ public class DatabaseViewerTabContent extends GenericTabContent{
     public void save() {
         Logging.logInfo("Saving " + tabName.get());
 
+        Path backupFile = Paths.get(Constants.BASE_APP_DATA_FILEPATH + "/resources/tempBackup" + System.currentTimeMillis() + ".tmp");
+        try {
+            JSONArray dataArray = DatabaseManager.readDatabase(tableName);
+            File selectedFile;
+            boolean needToPickFile = true;
+            if (contentFileLocation.isPresent()) {
+                File potentialFile = contentFileLocation.get();
+                if (potentialFile.exists() && potentialFile.isFile()) {
+                    if (potentialFile.getName().endsWith(".json")) {
+                        needToPickFile = false;
+                    }
+                } else  {
+                    try {
+                        if (contentFileLocation.get().createNewFile()) {
+                            needToPickFile = false;
+                        }
+                    }catch (Exception e) {
+                        needToPickFile = true;
+                    }
 
-        JSONArray dataArray = DatabaseManager.readDatabase(tableName);
-        File selectedFile;
-        boolean needToPickFile = true;
-        if (contentFileLocation.isPresent()) {
-            File potentialFile = contentFileLocation.get();
-            if (potentialFile.exists() && potentialFile.isFile()) {
-                if (potentialFile.getName().endsWith(".json")) {
-                    needToPickFile = false;
                 }
-            }else if (contentFileLocation.get().createNewFile()) {
-                needToPickFile = false;
             }
-        }
+
         if (needToPickFile) {
             FileChooser chooser = new FileChooser();
             chooser.setTitle("Save Backup");
@@ -103,10 +112,10 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             return;
         }
         //save backup of file
-        Path copied = Paths.get(Constants.BASE_APP_DATA_FILEPATH + "/resources/tempBackup" + System.currentTimeMillis() + ".json");
+
         Path originalPath = selectedFile.toPath();
         try {
-            Files.copy(originalPath, copied);
+            Files.copy(originalPath, backupFile);
         } catch (IOException e) {
             Logging.logInfo("Failed to save backup before saving database, will just risk corrupting the users data");
         }
@@ -116,17 +125,22 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             os.write(dataArray.toString(1).getBytes());
             os.flush();
             os.close();
+            setNeedsSavingProperty(false);
+            contentFileLocation = Optional.of(selectedFile);
         } catch (IOException e) {
             Logging.logError(e, "Failed to save database, will try and restore backup");
-            Path copied = Paths.get(Constants.BASE_APP_DATA_FILEPATH + "/resources/tempBackup" + System.currentTimeMillis() + ".json");
+            Path target = selectedFile.toPath();
             try {
-                Files.copy(originalPath, copied);
-            } catch (IOException e) {
-                Logging.logInfo("Failed to save backup before saving database, will just risk corrupting the users data");
+                Files.copy(backupFile, target);
+            } catch (IOException l) {
+                Logging.logInfo("Failed to restore file");
             }
         }
-
-        contentFileLocation = Optional.of(selectedFile);
+        }catch (SQLException | ConfigFileFormatException  e) {
+            Logging.logError(e);
+        }finally {
+            backupFile.toFile().delete();
+        }
     }
 
     @Override

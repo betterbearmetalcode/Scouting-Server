@@ -5,6 +5,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -219,19 +222,18 @@ public class ScoutingServer extends Application {
         //file menu
 
         newItem.setOnAction(event -> MasterController.newThing());
-
+        newItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
         openItem.setOnAction(event -> MasterController.openJSONFileIntoDatabase());
-
+        openItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         saveItem.setDisable(true);
         saveItem.setOnAction(event -> MasterController.saveCurrentTab());
+        saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         saveAsItem.setDisable(true);
         saveAsItem.setOnAction(event -> MasterController.saveCurrentTabAs());
 
         saveAllItem.setDisable(true);
         saveAllItem.setOnAction(event -> MasterController.saveAllTabs());
         fileMenu.getItems().addAll(newItem, openItem, saveItem, saveAsItem, saveAllItem);
-
-
 
 
         dataTransferItem.setOnAction(event -> dataTransferItem.setText(MasterController.toggleDataTransferServer()));
@@ -283,6 +285,7 @@ public class ScoutingServer extends Application {
         saveAllItem.setDisable(!val);
         saveButton.setDisable(!val);
     }
+
 
     public static void main(String[] args) {
         launch();

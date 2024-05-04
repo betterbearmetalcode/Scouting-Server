@@ -32,8 +32,12 @@ public abstract class GenericTabContent {
 
     }
 
-    protected void setNeedsSavingProperty(boolean val) {
+    public void setNeedsSavingProperty(boolean val) {
         needsSavingProperty.setValue(val);
+    }
+
+    public boolean needsSaving() {
+        return  needsSavingProperty.get();
     }
 
 

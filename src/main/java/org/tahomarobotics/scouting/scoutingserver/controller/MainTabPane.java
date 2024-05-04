@@ -1,5 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
@@ -64,6 +66,17 @@ public class MainTabPane extends TabPane{
 
         tab.setContent(tabContent.get().getContent());
         tab.setClosable(true);
+        tab.setOnCloseRequest(event -> {
+            Optional<GenericTabContent> contentOptional = getSelectedTabContent();
+            if (contentOptional.isPresent()) {
+                if (contentOptional.get().needsSaving()) {
+                    if (Constants.askQuestion("Save before closing?")) {
+                        contentOptional.get().save();
+                    }
+                }
+            }
+
+        });
         tab.setOnClosed(event1 -> {
             for (GenericTabContent c : tabContents) {
                 if (Objects.equals(tab.getId(), c.getTabType().name())) {
