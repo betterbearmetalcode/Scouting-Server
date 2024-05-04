@@ -49,8 +49,7 @@ public class DataTransferClient extends Thread {
                 }
             }
             Logging.logInfo("storing data, time elapsed: " + (System.currentTimeMillis() - start));
-            ArrayList<DuplicateDataException> duplicates = DatabaseManager.importJSONArrayOfDataObjects(new JSONArray(builder.toString()), DataCollectionController.activeTable);
-            handleDuplicates(duplicates);
+            DatabaseManager.importJSONArrayOfDataObjects(new JSONArray(builder.toString()), DataCollectionController.activeTable);
 
             Logging.logInfo("data is" + builder);
             Logging.logInfo("Closing client Connection");

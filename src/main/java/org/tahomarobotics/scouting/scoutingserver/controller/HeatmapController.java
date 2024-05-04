@@ -1,3 +1,4 @@
+/*
 package org.tahomarobotics.scouting.scoutingserver.controller;
 
 import javafx.event.ActionEvent;
@@ -6,7 +7,6 @@ import javafx.scene.layout.VBox;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.AutoHeatMapCreatorDialog;
-import org.tahomarobotics.scouting.scoutingserver.util.auto.AutoHeatmap;
 import org.tahomarobotics.scouting.scoutingserver.util.auto.HeatmapCreationInformation;
 
 import java.io.IOException;
@@ -54,3 +54,4 @@ public class HeatmapController{
 
 
 }
+*/

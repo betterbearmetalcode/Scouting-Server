@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -11,6 +12,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.tahomarobotics.scouting.scoutingserver.controller.DataCollectionController;
 import org.tahomarobotics.scouting.scoutingserver.controller.MainTabPane;
 import org.tahomarobotics.scouting.scoutingserver.controller.MasterController;
@@ -19,6 +21,7 @@ import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -37,15 +40,23 @@ public class ScoutingServer extends Application {
     data transfer port
     -------
     when validationg matches which are over or under loaded will be skipped
-    make unused tables be deleted so they don't clog up the database.
+
+    -----todo
+    make sure all things data importing work
+            wireless
+            new databases
+            importing json file
+            merging databases
+    settings page
+    charts
+    find traps
+    strat scouting schedules
+    documentation
 
 
+    -------
 
     buttons i need
-    validate-no dialog popping up, just validate
-    export
-    text field to set the competiton and data validation threshold for a database
-    open button
 
      */
 
@@ -146,6 +157,17 @@ public class ScoutingServer extends Application {
             System.exit(1);
         }
 
+        mainStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent windowEvent) {
+                try {
+                    for (String tableName : SQLUtil.getTableNames()) {
+                        SQLUtil.execNoReturn("DROP TABLE IF EXISTS \"" + tableName + "\"");
+                    }
+                } catch (SQLException | DuplicateDataException ignored) {
+                }
+            }
+        });
         mainStage.widthProperty().addListener((observable, oldValue, newValue) -> {setAppWidthProperty(newValue.doubleValue()); resize(); });
         mainStage.heightProperty().addListener((observable, oldValue, newValue) -> {setAppHeight(newValue.doubleValue());resize(); });
 

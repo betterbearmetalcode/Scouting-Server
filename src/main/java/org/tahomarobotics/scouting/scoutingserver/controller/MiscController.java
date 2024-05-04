@@ -160,7 +160,7 @@ public class MiscController {
 
     }
 
-    @FXML
+ /*   @FXML
     public void getCSVBackupTemplate(ActionEvent event) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Save CSV Template");
@@ -225,5 +225,5 @@ public class MiscController {
         }
 
     }
-
+*/
 }

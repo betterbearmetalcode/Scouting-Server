@@ -37,16 +37,6 @@ public class Constants {
         AUTO_AMP,
         AUTO_SPEAKER_MISSED,
         AUTO_AMP_MISSED,
-        NOTE_1,
-        NOTE_2,
-        NOTE_3,
-        NOTE_4,
-        NOTE_5,
-        NOTE_6,
-        NOTE_7,
-        NOTE_8,
-        NOTE_9,
-        A_STOP,
         SHUTTLED,
 
         TELE_SPEAKER,
@@ -57,7 +47,6 @@ public class Constants {
         SPEAKER_RECEIVED,
         AMP_RECEIVED,
 
-        LOST_COMMS,
         TELE_COMMENTS
 
     }

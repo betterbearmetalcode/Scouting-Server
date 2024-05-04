@@ -732,7 +732,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 try {
                     SQLUtil.execNoReturn("DELETE FROM \"" + tableName + "\" WHERE " + Constants.SQLColumnName.MATCH_NUM.name() + "=? AND " + Constants.SQLColumnName.TEAM_NUM.name() + "=?", new Object[]{match, teamNum}, true);
                     setNeedsSavingProperty(true);
-                } catch (SQLException | DuplicateDataException e) {
+                } catch (SQLException e) {
                     Logging.logError(e, "Failed to delete datapoint");
                 }
             }
@@ -851,7 +851,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                         SQLUtil.execNoReturn(statementBuilder.toString(), new String[] {newString, String.valueOf(teamNum), String.valueOf(matchNum)}, true);
                         super.commitEdit(newStringTodisplay);
                         setNeedsSavingProperty(true);
-                    } catch (SQLException | DuplicateDataException e) {
+                    } catch (SQLException  e) {
                         Logging.logError(e, "Error updatingSQLDatabase");
                         cancelEdit();
                     }

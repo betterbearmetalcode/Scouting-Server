@@ -1,3 +1,4 @@
+/*
 package org.tahomarobotics.scouting.scoutingserver.util.auto;
 
 import javafx.geometry.Orientation;
@@ -34,12 +35,13 @@ public class AutoHeatmap {
 
     //correlates robot position with each robot's autos
     //each robot is represented by its team number and a list of all its autos
-    private final HashMap<DatabaseManager.RobotPosition, TeamAutoHistory> heatmap;
+   // private final HashMap<DatabaseManager.RobotPosition, TeamAutoHistory> heatmap;
     private final CheckTreeView<String> redAllianceView = new CheckTreeView<>();
     private final CheckTreeView<String> blueAllianceView = new CheckTreeView<>();
-    private final VBox displayBox;
+    //private final VBox displayBox;
     public AutoHeatmap(HeatmapCreationInformation input) throws SQLException, IOException {
-        heatmap = new HashMap<>();
+        */
+/*heatmap = new HashMap<>();
         displayBox = new VBox();
         //for all the data add autos to the heatmap as appropriate;
             for (DatabaseManager.RobotPosition robotPosition : input.teams().keySet()) {
@@ -88,7 +90,8 @@ public class AutoHeatmap {
             }//end for each team
 
         //now we have initalized the heatmap variable, so now we need to create the GUI and render stuff
-        setUpGUI();
+        setUpGUI();*//*
+
     }
 
 
@@ -442,3 +445,4 @@ public class AutoHeatmap {
     }//end inner class
 
 }
+*/

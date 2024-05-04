@@ -1,6 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
 import org.json.JSONArray;
+import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
@@ -31,8 +32,7 @@ public class SQLUtil {
                 }
             }
         }
-        schema.replace(schema.length() - 2, schema.length(), "");
-        schema.append(")");
+        schema.append("PRIMARY KEY (" + Constants.SQLColumnName.MATCH_NUM + ", " + Constants.SQLColumnName.MATCH_NUM + "))");
         String statement = "CREATE TABLE IF NOT EXISTS \"" + tableName + "\"" + schema;
         
         execNoReturn(statement);
@@ -57,11 +57,11 @@ public class SQLUtil {
         execNoReturn(statement, SQLUtil.EMPTY_PARAMS, log);
     }
 
-    public static void execNoReturn(String statement, Object[] params, boolean log) throws SQLException, IllegalArgumentException, DuplicateDataException {
+    public static void execNoReturn(String statement, Object[] params, boolean log) throws SQLException, IllegalArgumentException {
         execNoReturn(statement, params, log, null);
     }
 
-    public static void execNoReturn(String statement, Object[] params, boolean log, JSONArray arrayBeingAdded) throws SQLException, IllegalArgumentException, DuplicateDataException {
+    public static void execNoReturn(String statement, Object[] params, boolean log, JSONArray arrayBeingAdded) throws SQLException, IllegalArgumentException {
         try {
             PreparedStatement toExec = connection.prepareStatement(statement);
             Integer count = 1;
