@@ -127,7 +127,7 @@ public class DataCollectionController {
                     dataToImport.put(rawDataMetric.getName(), finalDataCarryingaObject);
                 }
                 try {
-                    SQLUtil.execNoReturn(DatabaseManager.getValuesStatementFromJSONJata(dataToImport, activeTable));
+                    SQLUtil.execNoReturn(DatabaseManager.getValuesStatementFromJSONJata(dataToImport));
                 } catch (DuplicateDataException e) {
                     duplicates.add(e);
                 } catch (SQLException e) {

@@ -1,28 +1,22 @@
 package org.tahomarobotics.scouting.scoutingserver;
 
-import javafx.application.Platform;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.tahomarobotics.scouting.scoutingserver.controller.MasterController;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DuplicateDataResolverDialog;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
-import org.tahomarobotics.scouting.scoutingserver.util.configuration.DuplicateData;
+import org.tahomarobotics.scouting.scoutingserver.util.data.DuplicateData;
+import org.tahomarobotics.scouting.scoutingserver.util.data.DuplicateResolution;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
-import javax.swing.text.html.ObjectView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent.getIntFromEntryJSONObject;
 
@@ -91,51 +85,131 @@ public class DatabaseManager {
                 return;
            }
         }
-        List<Object> dataAsList = data.toList();
         int maxMatchNumber = 1;
-        for (Object o : dataAsList) {
-            maxMatchNumber = Math.max(getIntFromEntryJSONObject(Constants.SQLColumnName.MATCH_NUM, (JSONObject) o), maxMatchNumber);
+        for (int i = 0; i < data.length(); i++) {
+            maxMatchNumber = Math.max(getIntFromEntryJSONObject(Constants.SQLColumnName.MATCH_NUM, data.getJSONObject(i)), maxMatchNumber);
         }
+
+        JSONArray oldData = null;
+        //find all duplicate data in the dataset we are importing and have the user resolve it
+        try {
+            //add all data from the table into dataset
+            oldData = readDatabase(activeTable, false);
+            data.putAll(oldData);
+            ArrayList<DuplicateData> duplicates = findDuplicateDataInThisJSONArray(data, maxMatchNumber);
+            if (!duplicates.isEmpty()) {
+                DuplicateDataResolverDialog dialog = new DuplicateDataResolverDialog(findDuplicateDataInThisJSONArray(data, maxMatchNumber));
+                Optional<ArrayList<DuplicateResolution>> optionalResolutions = dialog.showAndWait();
+                //go through the old data and remove the duplicates and replace them with the ones the user decided they should be
+                final JSONArray dataWithoutDuplicates = new JSONArray();
+                if (optionalResolutions.isPresent()) {
+                    ArrayList<DuplicateResolution> resolutions = optionalResolutions.get();
+                    data.forEach(o -> {
+                        JSONObject datumObject = (JSONObject) o;
+                        int teamNum = getIntFromEntryJSONObject(Constants.SQLColumnName.TEAM_NUM, datumObject);
+                        int matchNum = getIntFromEntryJSONObject(Constants.SQLColumnName.MATCH_NUM, datumObject);
+                        boolean shouldAdd = true;
+                        for (DuplicateResolution resolution : resolutions) {
+                            if ((resolution.teamNum() == teamNum) && (resolution.matchNum() == matchNum)) {
+                                shouldAdd = false;
+                            }
+                        }
+                        if (shouldAdd) {
+                            dataWithoutDuplicates.put(o);
+                        }
+                    });
+                    for (DuplicateResolution resolution : resolutions) {
+                        dataWithoutDuplicates.put(resolution.dataToUse());
+                    }
+                }else {
+                    dataWithoutDuplicates.putAll(data);
+                }
+                data = dataWithoutDuplicates;
+            }
+
+        } catch (ConfigFileFormatException | SQLException e) {
+            Logging.logError(e);
+        }
+        //we have now verified that every entry in the data array has a unique match and team number pair
+        //so just add it into the sql table
+        //first clear the contents of the table because we have already got everything in ram
+
+        try {
+            SQLUtil.execNoReturn("DELETE FROM \"" + activeTable + "\"");
+            //insert data in batches to increase preformance
+
+            int remainder = data.length() % Constants.DATA_IMPORTATION_BATCH_SIZE;
+            StringBuilder remainderBuilder = new StringBuilder("INSERT INTO \"" + activeTable + "\" VALUES");
+            int index;
+            for (index = 0; index < remainder; index++) {
+                remainderBuilder.append(getValuesStatementFromJSONJata(data.getJSONObject(index))).append(", ");
+            }
+            remainderBuilder.replace(remainderBuilder.toString().length() - 2, remainderBuilder.length()  -1, "");
+            //insert some of the data so that the rest of the data is divisible by the batch size
+            SQLUtil.execNoReturn(remainderBuilder.toString(), SQLUtil.EMPTY_PARAMS, false);
+            for (; index < data.length();) {
+
+                //for each batch
+                StringBuilder batchBuilder = new StringBuilder("INSERT INTO \"" + activeTable + "\" VALUES ");
+                int endOfThisBatch = index + Constants.DATA_IMPORTATION_BATCH_SIZE;
+                for (; index < endOfThisBatch ; index++) {
+                    batchBuilder.append(getValuesStatementFromJSONJata(data.getJSONObject(index))).append(", ");
+                }
+                batchBuilder.replace(batchBuilder.toString().length() - 2, batchBuilder.length()  -1, "");
+                SQLUtil.execNoReturn(batchBuilder.toString(), SQLUtil.EMPTY_PARAMS, false);
+            }
+
+
+        } catch (NumberFormatException |SQLException | DuplicateDataException e) {
+            Logging.logError(e);
+        }
+
+
+    }
+
+    private static ArrayList<DuplicateData> findDuplicateDataInThisJSONArray(JSONArray data, int maxMatchNumber) {
         ArrayList<DuplicateData> duplicateData = new ArrayList<>();
-        //ensure each match has unique entries
         for (int matchum = 1; matchum <= maxMatchNumber; matchum++) {
-            int finalMatchum = matchum;
-            ArrayList<Object> dataForThisMatch = dataAsList.stream().filter(o -> getIntFromEntryJSONObject(Constants.SQLColumnName.MATCH_NUM, (JSONObject) o) == finalMatchum).collect(Collectors.toCollection(ArrayList::new));
+            ArrayList<JSONObject> dataForThisMatch = new ArrayList<>();
+            for (int i = 0; i < data.length(); i++) {
+                if ( getIntFromEntryJSONObject(Constants.SQLColumnName.MATCH_NUM, data.getJSONObject(i)) == matchum) {
+                        dataForThisMatch.add(data.getJSONObject(i));
+                }
+            }
             //we have all the data for one match
             //all team numbers must be unique
             //I don't care if there are more or less than 6 entries, becuase I don't want problems with data importation and having multiple entries for the same position of different tablets
             //it is the job of the database manager to resolve these issues or the scouting app devs/scouts to not create them in the first place :)
             ArrayList<Integer> teamsSeen = new ArrayList<>();
-            for (Object forThisMatch : dataForThisMatch) {
-                int teamNum = getIntFromEntryJSONObject(Constants.SQLColumnName.TEAM_NUM, (JSONObject) forThisMatch);
+            ArrayList<Integer> duplicatedTeams = new ArrayList<>();
+            for (JSONObject forThisMatch : dataForThisMatch) {
+                int teamNum = getIntFromEntryJSONObject(Constants.SQLColumnName.TEAM_NUM, forThisMatch);
                 if (!teamsSeen.contains(teamNum)) {
                     teamsSeen.add(teamNum);
                 }else {
-                    //then we have seen this team twice
-                    ArrayList<JSONObject> dataAsJSONObjects = new ArrayList<>();
-                    dataForThisMatch.forEach(o -> dataAsJSONObjects.add((JSONObject) o));
-                    duplicateData.add(new DuplicateData(dataAsJSONObjects));
+                    if (!duplicatedTeams.contains(teamNum)) {
+                        duplicatedTeams.add(teamNum);
+                    }
+
                 }
             }
+            for (Integer duplicatedTeam : duplicatedTeams) {
+                //add all the duplicated teams' data
+                ArrayList<JSONObject> dataAsJSONObjects = new ArrayList<>();
+                dataForThisMatch.forEach(object -> {
+                    if (getIntFromEntryJSONObject(Constants.SQLColumnName.TEAM_NUM, object) == duplicatedTeam) {
+                        dataAsJSONObjects.add(object);
+                    }
+                });
+                duplicateData.add(new DuplicateData(dataAsJSONObjects, matchum, duplicatedTeam));
+            }
         }
-        DuplicateDataResolverDialog dialog = new DuplicateDataResolverDialog(duplicateData);
-        dialog.showAndWait();
-        StringBuilder statementBuilder = new StringBuilder("INSERT INTO \"" + activeTable + "\" VALUES ");
-        for (Object object : data) {
-            statementBuilder.append(getValuesStatementFromJSONJata((JSONObject) object, activeTable)).append(", ");
-        }
-        statementBuilder.replace(statementBuilder.toString().length() - 2, statementBuilder.length()  -1, "");
-        try {
-
-            SQLUtil.execNoReturn(statementBuilder.toString(), SQLUtil.EMPTY_PARAMS, false, data);
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException | IllegalStateException |
-                 SQLException e) {
-            Logging.logError(e, "Failed to import datum");
-
-        }
+        return duplicateData;
     }
 
-    public static String getValuesStatementFromJSONJata(JSONObject datum, String tableName) {
+
+    //returns (<data> INTEGER, <data> INTEGER, <data> TEXT, ...)
+    public static String getValuesStatementFromJSONJata(JSONObject datum) {
         StringBuilder statementbuilder = new StringBuilder();
         statementbuilder.append("(");
 

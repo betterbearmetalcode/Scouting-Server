@@ -32,7 +32,7 @@ public class SQLUtil {
                 }
             }
         }
-        schema.append("PRIMARY KEY (" + Constants.SQLColumnName.MATCH_NUM + ", " + Constants.SQLColumnName.MATCH_NUM + "))");
+        schema.append("PRIMARY KEY (" + Constants.SQLColumnName.MATCH_NUM + ", " + Constants.SQLColumnName.TEAM_NUM + "))");
         String statement = "CREATE TABLE IF NOT EXISTS \"" + tableName + "\"" + schema;
         
         execNoReturn(statement);
@@ -57,11 +57,8 @@ public class SQLUtil {
         execNoReturn(statement, SQLUtil.EMPTY_PARAMS, log);
     }
 
-    public static void execNoReturn(String statement, Object[] params, boolean log) throws SQLException, IllegalArgumentException {
-        execNoReturn(statement, params, log, null);
-    }
 
-    public static void execNoReturn(String statement, Object[] params, boolean log, JSONArray arrayBeingAdded) throws SQLException, IllegalArgumentException {
+    public static void execNoReturn(String statement, Object[] params, boolean log) throws SQLException, IllegalArgumentException {
         try {
             PreparedStatement toExec = connection.prepareStatement(statement);
             Integer count = 1;

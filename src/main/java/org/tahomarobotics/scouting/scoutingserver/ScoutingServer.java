@@ -38,6 +38,8 @@ public class ScoutingServer extends Application {
     when exporting do we skip overloaded datapoints
     warn if importing data with all default values
     data transfer port
+    update configuration button
+    clear logs button
     -------
     when validationg matches which are over or under loaded will be skipped
 

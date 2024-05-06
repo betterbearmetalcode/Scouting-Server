@@ -22,6 +22,9 @@ public class Constants {
 
     public static final String QR_DATA_DELIMITER = "/";
 
+    //number of data entries to import at a time
+    public static final int DATA_IMPORTATION_BATCH_SIZE = 18;
+
     public static final int WIRED_DATA_TRANSFER_PORT = 45482;
 
     public enum TabType {
