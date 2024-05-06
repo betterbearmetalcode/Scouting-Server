@@ -13,7 +13,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import static org.tahomarobotics.scouting.scoutingserver.DatabaseManager.handleDuplicates;
 
 public class DataTransferClient extends Thread {
 

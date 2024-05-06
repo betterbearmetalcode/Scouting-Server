@@ -4,6 +4,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
@@ -71,6 +72,27 @@ public class MasterController {
 
     public static void addJSONFile() {
         Logging.logInfo("Adding JSON File to database");
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select JSON File");
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+        File selectedFile = chooser.showOpenDialog(ScoutingServer.mainStage.getOwner());
+        if (selectedFile == null) {
+            return;
+        }
+        Optional<GenericTabContent> selectedContentOptional = ScoutingServer.mainTabPane.getSelectedTabContent();
+        if (selectedContentOptional.isPresent()) {
+            Constants.TabType type = selectedContentOptional.get().getTabType();
+            if (type == Constants.TabType.DATABASE_VIEWER) {
+                try {
+                    DatabaseManager.importJSONFile(selectedFile, ((DatabaseViewerTabContent) selectedContentOptional.get()).tableName);
+                    selectedContentOptional.get().setNeedsSavingProperty(true);
+                } catch (IOException e) {
+                    Logging.logError(e, "Failed to import data");
+                }
+            }
+        }
+
     }
 
     public static void addCSVFile() {

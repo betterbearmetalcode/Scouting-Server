@@ -101,7 +101,7 @@ public class DuplicateDataResolverDialog extends Dialog<ArrayList<DuplicateResol
             ToggleGroup group = new ToggleGroup();
             toggleGroups.add(group);
             for (int i = 0; i < duplicate.data().size(); i++) {
-                TreeItem<String> datumItem = new TreeItem<>("Duplicate Datum: " + i + " Alliance Pos: " + DatabaseManager.RobotPosition.values()[duplicate.data().get(i).getJSONObject(Constants.SQLColumnName.ALLIANCE_POS.name()).optInt("0",0)]);
+                TreeItem<String> datumItem = new TreeItem<>("Duplicate Datum: " + (i+1) + " Alliance Pos: " + DatabaseManager.RobotPosition.values()[duplicate.data().get(i).getJSONObject(Constants.SQLColumnName.ALLIANCE_POS.name()).optInt("0",0)]);
                 RadioButton radioButton = new RadioButton();
                 if (i == 0) {
                     radioButton.setSelected(true);

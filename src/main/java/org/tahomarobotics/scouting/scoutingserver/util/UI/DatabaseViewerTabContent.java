@@ -607,16 +607,6 @@ public class DatabaseViewerTabContent extends GenericTabContent{
 
         }
 
-/*        public boolean selectCompetition() {
-            Logging.logInfo("asking user to select which competition they are at");
-            DataValidationCompetitionChooser chooser = new DataValidationCompetitionChooser();
-            Optional<String> result = chooser.showAndWait();
-            AtomicReference<String> selectedEvent = new AtomicReference<>("");
-            result.ifPresent(selectedEvent::set);
-            currentEventCode = selectedEvent.get();
-            return Objects.equals(currentEventCode, "");
-
-        }*/
 
         private void setExpansionAll(TreeItem<String> treeItem, boolean val) {
             if (treeItem.getValue().equals("root-item")) {
@@ -662,6 +652,16 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 exportButton.setGraphic(exportImageView);
                 exportButton.setOnAction(event -> MasterController.export());
                 buttonBar.getChildren().add(exportButton);
+
+                Button wirelessTransferButton = new Button();
+                wirelessTransferButton.setTooltip(new Tooltip("Start/Stop wireless transfer server"));
+                File transferImageFile = new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/transfer-icon.png");
+                Image transferImage = new Image(transferImageFile.toURI().toString());
+                ImageView transferImageView = new ImageView();
+                transferImageView.setImage(transferImage);
+                wirelessTransferButton.setGraphic(transferImageView);
+                wirelessTransferButton.setOnAction(event -> MasterController.toggleDataTransferServer());
+                buttonBar.getChildren().add(wirelessTransferButton);
 
 
             content.getChildren().add(buttonBar);

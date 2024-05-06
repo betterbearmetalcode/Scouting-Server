@@ -38,36 +38,6 @@ public class DatabaseManager {
         inputStream.close();
     }
 
-    public static void handleDuplicates(ArrayList<DuplicateDataException> duplicates) {
-        if (duplicates.isEmpty()) {
-            return;
-        }
-        /*Platform.runLater(() -> {
-            //this method has to use a duplicate data handler to go through all the duplicates and generate a list of entryies which should be added
-            //then for each of these emtries, all the ones in the database that have the same match and team number are deleted and re added
-            DuplicateDataResolverDialog dialog = new DuplicateDataResolverDialog(duplicates);
-            Optional<ArrayList<JSONObject>> dataToAdd = dialog.showAndWait();
-            String tableName = duplicates.get(0).getTableName();
-            dataToAdd.ifPresent(jsonObjects -> {
-                for (JSONObject jsonObject: jsonObjects) {
-                    //first delete the old record from the database that caused the duplicate then add the one we want to add
-                    try {
-                        SQLUtil.execNoReturn("DELETE FROM \"" + tableName + "\" WHERE " +
-                                Constants.SQLColumnName.TEAM_NUM + "=? AND " +
-                                Constants.SQLColumnName.MATCH_NUM + "=?",
-                                new Object[]{getIntFromEntryJSONObject(Constants.SQLColumnName.TEAM_NUM, jsonObject),
-                                        getIntFromEntryJSONObject(Constants.SQLColumnName.MATCH_NUM, jsonObject)}, true);
-                    } catch (SQLException e) {
-                        Logging.logError(e);
-                    }
-                }
-
-                DatabaseManager.importJSONArrayOfDataObjects(new JSONArray(jsonObjects), tableName);
-            });
-        });*/
-
-
-    }
     //the king of storage methods, all the data storage methods eventually call this one, it is the final leg of the chain
 
     //the way this will work is get the max match number and iterate through each match.

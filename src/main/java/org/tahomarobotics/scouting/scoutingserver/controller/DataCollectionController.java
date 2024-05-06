@@ -27,7 +27,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static org.tahomarobotics.scouting.scoutingserver.DatabaseManager.handleDuplicates;
 
 
 public class DataCollectionController {
@@ -134,7 +133,6 @@ public class DataCollectionController {
                     Logging.logError(e, "SQL Exception: ");
                 }
             }
-            handleDuplicates(duplicates);
 
             inputStream.close();
         } catch (IOException | ConfigFileFormatException e) {
