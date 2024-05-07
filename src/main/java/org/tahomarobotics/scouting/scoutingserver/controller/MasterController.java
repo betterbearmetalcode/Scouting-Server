@@ -28,7 +28,7 @@ public class MasterController {
     //called when file>new is clicked, or the plus tab button is clicked
     public static void newThing() {
         Logging.logInfo("Creating something new");
-        ScoutingServer.mainTabPane.addTab(new NewItemDialog().showAndWait());
+        ScoutingServer.mainTabPane.addTab(new NewItemDialog().showAndWait(),true);
     }
 
     public static void openJSONFileIntoDatabase() {
@@ -41,7 +41,7 @@ public class MasterController {
         if (selectedFile == null) {
             return;
         }
-        ScoutingServer.mainTabPane.addTab(Optional.of(new DatabaseViewerTabContent(selectedFile)));
+        ScoutingServer.mainTabPane.addTab(Optional.of(new DatabaseViewerTabContent(selectedFile)), false);
 
 
     }

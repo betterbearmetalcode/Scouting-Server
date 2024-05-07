@@ -55,9 +55,7 @@ public class MainTabPane extends TabPane{
 
 
     //called when the new tab button is clicked
-    public void addTab(Optional<GenericTabContent> tabContent) {
-
-
+    public void addTab(Optional<GenericTabContent> tabContent, boolean needsSaving) {
         if (tabContent.isEmpty()) {
             return;
         }
@@ -75,7 +73,6 @@ public class MainTabPane extends TabPane{
                     }
                 }
             }
-
         });
         tab.setOnClosed(event1 -> {
             for (GenericTabContent c : tabContents) {
@@ -99,6 +96,7 @@ public class MainTabPane extends TabPane{
 
 
         getTabs().add(tab);
+        tabContent.get().setNeedsSavingProperty(needsSaving);
         getSelectionModel().select(tab);
         tabContents.add(tabContent.get());
         tabContent.get().updateDisplay();

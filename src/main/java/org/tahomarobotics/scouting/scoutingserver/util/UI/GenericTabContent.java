@@ -21,7 +21,7 @@ public abstract class GenericTabContent {
     private final BooleanProperty needsSavingProperty = new SimpleBooleanProperty(false);
     public GenericTabContent(String name, Optional<File> file) {
         this.tabName.set(name);
-        needsSavingProperty.addListener((observableValue, oldVal, newVal) -> ScoutingServer.mainTabPane.getTabs().forEach(tab -> {
+        needsSavingProperty.addListener((observableValue, oldVal, newVal) -> ScoutingServer.mainTabPane.getTabs().forEach(tab -> {//Problem is here
             Label label = (Label) tab.getGraphic();
             if (Objects.equals(label.getText(), name)) {
                 label.setStyle("-fx-font-weight: " + (needsSavingProperty.get()?"bold":"regular"));

@@ -108,7 +108,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
 
         //maybe, but better safe than sorry
         if (selectedFile == null) {
-            Logging.logError(new Exception(), "Could not get a file to save the database at");
+            Logging.logInfo("Could not get a file to save the database at");
             return;
         }
         //save backup of file
