@@ -47,7 +47,10 @@ public class DatabaseManager {
     //after all that data which can be added is added, any remaining duplicate data will be resolved by the user and added.
 
     public static void importJSONArrayOfDataObjects(JSONArray data, String activeTable){
-
+        long startTime = System.currentTimeMillis();
+        long dialogShown = -1;
+        long dialogFinished = -1;
+        long duplicatesResolved = -1;
         try {
             Configuration.updateConfiguration();
         } catch (ConfigFileFormatException e) {
@@ -69,7 +72,9 @@ public class DatabaseManager {
             ArrayList<DuplicateData> duplicates = findDuplicateDataInThisJSONArray(data, maxMatchNumber);
             if (!duplicates.isEmpty()) {
                 DuplicateDataResolverDialog dialog = new DuplicateDataResolverDialog(findDuplicateDataInThisJSONArray(data, maxMatchNumber));
+                dialogShown = System.currentTimeMillis();
                 Optional<ArrayList<DuplicateResolution>> optionalResolutions = dialog.showAndWait();
+                dialogFinished = System.currentTimeMillis();
                 //go through the old data and remove the duplicates and replace them with the ones the user decided they should be
                 final JSONArray dataWithoutDuplicates = new JSONArray();
                 if (optionalResolutions.isPresent()) {
@@ -103,7 +108,7 @@ public class DatabaseManager {
         //we have now verified that every entry in the data array has a unique match and team number pair
         //so just add it into the sql table
         //first clear the contents of the table because we have already got everything in ram
-
+        duplicatesResolved = System.currentTimeMillis();
         try {
             SQLUtil.execNoReturn("DELETE FROM \"" + activeTable + "\"");
             //insert data in batches to increase preformance
