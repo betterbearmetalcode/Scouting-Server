@@ -48,9 +48,12 @@ public class DatabaseManager {
 
     public static void importJSONArrayOfDataObjects(JSONArray data, String activeTable){
         long startTime = System.currentTimeMillis();
-        long dialogShown = -1;
-        long dialogFinished = -1;
-        long duplicatesResolved = -1;
+        long dialogShown = 0;
+        long dialogFinished = 0;
+        long duplicatesResolved = 0;
+        long dataAdded = 0;
+        long tempStart = 5;
+        long tempEnd = 0;
         try {
             Configuration.updateConfiguration();
         } catch (ConfigFileFormatException e) {
@@ -69,7 +72,9 @@ public class DatabaseManager {
             //add all data from the table into dataset
             oldData = readDatabase(activeTable, false);
             data.putAll(oldData);
+            tempStart = System.currentTimeMillis();
             ArrayList<DuplicateData> duplicates = findDuplicateDataInThisJSONArray(data, maxMatchNumber);
+            tempEnd = System.currentTimeMillis();
             if (!duplicates.isEmpty()) {
                 DuplicateDataResolverDialog dialog = new DuplicateDataResolverDialog(findDuplicateDataInThisJSONArray(data, maxMatchNumber));
                 dialogShown = System.currentTimeMillis();
@@ -138,7 +143,17 @@ public class DatabaseManager {
         } catch (NumberFormatException |SQLException | DuplicateDataException e) {
             Logging.logError(e);
         }
-
+        long endTime = System.currentTimeMillis();
+        long timeUserWasted = dialogFinished - dialogShown;
+        long a = (dialogShown - startTime);
+        long b = (duplicatesResolved - dialogFinished);
+        long timeToResolveDuplicates =  a + b;
+        long overall = ((endTime - startTime) - timeUserWasted);
+        System.out.println("Took: " + timeToResolveDuplicates + " millis to resolve duplciates");
+        System.out.println("Took: " + (overall - timeToResolveDuplicates) + " Millis to add data to database");
+        System.out.println("Took: " +  overall + " millis overall");
+        System.out.println("Took: " + timeUserWasted + " millis in dialog waiting for user/dialog code to do its thing");
+        System.out.println("TooK: " + (tempEnd - tempStart) + " millis to ");
 
     }
 
