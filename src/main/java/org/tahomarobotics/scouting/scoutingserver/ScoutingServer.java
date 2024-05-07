@@ -119,11 +119,7 @@ public class ScoutingServer extends Application {
         mainStage.setWidth(getAppWidth());
         mainStage.show();
 
-        try {
-            Configuration.updateConfiguration();
-        } catch (ConfigFileFormatException e) {
-            Logging.logError(e);
-        }
+
 
         try {
             //set up resources folder if not already created
@@ -148,6 +144,11 @@ public class ScoutingServer extends Application {
             File configFilepath = new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/config");
             if (!configFilepath.exists()) {
                 duplicateDataFilepath.mkdirs();
+            }
+            try {
+                Configuration.updateConfiguration();
+            } catch (ConfigFileFormatException e) {
+                Logging.logError(e);
             }
             //set up database
             SQLUtil.initialize(Constants.DATABASE_FILEPATH + Constants.SQL_DATABASE_NAME);
