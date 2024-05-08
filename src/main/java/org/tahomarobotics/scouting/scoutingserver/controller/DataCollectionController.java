@@ -17,7 +17,6 @@ import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
-import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.io.File;
@@ -64,7 +63,6 @@ public class DataCollectionController {
             String csv = new String(inputStream.readAllBytes());
             csv = csv.replaceAll("\r", "");
             JSONArray result = CDL.toJSONArray(csv);
-            Configuration.updateConfiguration();
             ArrayList<DuplicateDataException> duplicates = new ArrayList<>();
             for (Object o : result) {
                 JSONObject rawData = (JSONObject) o;
@@ -127,15 +125,13 @@ public class DataCollectionController {
                 }
                 try {
                     SQLUtil.execNoReturn(DatabaseManager.getValuesStatementFromJSONJata(dataToImport));
-                } catch (DuplicateDataException e) {
-                    duplicates.add(e);
-                } catch (SQLException e) {
+                }catch (SQLException e) {
                     Logging.logError(e, "SQL Exception: ");
                 }
             }
 
             inputStream.close();
-        } catch (IOException | ConfigFileFormatException e) {
+        } catch (IOException  e) {
             Logging.logError(e);
         }
     }

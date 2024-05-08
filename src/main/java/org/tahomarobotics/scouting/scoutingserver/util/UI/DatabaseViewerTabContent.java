@@ -1,6 +1,5 @@
 package org.tahomarobotics.scouting.scoutingserver.util.UI;
 
-import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -28,14 +27,12 @@ import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
-import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.OperationAbortedByUserException;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -208,7 +205,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 if (data.isPresent()) {
                     DatabaseManager.importJSONFile(data.get(), tableName);
                 }
-            } catch (ConfigFileFormatException | SQLException | IOException | DuplicateDataException e) {
+            } catch (SQLException | IOException  e) {
                 Logging.logError(e);
                 //duplicate data is not handled here because the import json file methond does not throw duplicate data exception, only
                 //the drop table and create new table statements are causing it, in which case, we don't care, it won't happen.
@@ -328,7 +325,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             Logging.logInfo("Clearing databse: " + tabName.get());
             try {
                 SQLUtil.execNoReturn("DELETE FROM \"" + tabName.get() + "\"");
-            } catch (SQLException | DuplicateDataException e) {
+            } catch (SQLException  e) {
                 Logging.logError(e);
             }
             rootItem.getChildren().clear();
@@ -339,11 +336,6 @@ public class DatabaseViewerTabContent extends GenericTabContent{
 
         public void updateDisplay(boolean validateData) {
             Logging.logInfo("Updating database: " + tabName.get());
-            try {
-                Configuration.updateConfiguration();
-            } catch (ConfigFileFormatException e) {
-                Logging.logError(e);
-            }
             if (validateData && tbaDataOptional.isEmpty()) {
                 Logging.logInfo("Cannont validate with no TBA Data. ", true);
                 validateData = false;
@@ -437,7 +429,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 }//match num loop
 
 
-            } catch (SQLException | ConfigFileFormatException e) {
+            } catch (SQLException  e) {
                 Logging.logError(e);
             }
         }

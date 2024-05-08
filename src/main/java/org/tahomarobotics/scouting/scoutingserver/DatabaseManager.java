@@ -10,7 +10,6 @@ import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DuplicateData;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DuplicateResolution;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
-import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,6 +46,10 @@ public class DatabaseManager {
     //after all that data which can be added is added, any remaining duplicate data will be resolved by the user and added.
 
     public static void importJSONArrayOfDataObjects(JSONArray data, String activeTable){
+        if (data.isEmpty()) {
+            Logging.logInfo("No data to input, returning");
+            return;
+        }
         long startTime = System.currentTimeMillis();
         long dialogShown = 0;
         long dialogFinished = 0;
@@ -54,13 +57,6 @@ public class DatabaseManager {
         long dataAdded = 0;
         long tempStart = 5;
         long tempEnd = 0;
-        try {
-            Configuration.updateConfiguration();
-        } catch (ConfigFileFormatException e) {
-           if (!Constants.askQuestion("Unable to update configuration, proceed with current configuration?")) {
-                return;
-           }
-        }
         int maxMatchNumber = 1;
         for (int i = 0; i < data.length(); i++) {
             maxMatchNumber = Math.max(getIntFromEntryJSONObject(Constants.SQLColumnName.MATCH_NUM, data.getJSONObject(i)), maxMatchNumber);
@@ -107,7 +103,7 @@ public class DatabaseManager {
                 data = dataWithoutDuplicates;
             }
 
-        } catch (ConfigFileFormatException | SQLException e) {
+        } catch (SQLException e) {
             Logging.logError(e);
         }
         //we have now verified that every entry in the data array has a unique match and team number pair
@@ -140,7 +136,7 @@ public class DatabaseManager {
             }
 
 
-        } catch (NumberFormatException |SQLException | DuplicateDataException e) {
+        } catch (NumberFormatException |SQLException e) {
             Logging.logError(e);
         }
         long endTime = System.currentTimeMillis();
@@ -242,10 +238,19 @@ public class DatabaseManager {
         return statementbuilder.toString();
     }
 
-    public static JSONArray readDatabase(String tableName, boolean sorted) throws ConfigFileFormatException, SQLException {
+
+    /**
+     *Reads a SQL table returns the data in a json array for use
+     *
+     * @param tableName the sql table we are trying to read from
+     * @param sorted whether the data which is returned should be sorted or not
+     * @return a json array following the BMSS data transfer protocol
+     * @throws SQLException if sql goes wrong
+     */
+    public static JSONArray readDatabase(String tableName, boolean sorted) throws SQLException {
+        long startTime = System.currentTimeMillis();
         ArrayList<HashMap<String, Object>> rawList = SQLUtil.exec("SELECT * FROM \"" + tableName + "\"", true);
         JSONArray output = new JSONArray();
-        Configuration.updateConfiguration();
         for (HashMap<String, Object> rawRow : rawList) {
             //export all the data we have regardless of whether or not the config file says we care about it
             //users can make mistakes and importing only imports what the config file wants to export everything in an effort to never lose data
@@ -281,8 +286,10 @@ public class DatabaseManager {
                     return Integer.compare(robotPosition1, robotPosition2);
                 }
             });
+            System.out.println("Took: " + (System.currentTimeMillis() - startTime) + " millis to read database with sorting");
             return new JSONArray().putAll(sortedOutput);
         }
+        System.out.println("Took: "  + (System.currentTimeMillis() - startTime) + " millis to read database without sorting");
         return output;
     }
 

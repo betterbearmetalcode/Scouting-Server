@@ -178,7 +178,6 @@ public class Constants {
         }
 
         public static void setAppHeight(double value) {
-            System.out.println("Setting app Height to: " + value);
             Constants.UIValues.appHeightProperty.set(value);
         }
 

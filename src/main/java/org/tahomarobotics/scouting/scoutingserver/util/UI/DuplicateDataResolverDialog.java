@@ -1,19 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.util.UI;
 
-import javafx.beans.Observable;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableBooleanValue;
-import javafx.beans.value.ObservableValue;
-import javafx.beans.value.ObservableValueBase;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
-import org.controlsfx.control.CheckTreeView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
@@ -29,8 +17,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Optional;
-import java.util.regex.Pattern;
 
 //takes in a list of duplicates
 public class DuplicateDataResolverDialog extends Dialog<ArrayList<DuplicateResolution>>{

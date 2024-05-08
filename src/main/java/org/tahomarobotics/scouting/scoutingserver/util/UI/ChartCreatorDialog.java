@@ -48,7 +48,7 @@ public class ChartCreatorDialog extends Dialog<Chart> {
                 try {
                     tableChooserListView.getItems().set(event.getIndex(), event.getNewValue());
                     SQLUtil.execNoReturn("ALTER TABLE \"" + oldValue + "\" RENAME TO \"" + event.getNewValue() + "\"");
-                } catch (SQLException | DuplicateDataException e) {
+                } catch (SQLException  e) {
                     Logging.logError(e);
                 }
             }
@@ -136,7 +136,7 @@ public class ChartCreatorDialog extends Dialog<Chart> {
                 String name = "New Database";
                 listView.getItems().add(name);
                 SQLUtil.addTableIfNotExists(name);
-            } catch (SQLException | DuplicateDataException | ConfigFileFormatException e) {
+            } catch (SQLException  e) {
                 Logging.logError(e);
             }
         });
@@ -146,7 +146,7 @@ public class ChartCreatorDialog extends Dialog<Chart> {
             try {
                 SQLUtil.execNoReturn("DROP TABLE IF EXISTS '" + listView.getSelectionModel().getSelectedItem() + "'");
                 listView.getItems().remove(listView.getSelectionModel().getSelectedItem());
-            } catch (SQLException | DuplicateDataException e) {
+            } catch (SQLException  e) {
                 Logging.logError(e);
             }
         });
@@ -170,7 +170,7 @@ public class ChartCreatorDialog extends Dialog<Chart> {
 
                 SQLUtil.execNoReturn("CREATE TABLE '" + name + "' AS  SELECT *  FROM '" + listView.getSelectionModel().getSelectedItem() + "'");
                 listView.getItems().add(name);
-            } catch (SQLException | DuplicateDataException e) {
+            } catch (SQLException  e) {
                 Logging.logError(e);
             }
         });
