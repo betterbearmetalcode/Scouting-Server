@@ -33,6 +33,7 @@ public class ScoutingServer extends Application {
 
     /*
     notes
+    -------------settings--------------
     have a settings page with the following settings
     if a team number is inconsistent with the match schedule should we validate that entry or mark it as unknown
     when exporting do we skip overloaded datapoints
@@ -40,10 +41,11 @@ public class ScoutingServer extends Application {
     data transfer port
     update configuration button
     clear logs button
-    -------
-    when validationg matches which are over or under loaded will be skipped
+    ---------------------
+
 
     -----todo
+        when validationg matches which are over or under loaded will be skipped
     make sure all things data importing work
             wireless
             new databases
@@ -55,10 +57,7 @@ public class ScoutingServer extends Application {
     strat scouting schedules
     documentation
 
-
     -------
-
-    buttons i need
 
      */
 
@@ -167,7 +166,7 @@ public class ScoutingServer extends Application {
                     for (String tableName : SQLUtil.getTableNames()) {
                         SQLUtil.execNoReturn("DROP TABLE IF EXISTS \"" + tableName + "\"");
                     }
-                } catch (SQLException | DuplicateDataException ignored) {
+                } catch (SQLException  ignored) {
                 }
             }
         });

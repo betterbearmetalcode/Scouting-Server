@@ -147,13 +147,10 @@ public class MiscController {
 
 
 
-    @FXML
     public void findTraps(ActionEvent event) {
             //save data
         try {
             DatabaseManager.readDatabase("Hopper", true);
-        } catch (ConfigFileFormatException e) {
-            throw new RuntimeException(e);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

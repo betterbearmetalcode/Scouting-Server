@@ -81,7 +81,7 @@ public class MainTabPane extends TabPane{
                         String tableName = ((DatabaseViewerTabContent) c).tableName;
                         try {
                             SQLUtil.execNoReturn("DROP TABLE IF EXISTS \"" + tableName + "\"");
-                        } catch (SQLException | DuplicateDataException e) {
+                        } catch (SQLException e) {
                             Logging.logError(e, "Failed to delete internal SQL table on tab closing");
                         }
                     }

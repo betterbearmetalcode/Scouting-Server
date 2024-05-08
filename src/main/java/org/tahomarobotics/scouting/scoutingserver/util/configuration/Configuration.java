@@ -13,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -27,10 +28,18 @@ public class Configuration {
 
     private static  ArrayList<DataMetric> rawDataMetrics = new ArrayList<>();
 
+    private static HashMap<String, DataMetric> rawDataMetricsMap = new HashMap<>();
+
+    /**
+     * Updates the configuration in RAM by reading the config file. This method needs to be called any time the configuration file changes,
+     * otherwise the scouting server will not behave how the user has defined it to behave.
+     * @throws ConfigFileFormatException if the configuration file is not precisely the correct format
+     */
     public static void updateConfiguration() throws ConfigFileFormatException {
         try {
             long start = System.currentTimeMillis();
-            ArrayList<DataMetric> backupDataMetrics = rawDataMetrics;//create backup in case of exceptions
+            HashMap<String, DataMetric> backupDataMetricMap = rawDataMetricsMap;//create backup in case of exceptions
+            ArrayList<DataMetric> backupRawDataMetrics = rawDataMetrics;
             // Specify the file path as a File object
             File configFile = new File(Constants.CONFIG_FILE_LOCATION);
 
@@ -50,6 +59,7 @@ public class Configuration {
             }
             NodeList dataMetrics = nodeList.item(0).getChildNodes();
             rawDataMetrics.clear();
+            rawDataMetricsMap.clear();
             for (int i = 0; i < dataMetrics.getLength(); i++) {
                 Node node = dataMetrics.item(i);
                 if (!Objects.equals(node.getNodeName(), "dataMetric")) {
@@ -97,17 +107,21 @@ public class Configuration {
 
                             }
                             rawDataMetrics.add(new DataMetric(dataType, name, validateable, val));
+                            rawDataMetricsMap.put(name, new DataMetric(dataType, name, validateable, val));
                         }
                         case STRING -> {
                             rawDataMetrics.add(new DataMetric(dataType, name, validateable, defaultValueNode.getTextContent()));
+                            rawDataMetricsMap.put(name, new DataMetric(dataType, name, validateable, defaultValueNode.getTextContent()));
                         }
                         case BOOLEAN -> {
                             rawDataMetrics.add(new DataMetric(dataType, name, validateable, defaultValueNode.getTextContent().equalsIgnoreCase("true")));
+                            rawDataMetricsMap.put(name, new DataMetric(dataType, name, validateable, defaultValueNode.getTextContent().equalsIgnoreCase("true")));
                         }
                     }
 
                 } catch (IllegalArgumentException e) {
-                    rawDataMetrics = backupDataMetrics;//restore config to whatever we had before
+                    rawDataMetricsMap = backupDataMetricMap;//restore config to whatever we had before
+                    rawDataMetrics = backupRawDataMetrics;
                     throw new ConfigFileFormatException("Unsupported Datatype: " + dataTypeNode.getTextContent() + " for Metric: " + name);
                 }
 
@@ -126,12 +140,11 @@ public class Configuration {
     }
 
     public static Optional<DataMetric> getMetric(String name) {
-        for (DataMetric rawDataMetric : rawDataMetrics) {
-            if (Objects.equals(rawDataMetric.getName(), name)) {
-                return Optional.of(rawDataMetric);
-            }
+        if (rawDataMetricsMap.containsKey(name)) {
+            return Optional.of(rawDataMetricsMap.get(name));
+        }else {
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
 

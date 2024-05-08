@@ -36,7 +36,7 @@ public class TableChooserDialog extends Dialog<String> {
                     SQLUtil.execNoReturn("ALTER TABLE \"" + oldValue + "\" RENAME TO \"" + processedNewValue + "\"");
                     listView.getItems().set(event.getIndex(), processedNewValue);
 
-                } catch (SQLException | DuplicateDataException e) {
+                } catch (SQLException  e) {
                     Logging.logError(e);
                 }
             }
@@ -59,7 +59,7 @@ public class TableChooserDialog extends Dialog<String> {
                 }else {
                     try {
                         SQLUtil.addTableIfNotExists(listView.getSelectionModel().getSelectedItem());
-                    } catch (SQLException | DuplicateDataException | ConfigFileFormatException e) {
+                    } catch (SQLException  e) {
                         Logging.logError(e, "Failed to create table");
                         return "";
                     }
@@ -99,7 +99,7 @@ public class TableChooserDialog extends Dialog<String> {
                 SQLUtil.addTableIfNotExists(name);
                 listView.getItems().add(name);
 
-            } catch (SQLException | DuplicateDataException | ConfigFileFormatException e) {
+            } catch (SQLException  e) {
                 Logging.logError(e);
             }
         });
@@ -111,7 +111,7 @@ public class TableChooserDialog extends Dialog<String> {
                 }
                 SQLUtil.execNoReturn("DROP TABLE IF EXISTS '" + listView.getSelectionModel().getSelectedItem() + "'");
                 listView.getItems().remove(listView.getSelectionModel().getSelectedItem());
-            } catch (SQLException | DuplicateDataException e) {
+            } catch (SQLException  e) {
                 Logging.logError(e);
             }
         });

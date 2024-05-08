@@ -1,11 +1,8 @@
 package org.tahomarobotics.scouting.scoutingserver.util;
 
-import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
-import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
-import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,9 +13,8 @@ public class SQLUtil {
     public static final Object[] EMPTY_PARAMS = {};
 
 
-    public static void addTableIfNotExists(String tableName) throws SQLException, IllegalArgumentException, DuplicateDataException, ConfigFileFormatException {
+    public static void addTableIfNotExists(String tableName) throws SQLException, IllegalArgumentException {
         //first update configuration to ensure config file is read and then read the config file and use its columns to generate a SQL table that matches them
-        Configuration.updateConfiguration();
         StringBuilder schema = new StringBuilder("(");
         for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
             schema.append(rawDataMetric.getName()).append(" ");
@@ -49,11 +45,11 @@ public class SQLUtil {
         }
     }
 
-    public static void execNoReturn(String statement) throws SQLException, IllegalArgumentException, DuplicateDataException {
+    public static void execNoReturn(String statement) throws SQLException, IllegalArgumentException {
         execNoReturn(statement, SQLUtil.EMPTY_PARAMS, true);
     }
 
-    public static void execNoReturn(String statement, boolean log) throws SQLException, IllegalArgumentException, DuplicateDataException {
+    public static void execNoReturn(String statement, boolean log) throws SQLException, IllegalArgumentException {
         execNoReturn(statement, SQLUtil.EMPTY_PARAMS, log);
     }
 
