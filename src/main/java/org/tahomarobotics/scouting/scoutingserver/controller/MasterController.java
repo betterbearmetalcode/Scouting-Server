@@ -87,6 +87,7 @@ public class MasterController {
                 try {
                     DatabaseManager.importJSONFile(selectedFile, ((DatabaseViewerTabContent) selectedContentOptional.get()).tableName);
                     selectedContentOptional.get().setNeedsSavingProperty(true);
+                    ((DatabaseViewerTabContent) selectedContentOptional.get()).updateDisplay(false);
                 } catch (IOException e) {
                     Logging.logError(e, "Failed to import data");
                 }

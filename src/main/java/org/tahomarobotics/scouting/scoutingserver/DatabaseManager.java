@@ -3,10 +3,13 @@ package org.tahomarobotics.scouting.scoutingserver;
 import javafx.stage.FileChooser;
 import org.json.CDL;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.tahomarobotics.scouting.scoutingserver.controller.MainTabPane;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DuplicateDataResolverDialog;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.GenericTabContent;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DuplicateEntries;
@@ -40,10 +43,14 @@ public class DatabaseManager {
         if (!selectedFile.exists()) {
             return;
         }
-        FileInputStream inputStream = new FileInputStream(selectedFile);
-        JSONArray object = new JSONArray(new String(inputStream.readAllBytes()));
-        DatabaseManager.importJSONArrayOfDataObjects(object, activeTable);
-        inputStream.close();
+        try {
+            FileInputStream inputStream = new FileInputStream(selectedFile);
+            JSONArray object = new JSONArray(new String(inputStream.readAllBytes()));
+            DatabaseManager.importJSONArrayOfDataObjects(object, activeTable);
+            inputStream.close();
+        }catch (JSONException e) {
+            Logging.logError(e);
+        }
     }
 
     //
@@ -138,7 +145,7 @@ public class DatabaseManager {
                 batchBuilder.replace(batchBuilder.toString().length() - 2, batchBuilder.length()  -1, "");
                 SQLUtil.execNoReturn(batchBuilder.toString(), SQLUtil.EMPTY_PARAMS, false);
             }
-
+            //data imported succesfully
 
         } catch (NumberFormatException |SQLException e) {
             Logging.logError(e);
@@ -335,7 +342,6 @@ public class DatabaseManager {
      * @throws SQLException if sql goes wrong
      */
     public static JSONArray readDatabase(String tableName, boolean sorted) throws SQLException {
-        long startTime = System.currentTimeMillis();
         ArrayList<HashMap<String, Object>> rawList = SQLUtil.exec("SELECT * FROM \"" + tableName + "\"", true);
         JSONArray output = new JSONArray();
         for (HashMap<String, Object> rawRow : rawList) {
@@ -373,10 +379,8 @@ public class DatabaseManager {
                     return Integer.compare(robotPosition1, robotPosition2);
                 }
             });
-            System.out.println("Took: " + (System.currentTimeMillis() - startTime) + " millis to read database with sorting");
             return new JSONArray().putAll(sortedOutput);
         }
-        System.out.println("Took: "  + (System.currentTimeMillis() - startTime) + " millis to read database without sorting");
         return output;
     }
 

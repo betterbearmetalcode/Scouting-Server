@@ -48,14 +48,16 @@ public class ScoutingServer extends Application {
         when validationg matches which are over or under loaded will be skipped
     make sure all things data importing work
             wireless
-            new databases
-            importing json file
+            new databases done
+            importing json file done
             merging databases
+            csv importing
     settings page
     charts
     find traps
     strat scouting schedules
     documentation
+    test EVERYTHING
 
     -------
 
