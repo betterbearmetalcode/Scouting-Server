@@ -8,6 +8,7 @@ import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.GenericTabContent;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.RenameableTab;
@@ -49,6 +50,7 @@ public class MainTabPane extends TabPane{
                     ScoutingServer.setEnablingForSaveButtons(false);
                     ScoutingServer.setEnablingForDataMenu(false);
                 }
+            ServerUtil.stopServer();//stop the data transfer server, if we are switiching to a new tab, or a chart or anything, just stop it
         });
 
     }
@@ -75,6 +77,7 @@ public class MainTabPane extends TabPane{
             }
         });
         tab.setOnClosed(event1 -> {
+            ServerUtil.stopServer();
             for (GenericTabContent c : tabContents) {
                 if (Objects.equals(tab.getId(), c.getTabType().name())) {
                     if (c.getTabType() == Constants.TabType.DATABASE_VIEWER) {

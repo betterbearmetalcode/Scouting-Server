@@ -3,30 +3,30 @@ package org.tahomarobotics.scouting.scoutingserver.util;
 import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
-import org.tahomarobotics.scouting.scoutingserver.controller.DataCollectionController;
-import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
+import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.ArrayList;
 
 
 public class DataTransferClient extends Thread {
 
 
 
-    private Socket socket;
+    private final Socket socket;
 
-    public DataTransferClient(Socket sock) throws IOException {
+    private final String tableName;
+
+    public DataTransferClient(Socket sock, String nameOfTable) throws IOException {
         socket = sock;
         this.start();
+        tableName = nameOfTable;
     }
 
 
-    private BufferedReader reader;
     @Override
     public void run() {
         long start = System.currentTimeMillis();
@@ -37,7 +37,7 @@ public class DataTransferClient extends Thread {
             InputStream inputStream = socket.getInputStream();
 
 
-            reader = new BufferedReader(new InputStreamReader(inputStream));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             builder = new StringBuilder();
             while (true) {
                 String line = reader.readLine();
@@ -48,7 +48,7 @@ public class DataTransferClient extends Thread {
                 }
             }
             Logging.logInfo("storing data, time elapsed: " + (System.currentTimeMillis() - start));
-            DatabaseManager.importJSONArrayOfDataObjects(new JSONArray(builder.toString()), DataCollectionController.activeTable);
+            DatabaseManager.importJSONArrayOfDataObjects(new JSONArray(builder.toString()), tableName);
 
             Logging.logInfo("data is" + builder);
             Logging.logInfo("Closing client Connection");

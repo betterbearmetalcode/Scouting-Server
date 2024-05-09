@@ -7,17 +7,14 @@ import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
+import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.GenericTabContent;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.NewItemDialog;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 public class MasterController {
     
@@ -64,11 +61,7 @@ public class MasterController {
         ScoutingServer.mainTabPane.tabContents.forEach(GenericTabContent::save);
     }
 
-    //returns new name of item
-    public static String toggleDataTransferServer() {
-        Logging.logInfo("starting data transfer server");
-        return String.valueOf(System.currentTimeMillis());
-    }
+
 
     public static void addJSONFile() {
         Logging.logInfo("Adding JSON File to database");
@@ -134,17 +127,6 @@ public class MasterController {
         Logging.logInfo("Opening Documentation");
     }
 
-    //( ͡° ͜ʖ ͡°)
-    public static void rickrollUser() {
-        Logging.logInfo("Rickrolling user lol");
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            try {
-                Desktop.getDesktop().browse(new URI("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
-            } catch (IOException | URISyntaxException e) {
-                Logging.logError(e);
-            }
-        }
-    }
 
     public static void export() {
         Logging.logInfo("Exporting");
