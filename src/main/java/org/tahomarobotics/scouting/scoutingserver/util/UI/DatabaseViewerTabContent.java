@@ -1,5 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.util.UI;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -20,10 +22,7 @@ import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.Exporter;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.controller.MasterController;
-import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.Logging;
-import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
-import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.*;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
@@ -42,6 +41,9 @@ public class DatabaseViewerTabContent extends GenericTabContent{
     private final VBox content = new VBox();
 
     private final HBox buttonBar = new HBox();
+
+    private final BooleanProperty serverRunning = new SimpleBooleanProperty(false);
+
 
     private final Button validateButton = new Button();
     private final TextField autoCompletionField = new TextField();
@@ -332,6 +334,18 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             updateDisplay(false);
         }
 
+        /*    public void importDuplicateDataBackup(ActionEvent event) {
+        Logging.logInfo("Importing duplicate data backup");
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(new File(Constants.BASE_APP_DATA_FILEPATH + "/resources/duplicateDataBackups"));
+        chooser.setTitle("Select Backup to import");
+        try {
+            importJSONFile(chooser.showOpenDialog(ScoutingServer.mainStage.getOwner()));
+        } catch (IOException e) {
+            Logging.logError(e);
+        }
+
+    }*/
 
 
         public void updateDisplay(boolean validateData) {
@@ -652,8 +666,20 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                 ImageView transferImageView = new ImageView();
                 transferImageView.setImage(transferImage);
                 wirelessTransferButton.setGraphic(transferImageView);
-                wirelessTransferButton.setOnAction(event -> MasterController.toggleDataTransferServer());
-                buttonBar.getChildren().add(wirelessTransferButton);
+                Label serverStatusLabel = new Label("Server Stopped");
+                wirelessTransferButton.setOnAction(event -> {
+                    if (!serverRunning.get()) {
+                        ServerUtil.takeServer(tableName, this);
+                        serverRunning.setValue(true);
+                    }else {
+                        ServerUtil.stopServer();
+                        serverRunning.setValue(false);
+                    }
+                });
+
+                serverRunning.addListener((observableValue, aBoolean, newValue) -> serverStatusLabel.setText(newValue ? "Server Running" : "Server Stopped"));
+
+                buttonBar.getChildren().add(new HBox(wirelessTransferButton, serverStatusLabel));
 
 
             content.getChildren().add(buttonBar);
@@ -893,6 +919,12 @@ public class DatabaseViewerTabContent extends GenericTabContent{
         }
 
 
+        public void setServerRunning(boolean val) {
+            serverRunning.setValue(val);
+        }
+        public boolean isServerRunning() {
+            return serverRunning.get();
+        }
         private void setValidateButtonGraphic(File file) {
             Image image = new Image(file.toURI().toString());
             ImageView iamgeView = new ImageView();

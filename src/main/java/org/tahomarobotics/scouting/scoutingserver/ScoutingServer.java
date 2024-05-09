@@ -4,6 +4,10 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -13,18 +17,23 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.tahomarobotics.scouting.scoutingserver.controller.DataCollectionController;
 import org.tahomarobotics.scouting.scoutingserver.controller.MainTabPane;
 import org.tahomarobotics.scouting.scoutingserver.controller.MasterController;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.GenericTabContent;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
-import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import static org.tahomarobotics.scouting.scoutingserver.Constants.UIValues.*;
 
@@ -41,6 +50,7 @@ public class ScoutingServer extends Application {
     data transfer port
     update configuration button
     clear logs button
+    api key
     ---------------------
 
 
@@ -58,6 +68,7 @@ public class ScoutingServer extends Application {
     strat scouting schedules
     documentation
     test EVERYTHING
+    setup wizard, have the user load or create a config file, and enter their api key at least.
 
     -------
 
@@ -83,24 +94,23 @@ public class ScoutingServer extends Application {
     private static final MenuItem saveItem = new MenuItem("Save");
     private static final MenuItem saveAsItem = new MenuItem("Save As");
     private static final MenuItem saveAllItem = new MenuItem("SaveAll");
-    //data mstatic enu
+    //data menu
     private static final Menu dataMenu = new Menu("Data");
-    private static final MenuItem dataTransferItem = new MenuItem("Start Data Transfer Server");
+    public static final MenuItem dataTransferItem = new MenuItem("Start Data Transfer Server");
     private static final MenuItem jsonImportItem = new MenuItem("Import JSON");
     private static final MenuItem csvImportItem = new MenuItem("Import CSV");
     private static final MenuItem validateItem = new MenuItem("Validate");
     private static final MenuItem mergeDatabaseItem = new MenuItem("Merge Database");
-      //all static game specific?
+      //all  game specific?
     private static final Menu toolsMenu = new Menu("Tools");
     private static final MenuItem autoHeatmapItem = new MenuItem("Create Auto Heatmap");//not supported rn
     private static final MenuItem findTrapsItem = new MenuItem("Find Traps");
     private static final MenuItem stratScoutingScheduleButton = new MenuItem("Generate Strat Scouting Schedule");
     private static final Menu helpMenu = new Menu("Help");
     private static final MenuItem helpItem = new MenuItem("Open Documentation");
-    private static final MenuItem openEmotionalSupportItem = new MenuItem("Emotional Support");//rickroll shh -Caleb
+    private static final MenuItem openEmotionalSupportItem = new MenuItem("Emotional Support");
 
     private static final Button saveButton = new Button();
-    public static DataCollectionController dataCollectionController = new DataCollectionController();
 
 
 
@@ -113,7 +123,7 @@ public class ScoutingServer extends Application {
         mainStage.setScene(mainScene);
         mainStage.getIcons().add(new Image(Constants.BASE_READ_ONLY_FILEPATH + "/resources/Logo.png"));
         mainStage.setOnCloseRequest(event -> {
-            ServerUtil.setServerStatus(false);
+            ServerUtil.stopServer();
         });
 
         mainStage.setHeight(getAppHeight());
@@ -262,7 +272,20 @@ public class ScoutingServer extends Application {
         fileMenu.getItems().addAll(newItem, openItem, saveItem, saveAsItem, saveAllItem);
 
 
-        dataTransferItem.setOnAction(event -> dataTransferItem.setText(MasterController.toggleDataTransferServer()));
+        dataTransferItem.setOnAction(event -> {
+            Optional<GenericTabContent> content = mainTabPane.getSelectedTabContent();
+            if (content.isPresent() && (content.get().getTabType() == Constants.TabType.DATABASE_VIEWER)) {
+                DatabaseViewerTabContent tabContent = (DatabaseViewerTabContent) content.get();
+                Logging.logInfo("toggling data transfer server");
+                if (!tabContent.isServerRunning()) {
+                    ServerUtil.takeServer(tabContent.tableName, tabContent);
+                    tabContent.setServerRunning(true);
+                }else {
+                    ServerUtil.stopServer();
+                    tabContent.setServerRunning(false);
+                }
+            }
+        });
 
         jsonImportItem.setOnAction(event -> MasterController.addJSONFile());
 
@@ -289,7 +312,15 @@ public class ScoutingServer extends Application {
 
         helpItem.setOnAction(event -> MasterController.openDocumentation());
 
-        openEmotionalSupportItem.setOnAction(event -> MasterController.rickrollUser());
+        openEmotionalSupportItem.setOnAction(event -> {
+            Logging.logInfo("Rickrolling user lol");
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                try {
+                    Desktop.getDesktop().browse(new URI("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+                } catch (IOException | URISyntaxException ignored) {
+                }
+            }
+        });
         helpMenu.getItems().addAll(helpItem, openEmotionalSupportItem);
         MenuBar menuBar = new MenuBar();
         menuBar.getMenus().addAll(fileMenu, dataMenu, toolsMenu, helpMenu);
