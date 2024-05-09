@@ -57,7 +57,7 @@ public class ScoutingServer extends Application {
     -----todo
         when validationg matches which are over or under loaded will be skipped
     make sure all things data importing work
-            wireless
+            wireless done
             new databases done
             importing json file done
             merging databases
@@ -69,7 +69,7 @@ public class ScoutingServer extends Application {
     documentation
     test EVERYTHING
     setup wizard, have the user load or create a config file, and enter their api key at least.
-
+    add soem easter eggs
     -------
 
      */
@@ -287,7 +287,7 @@ public class ScoutingServer extends Application {
             }
         });
 
-        jsonImportItem.setOnAction(event -> MasterController.addJSONFile());
+        jsonImportItem.setOnAction(event -> MasterController.addDataFile());
 
         csvImportItem.setOnAction(event -> MasterController.addCSVFile());
 

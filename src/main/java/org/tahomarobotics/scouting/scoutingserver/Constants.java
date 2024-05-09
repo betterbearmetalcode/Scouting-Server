@@ -27,6 +27,8 @@ public class Constants {
 
     public static final int WIRED_DATA_TRANSFER_PORT = 45482;
 
+    public static final String DATA_FILE_EXTENSION = ".frcdat";
+
     public enum TabType {
         DATABASE_VIEWER,
         CHART

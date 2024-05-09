@@ -18,7 +18,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class ChartsController implements Initializable {
+public class ChartsController  {
     @FXML
     public VBox mainBox;
 
@@ -33,21 +33,13 @@ public class ChartsController implements Initializable {
         AUTO_NOTES,
         TELE_NOTES
     }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
-        tabPane.getTabs().get(0).setClosable(false);
-        tabPane.setTabMaxHeight(Toolkit.getDefaultToolkit().getScreenSize().height);
-    }
-
-    public void newTab(ActionEvent event) {
+ /*   public void newTab(ActionEvent event) {
         Logging.logInfo("Making new tab");
         try {
             Tab tab = new Tab();
             tab.setClosable(true);
 
-            ChartCreatorDialog dialog = new ChartCreatorDialog(SQLUtil.getTableNames());
+            ChartCreatorDialog dialog = new ChartCreatorDialog();
             Optional<Chart> result = dialog.showAndWait();
 
             result.ifPresent(chart -> {
@@ -73,7 +65,7 @@ public class ChartsController implements Initializable {
         }catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
 
 

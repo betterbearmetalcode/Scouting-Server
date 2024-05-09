@@ -79,7 +79,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             if (contentFileLocation.isPresent()) {
                 File potentialFile = contentFileLocation.get();
                 if (potentialFile.exists() && potentialFile.isFile()) {
-                    if (potentialFile.getName().endsWith(".json")) {
+                    if (potentialFile.getName().endsWith(Constants.DATA_FILE_EXTENSION)) {
                         needToPickFile = false;
                     }
                 } else  {
@@ -98,8 +98,8 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             FileChooser chooser = new FileChooser();
             chooser.setTitle("Save Backup");
             chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-            chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + ".json");
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
+            chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + Constants.DATA_FILE_EXTENSION);
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Scouting Server Files", "*" + Constants.DATA_FILE_EXTENSION));
             selectedFile  = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
         }else {
             selectedFile = contentFileLocation.get();
@@ -152,7 +152,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             chooser.setTitle("Save Database");
             chooser.setInitialDirectory(new File(System.getProperty("user.home")));
             chooser.setInitialFileName(tabName.get());
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Scouting Server Files",   "*" + Constants.DATA_FILE_EXTENSION));
             File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
             if (selectedFile == null) {
                 return;

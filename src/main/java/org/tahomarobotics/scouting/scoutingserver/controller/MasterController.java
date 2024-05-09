@@ -7,7 +7,6 @@ import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
-import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.GenericTabContent;
 import org.tahomarobotics.scouting.scoutingserver.util.UI.NewItemDialog;
@@ -33,7 +32,7 @@ public class MasterController {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Select JSON File");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Scouting Server Files", "*" + Constants.DATA_FILE_EXTENSION, "*.json"));
         File selectedFile = chooser.showOpenDialog(ScoutingServer.mainStage.getOwner());
         if (selectedFile == null) {
             return;
@@ -63,12 +62,12 @@ public class MasterController {
 
 
 
-    public static void addJSONFile() {
+    public static void addDataFile() {
         Logging.logInfo("Adding JSON File to database");
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Select JSON File");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Scouting Server Files", "*" + Constants.DATA_FILE_EXTENSION));
         File selectedFile = chooser.showOpenDialog(ScoutingServer.mainStage.getOwner());
         if (selectedFile == null) {
             return;
