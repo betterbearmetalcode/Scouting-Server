@@ -68,7 +68,7 @@ public class ScoutingServer extends Application {
     strat scouting schedules
     documentation
     test EVERYTHING
-    setup wizard, have the user load or create a config file, and enter their api key at least. 
+    setup wizard, have the user load or create a config file, and enter their api key at least.
 
     -------
 
