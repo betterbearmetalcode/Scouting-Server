@@ -4,9 +4,14 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 
 import java.awt.*;
+import java.io.File;
 import java.util.Optional;
 
 public class Constants {
@@ -205,6 +210,36 @@ public class Constants {
             setAppHeight(APP_HEIGHT);
             setAppWidthProperty(APP_WIDTH);
         }
+    }
+
+
+    public static File selectDataFile(String title, boolean saveType) {
+        return selectDataFile(title, saveType, "");
+    }
+    public static File selectDataFile(String title, boolean saveType, String initalFileName) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(title);
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        if (!initalFileName.isEmpty()) {
+            chooser.setInitialFileName(initalFileName);
+        }
+        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Scouting Server Files", "*" + Constants.DATA_FILE_EXTENSION, "*.json"));
+        if (!saveType) {
+            return chooser.showOpenDialog(ScoutingServer.mainStage.getOwner());
+        }else {
+            return chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+        }
+
+    }
+
+    public static javafx.scene.control.Button getButtonWithIcon(File icon, String toolTip) {
+        javafx.scene.control.Button button = new javafx.scene.control.Button();
+        button.setTooltip(new Tooltip(toolTip));
+        javafx.scene.image.Image image = new Image(icon.toURI().toString());
+        ImageView iamgeView = new ImageView();
+        iamgeView.setImage(image);
+        button.setGraphic(iamgeView);
+        return button;
     }
     public static boolean askQuestion(String question) {
         Dialog<Boolean> continueDialog = new Dialog<>();

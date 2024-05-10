@@ -95,12 +95,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             }
 
         if (needToPickFile) {
-            FileChooser chooser = new FileChooser();
-            chooser.setTitle("Save Backup");
-            chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-            chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + Constants.DATA_FILE_EXTENSION);
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Scouting Server Files", "*" + Constants.DATA_FILE_EXTENSION));
-            selectedFile  = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+            selectedFile  = Constants.selectDataFile("Save Database", true, tabName.get());
         }else {
             selectedFile = contentFileLocation.get();
         }
@@ -148,12 +143,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
 
         try {
             JSONArray dataArray = DatabaseManager.readDatabase(tableName);
-            FileChooser chooser = new FileChooser();
-            chooser.setTitle("Save Database");
-            chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-            chooser.setInitialFileName(tabName.get());
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Scouting Server Files",   "*" + Constants.DATA_FILE_EXTENSION));
-            File selectedFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+            File selectedFile = Constants.selectDataFile("Save Database", true, tabName.get());
             if (selectedFile == null) {
                 return;
             }

@@ -21,7 +21,7 @@ public class ChartTabContent extends GenericTabContent{
     private List<Constants.SQLColumnName> cols;
     public String title;
     private final VBox content = new VBox();
-    public ChartTabContent(String name, Optional<File> saveLocation, File dataSourceFile, ArrayList<DataMetric> metricsToGraph) {
+    public ChartTabContent(String name, Optional<File> saveLocation, Optional<File> dataSourceFile, ArrayList<DataMetric> metricsToGraph) {
         super(name, saveLocation);
     }
 

@@ -1,5 +1,7 @@
 package org.tahomarobotics.scouting.scoutingserver.util.UI;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
@@ -7,11 +9,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.controller.MasterController;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.tahomarobotics.scouting.scoutingserver.Constants.SQLColumnName.*;
@@ -30,6 +36,12 @@ public class ChartCreatorDialog extends Dialog<Optional<ChartTabContent>> {
 
     private final TextField fileNameField = new TextField();
 
+    private final TextField saveLocationField = new TextField();
+
+    private Optional<File> dataSourceFile = Optional.empty();
+
+    private Optional<File> saveLocationFile = Optional.empty();
+
 
 
     public ChartCreatorDialog() {
@@ -39,23 +51,15 @@ public class ChartCreatorDialog extends Dialog<Optional<ChartTabContent>> {
 
         VBox chartSettings = new VBox();
         chartSettings.getChildren().add(new Label("Select Metrics to track"));
-        for (Constants.SQLColumnName value : Constants.SQLColumnName.values()) {
-            //allow user to select these columns
-            if (!(value.equals(AUTO_SPEAKER) ||
-                    value.equals(AUTO_AMP) ||
-                    value.equals(AUTO_SPEAKER_MISSED) ||
-                    value.equals(AUTO_AMP_MISSED) ||
-                    value.equals(TELE_SPEAKER) ||
-                    value.equals(TELE_AMP) ||
-                    value.equals(TELE_TRAP) ||
-                    value.equals(TELE_SPEAKER_MISSED) ||
-                    value.equals(TELE_AMP_MISSED) ||
-                    value.equals(SPEAKER_RECEIVED) ||
-                    value.equals(AMP_RECEIVED))
-                    ) {
+        for (DataMetric rawDataMetric : Configuration.getRawDataMetrics()) {
+            if (Objects.equals(rawDataMetric.getName(), TEAM_NUM.name()) || Objects.equals(rawDataMetric.getName(), MATCH_NUM.name()) || Objects.equals(rawDataMetric.getName(), ALLIANCE_POS.name())) {
+                //un graphable things
                 continue;
             }
-            CheckBox box = new CheckBox(value.name());
+            if (rawDataMetric.getDatatype() != Configuration.Datatype.INTEGER) {
+                continue;
+            }
+            CheckBox box = new CheckBox(rawDataMetric.getName());
             box.setSelected(false);
             checkBoxes.add(box);
             chartSettings.getChildren().add(box);
@@ -65,40 +69,55 @@ public class ChartCreatorDialog extends Dialog<Optional<ChartTabContent>> {
         chartSettings.getChildren().add(new HBox(new Label("Y Axis Name"), yAzisNameField));
 
 
-        Button selectFileButton = new Button();
-        selectFileButton.setTooltip(new Tooltip("Select File"));
-        File selectImageFile = new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/file-selector-icon.png");
-        Image selectFileImage = new Image(selectImageFile.toURI().toString());
-        ImageView selectFileImageView = new ImageView();
-        selectFileImageView.setImage(selectFileImage);
-        selectFileButton.setGraphic(selectFileImageView);
-        selectFileButton.setOnAction(event -> MasterController.openJSONFileIntoDatabase());
+        Button selectFileButton = Constants.getButtonWithIcon(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/file-selector-icon.png"), "Select File");
+        selectFileButton.setOnAction(event -> {
+            File potentialFile = Constants.selectDataFile("Select Data Source File", false);
+            if (potentialFile != null) {
+                dataSourceFile = Optional.of(potentialFile);
+            }
+            dataSourceFile.ifPresent(file -> fileNameField.setText(file.getAbsolutePath()));
+
+        });
 
         fileNameField.setEditable(false);
         fileNameField.setPromptText("Select Data file you would like to use");
-        HBox fileBox = new HBox(fileNameField, selectFileButton);
+        HBox sourceFileBox = new HBox(new Label("Data Source File"), fileNameField, selectFileButton);
+        chartSettings.getChildren().add(sourceFileBox);
+        saveLocationField.setEditable(false);
+        saveLocationField.setPromptText("Select Save Location");
 
+        Button selectSaveLocationButton = Constants.getButtonWithIcon(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/file-selector-icon.png"), "Select File");
+        selectSaveLocationButton.setOnAction(event -> {
+            File potentialFile = Constants.selectDataFile("Select Save Location", false);
+            if (potentialFile != null) {
+                saveLocationFile = Optional.of(potentialFile);
+            }
+            saveLocationFile.ifPresent(file -> saveLocationField.setText(file.getAbsolutePath()));
+
+        });
+        HBox saveLocation = new HBox(new Label("Save Location"), saveLocationField, selectFileButton);
+        chartSettings.getChildren().add(saveLocation);
 
         this.getDialogPane().setContent(chartSettings);
         this.setResultConverter(param -> {
             if (param == openType) {
-                String tableName = "wheep whoop";
-                ArrayList<Constants.SQLColumnName> columnNames = new ArrayList<>();
+                ArrayList<DataMetric> dataMetrics = new ArrayList<>();
                 checkBoxes.forEach(checkBox -> {
                     if (checkBox.isSelected()) {
-                        columnNames.add(Constants.SQLColumnName.valueOf(checkBox.getText()));
+                        Optional<DataMetric> potentialMetric = Configuration.getMetric(checkBox.getText());
+                        potentialMetric.ifPresent(dataMetrics::add);
                     }
 
                 });
-                if (columnNames.isEmpty()) {
-                    return null;
+                if (dataMetrics.isEmpty()) {
+                    return Optional.empty();
                 }
                 CategoryAxis xAxis = new CategoryAxis();
                 xAxis.setLabel(xAxisNameField.getText().isEmpty()?"X Axis":xAxisNameField.getText());
                 NumberAxis yAxis = new NumberAxis();
                 yAxis.setLabel(yAzisNameField.getText().isEmpty()?"Y Axis":yAzisNameField.getText());
                 String title = chartTitleField.getText().isEmpty()?"Chart":chartTitleField.getText();
-                return Optional.of(new ChartTabContent(title, Optional.of(new File("bloop")), new File("another file"), new ArrayList<>()));
+                return Optional.of(new ChartTabContent(title, saveLocationFile,dataSourceFile, dataMetrics));
 
             }else {
 

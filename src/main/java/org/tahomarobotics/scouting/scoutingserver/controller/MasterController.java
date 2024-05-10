@@ -29,11 +29,7 @@ public class MasterController {
 
     public static void openJSONFileIntoDatabase() {
         Logging.logInfo("Opening JSON File Database");
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Select JSON File");
-        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Scouting Server Files", "*" + Constants.DATA_FILE_EXTENSION, "*.json"));
-        File selectedFile = chooser.showOpenDialog(ScoutingServer.mainStage.getOwner());
+        File selectedFile = Constants.selectDataFile("Select JSON File", false);
         if (selectedFile == null) {
             return;
         }
@@ -64,11 +60,7 @@ public class MasterController {
 
     public static void addDataFile() {
         Logging.logInfo("Adding JSON File to database");
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Select JSON File");
-        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Scouting Server Files", "*" + Constants.DATA_FILE_EXTENSION));
-        File selectedFile = chooser.showOpenDialog(ScoutingServer.mainStage.getOwner());
+        File selectedFile = Constants.selectDataFile("Select JSON File", false);
         if (selectedFile == null) {
             return;
         }

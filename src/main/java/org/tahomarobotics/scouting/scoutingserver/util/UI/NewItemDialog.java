@@ -40,7 +40,6 @@ public class NewItemDialog extends Dialog<GenericTabContent> {
             if (param == ButtonType.OK) {
                 if (chartRadioButton.isSelected()) {
                     //create a chart
-                    this.hide();
                     new ChartCreatorDialog().showAndWait();
                 }else {
                     //create a database viewer
