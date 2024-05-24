@@ -4,6 +4,8 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
+import java.util.Optional;
+
 public class NewItemDialog extends Dialog<GenericTabContent> {
 
     //this is created whenever the user clicks file>new or the plus button in the main tab pane
@@ -40,7 +42,8 @@ public class NewItemDialog extends Dialog<GenericTabContent> {
             if (param == ButtonType.OK) {
                 if (chartRadioButton.isSelected()) {
                     //create a chart
-                    new ChartCreatorDialog().showAndWait();
+                    Optional<ChartTabContent> potentTialContenet = new ChartCreatorDialog().showAndWait();
+                    return potentTialContenet.orElse(null);
                 }else {
                     //create a database viewer
                     String text = databaseNameField.getText();
@@ -51,7 +54,6 @@ public class NewItemDialog extends Dialog<GenericTabContent> {
 
 
                 }
-                return null;
             }else {
 
                 return null;

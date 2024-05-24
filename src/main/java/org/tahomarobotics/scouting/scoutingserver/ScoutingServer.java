@@ -199,7 +199,7 @@ public class ScoutingServer extends Application {
 
     }
 
-    private static void resize() {
+    public static void resize() {
         resize(getAppWidth(), getAppHeight());
 
     }

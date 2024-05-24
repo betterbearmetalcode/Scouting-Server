@@ -33,7 +33,7 @@ public class Chart extends StackedBarChart<String, Number> {
 
     }//end constructor
 
-    public void update() throws SQLException {
+/*    public void update() throws SQLException {
         getData().clear();
         categoryAxis.getCategories().clear();
         ArrayList<HashMap<String, Object>> teamsScouted = SQLUtil.exec("SELECT DISTINCT " + Constants.SQLColumnName.TEAM_NUM + " FROM \"" + activeTable + "\"", true);
@@ -62,7 +62,7 @@ public class Chart extends StackedBarChart<String, Number> {
         categoryAxis.getCategories().sort((o1, o2) -> Double.compare(ranks.get(o2), ranks.get(o1)));
         this.prefHeightProperty().bind(Constants.UIValues.databaseHeightProperty());
         this.prefWidthProperty().bind(Constants.UIValues.splitWidthPropertyProperty());
-    }
+    }*/
 
 
 }

@@ -39,6 +39,7 @@ public class DuplicateDataResolverDialog extends Dialog<ArrayList<DuplicateResol
      * @param duplicates An array of {@link DuplicateEntries} objects which need to be resolved
      */
     public DuplicateDataResolverDialog(ArrayList<DuplicateEntries> duplicates) {
+        Logging.logInfo("Throwing up duplicate data resolver dialog");
         this.setTitle("Select Data to Keep");
         this.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
         Button toggleAllButton = new Button("Toggle All");

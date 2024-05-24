@@ -25,6 +25,7 @@ public class MasterController {
     public static void newThing() {
         Logging.logInfo("Creating something new");
         ScoutingServer.mainTabPane.addTab(new NewItemDialog().showAndWait(),true);
+        ScoutingServer.resize();
     }
 
     public static void openJSONFileIntoDatabase() {

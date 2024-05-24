@@ -33,6 +33,7 @@ public class Constants {
     public static final int WIRED_DATA_TRANSFER_PORT = 45482;
 
     public static final String DATA_FILE_EXTENSION = ".frcdat";
+    public static final String CHART_FILE_EXTENSION = ".frccrt";
 
     public enum TabType {
         DATABASE_VIEWER,
@@ -230,6 +231,21 @@ public class Constants {
             return chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
         }
 
+    }
+
+    public static File selectChartFile(String title, boolean saveType, String initalFileName) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(title);
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        if (!initalFileName.isEmpty()) {
+            chooser.setInitialFileName(initalFileName);
+        }
+        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Scouting Server Files", "*" + Constants.CHART_FILE_EXTENSION));
+        if (!saveType) {
+            return chooser.showOpenDialog(ScoutingServer.mainStage.getOwner());
+        }else {
+            return chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
+        }
     }
 
     public static javafx.scene.control.Button getButtonWithIcon(File icon, String toolTip) {

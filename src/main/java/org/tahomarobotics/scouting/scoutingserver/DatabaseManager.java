@@ -16,6 +16,7 @@ import org.tahomarobotics.scouting.scoutingserver.util.data.DuplicateEntries;
 import org.tahomarobotics.scouting.scoutingserver.util.data.DuplicateResolution;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.ConfigFileFormatException;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.DuplicateDataException;
+import org.tahomarobotics.scouting.scoutingserver.util.exceptions.NoDataFoundException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,6 +47,9 @@ public class DatabaseManager {
         try {
             FileInputStream inputStream = new FileInputStream(selectedFile);
             JSONArray object = new JSONArray(new String(inputStream.readAllBytes()));
+            if (object.isEmpty()) {
+                throw new NoDataFoundException("No Data Found when importing json file" + selectedFile.getAbsolutePath());
+            }
             DatabaseManager.importJSONArrayOfDataObjects(object, activeTable);
             inputStream.close();
         }catch (JSONException e) {
@@ -425,11 +429,10 @@ public class DatabaseManager {
         B3,
     }
 
-    //needs to be re-written in charts implementation
-    public static double getAverage(Constants.SQLColumnName column, String teamName, String table, boolean log) throws SQLException {
-        ArrayList<HashMap<String, Object>> raw = SQLUtil.exec("SELECT " + column + " FROM \"" + table + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{teamName}, log);
+    public static double getAverage(DataMetric metric, String teamName, String table, boolean log) throws SQLException {
+        ArrayList<HashMap<String, Object>> raw = SQLUtil.exec("SELECT " + metric.getName() + " FROM \"" + table + "\" WHERE " + Constants.SQLColumnName.TEAM_NUM + "=?", new Object[]{teamName}, log);
         ArrayList<Integer> data = new ArrayList<>();
-        raw.forEach(map -> data.add(Integer.valueOf(map.get(column.toString()).toString())));
+        raw.forEach(map -> data.add(Integer.valueOf(map.get(metric.getName()).toString())));
         return (double) data.stream().mapToInt(Integer::intValue).sum() /data.size();
     }
 }

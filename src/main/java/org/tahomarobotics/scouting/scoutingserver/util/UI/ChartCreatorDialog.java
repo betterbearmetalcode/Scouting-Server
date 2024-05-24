@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
+import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.controller.MasterController;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.configuration.DataMetric;
@@ -19,10 +20,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.tahomarobotics.scouting.scoutingserver.Constants.SQLColumnName.*;
 
-public class ChartCreatorDialog extends Dialog<Optional<ChartTabContent>> {
+public class ChartCreatorDialog extends Dialog<ChartTabContent> {
 
     //needs to be able to have you select what sql colmns are going to be used as well as what the chart name should be and what the y axis and x axis should be named
 
@@ -46,8 +48,8 @@ public class ChartCreatorDialog extends Dialog<Optional<ChartTabContent>> {
 
     public ChartCreatorDialog() {
         this.setTitle("Create Chart");
-        ButtonType openType = new ButtonType("Open", ButtonType.OK.getButtonData());
-        this.getDialogPane().getButtonTypes().addAll(openType, ButtonType.CANCEL);
+        ButtonType createType = new ButtonType("Create", ButtonType.OK.getButtonData());
+        this.getDialogPane().getButtonTypes().addAll(createType, ButtonType.CANCEL);
 
         VBox chartSettings = new VBox();
         chartSettings.getChildren().add(new Label("Select Metrics to track"));
@@ -88,19 +90,25 @@ public class ChartCreatorDialog extends Dialog<Optional<ChartTabContent>> {
 
         Button selectSaveLocationButton = Constants.getButtonWithIcon(new File(Constants.BASE_READ_ONLY_FILEPATH + "/resources/icons/file-selector-icon.png"), "Select File");
         selectSaveLocationButton.setOnAction(event -> {
-            File potentialFile = Constants.selectDataFile("Select Save Location", false);
+
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Select Chart Save Location");
+            chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            chooser.setInitialFileName("Chart");
+            chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Scouting Server Charts", "*" + Constants.CHART_FILE_EXTENSION));
+            File potentialFile = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
             if (potentialFile != null) {
                 saveLocationFile = Optional.of(potentialFile);
             }
             saveLocationFile.ifPresent(file -> saveLocationField.setText(file.getAbsolutePath()));
 
         });
-        HBox saveLocation = new HBox(new Label("Save Location"), saveLocationField, selectFileButton);
+        HBox saveLocation = new HBox(new Label("Save Location"), saveLocationField, selectSaveLocationButton);
         chartSettings.getChildren().add(saveLocation);
 
         this.getDialogPane().setContent(chartSettings);
         this.setResultConverter(param -> {
-            if (param == openType) {
+            if (param == createType) {
                 ArrayList<DataMetric> dataMetrics = new ArrayList<>();
                 checkBoxes.forEach(checkBox -> {
                     if (checkBox.isSelected()) {
@@ -110,18 +118,18 @@ public class ChartCreatorDialog extends Dialog<Optional<ChartTabContent>> {
 
                 });
                 if (dataMetrics.isEmpty()) {
-                    return Optional.empty();
+                    return null;
                 }
                 CategoryAxis xAxis = new CategoryAxis();
                 xAxis.setLabel(xAxisNameField.getText().isEmpty()?"X Axis":xAxisNameField.getText());
                 NumberAxis yAxis = new NumberAxis();
                 yAxis.setLabel(yAzisNameField.getText().isEmpty()?"Y Axis":yAzisNameField.getText());
                 String title = chartTitleField.getText().isEmpty()?"Chart":chartTitleField.getText();
-                return Optional.of(new ChartTabContent(title, saveLocationFile,dataSourceFile, dataMetrics));
+                return new ChartTabContent(title, saveLocationFile.orElse(null),dataSourceFile.orElse(null), dataMetrics, xAxis, yAxis);
 
             }else {
 
-                return Optional.empty();
+                return null;
             }
 
         });

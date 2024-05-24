@@ -71,9 +71,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
     public void save() {
         Logging.logInfo("Saving " + tabName.get());
 
-        Path backupFile = Paths.get(Constants.BASE_APP_DATA_FILEPATH + "/resources/tempBackup" + System.currentTimeMillis() + ".tmp");
         try {
-            JSONArray dataArray = DatabaseManager.readDatabase(tableName);
             File selectedFile;
             boolean needToPickFile = true;
             if (contentFileLocation.isPresent()) {
@@ -87,53 +85,22 @@ public class DatabaseViewerTabContent extends GenericTabContent{
                         if (contentFileLocation.get().createNewFile()) {
                             needToPickFile = false;
                         }
-                    }catch (Exception e) {
-                        needToPickFile = true;
+                    }catch (Exception ignored) {
                     }
 
                 }
             }
 
-        if (needToPickFile) {
-            selectedFile  = Constants.selectDataFile("Save Database", true, tabName.get());
-        }else {
-            selectedFile = contentFileLocation.get();
-        }
-
-        //maybe, but better safe than sorry
-        if (selectedFile == null) {
-            Logging.logInfo("Could not get a file to save the database at");
-            return;
-        }
-        //save backup of file
-
-        Path originalPath = selectedFile.toPath();
-        try {
-            Files.copy(originalPath, backupFile);
-        } catch (IOException e) {
-            Logging.logInfo("Failed to save backup before saving database, will just risk corrupting the users data");
-        }
-
-        try {
-            FileOutputStream os = new FileOutputStream(selectedFile);
-            os.write(dataArray.toString(1).getBytes());
-            os.flush();
-            os.close();
+            if (needToPickFile) {
+                selectedFile =  Constants.selectDataFile("Save Database", true, tabName.get());
+            }else {
+                selectedFile =  contentFileLocation.get();
+            }
+            saveFileWithCorruptionProtection(selectedFile, DatabaseManager.readDatabase(tableName).toString(1));
             setNeedsSavingProperty(false);
             contentFileLocation = Optional.of(selectedFile);
-        } catch (IOException e) {
-            Logging.logError(e, "Failed to save database, will try and restore backup");
-            Path target = selectedFile.toPath();
-            try {
-                Files.copy(backupFile, target);
-            } catch (IOException l) {
-                Logging.logInfo("Failed to restore file");
-            }
-        }
-        }catch (SQLException | ConfigFileFormatException  e) {
+        }catch (SQLException | ConfigFileFormatException | FileNotFoundException e) {
             Logging.logError(e);
-        }finally {
-            backupFile.toFile().delete();
         }
     }
 
@@ -142,19 +109,8 @@ public class DatabaseViewerTabContent extends GenericTabContent{
         Logging.logInfo("Saving " + tabName.get() +  "As new File");
 
         try {
-            JSONArray dataArray = DatabaseManager.readDatabase(tableName);
             File selectedFile = Constants.selectDataFile("Save Database", true, tabName.get());
-            if (selectedFile == null) {
-                return;
-            }
-            if (!selectedFile.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                selectedFile.createNewFile();
-            }
-            FileOutputStream os = new FileOutputStream(selectedFile);
-            os.write(dataArray.toString(1).getBytes());
-            os.flush();
-            os.close();
+            saveFileWithCorruptionProtection(selectedFile, DatabaseManager.readDatabase(tableName).toString(1));
 
 
         } catch (IOException | SQLException | ConfigFileFormatException e) {
