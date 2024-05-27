@@ -4,23 +4,34 @@ import org.json.JSONArray;
 import org.tahomarobotics.scouting.scoutingserver.util.APIUtil;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.SQLUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.SpreadsheetUtil;
+import org.tahomarobotics.scouting.scoutingserver.util.UI.DatabaseViewerTabContent;
+import org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration;
 import org.tahomarobotics.scouting.scoutingserver.util.exceptions.OperationAbortedByUserException;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.SQLOutput;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import static org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration.Datatype.*;
+import static org.tahomarobotics.scouting.scoutingserver.util.configuration.Configuration.getRawDataMetrics;
 
 public class Exporter {
 
-    private final JSONArray competitionData;
-    private final String eventCode;
+    private static JSONArray competitionData;
+    private static String eventCode;
 
-    private final ArrayList<HashMap<String, Object>> teamsScouted;
+    private static ArrayList<HashMap<String, Object>> teamsScouted;
 
     private final String tableName;
 
-    private final ArrayList<Integer> teamsToSkip = new ArrayList<>();
+    private static final ArrayList<Integer> teamsToSkip = new ArrayList<>();
+
 
     public Exporter(String theEventCode, String activeTableName) throws IOException, InterruptedException, OperationAbortedByUserException, SQLException {
         eventCode = theEventCode;
@@ -47,7 +58,7 @@ public class Exporter {
     }
 
 
-    public ArrayList<ArrayList<String>> export() throws SQLException {
+    public static void export(String tableName, File outputFile) throws SQLException, IOException {
         ArrayList<ArrayList<String>> output = new ArrayList<>();
         //add title row to export
         ArrayList<String> titleRow = new ArrayList<>();
@@ -72,7 +83,7 @@ public class Exporter {
         }
             ArrayList<HashMap<String, Object>> matchScoutData = SQLUtil.exec("SELECT * FROM \"" + tableName + "\"" + " WHERE " + Constants.SQLColumnName.MATCH_NUM + "=?", new Object[]{matchNum}, false);
             //we have all the data for a match
-            //do the smae thing to both the red and blue alliances
+            //do the same thing to both the red and blue alliances
 
             ArrayList<HashMap<String, Object>> redDataForThisMatch = matchScoutData.stream().filter(map -> (int) map.getOrDefault(Constants.SQLColumnName.ALLIANCE_POS.toString(), 0) < 3).collect(Collectors.toCollection(ArrayList::new));
             exportAlliance(redDataForThisMatch, output, tbaMatchBreakdown);
@@ -80,7 +91,7 @@ public class Exporter {
             exportAlliance(blueDataForThisMatch, output, tbaMatchBreakdown);
 
 
-        }//end for ecah match
+        }//end for each match
         for (HashMap<String, Object> map : teamsScouted) {
             int teamNum = (int) map.get(Constants.SQLColumnName.TEAM_NUM.toString());
             if (teamsToSkip.contains(teamNum)) {
@@ -99,11 +110,11 @@ public class Exporter {
             }
             output.add(row);
         }
-        return output;
+        SpreadsheetUtil.writeArrayToSpreadsheet(output, outputFile);
 
     }
 
-    private void exportAlliance(ArrayList<HashMap<String, Object>> dataForThisAlliance, ArrayList<ArrayList<String>> output, HashMap<String, HashMap<String, Object>> tbaMatchBreakdown) {
+    private static void exportAlliance(ArrayList<HashMap<String, Object>> dataForThisAlliance, ArrayList<ArrayList<String>> output, HashMap<String, HashMap<String, Object>> tbaMatchBreakdown) {
         ArrayList<HashMap<String, Object>> teamsWhoRecievedShuttledNotes = new ArrayList<>();
         ArrayList<HashMap<String, Object>> teamsWhoDidNotParticipateInShutteling = new ArrayList<>();
         ArrayList<HashMap<String, Object>> teamsWhoShuttled = new ArrayList<>();
@@ -131,25 +142,34 @@ public class Exporter {
 
 
             //add the data
-            teamsWhoRecievedShuttledNotes.forEach(map -> output.add(getStandardRow(map, tbaMatchBreakdown, true, teleSpeakerAdjusted)));
-            teamsWhoShuttled.forEach(map -> output.add(getStandardRow(map, tbaMatchBreakdown, true, teleSpeakerAdjusted)));
-            teamsWhoDidNotParticipateInShutteling.forEach(map -> output.add(getStandardRow(map, tbaMatchBreakdown, false, 0)));
+            teamsWhoRecievedShuttledNotes.forEach(map -> output.add(getMatchScoreRow(map, tbaMatchBreakdown, true, teleSpeakerAdjusted)));
+            teamsWhoShuttled.forEach(map -> output.add(getMatchScoreRow(map, tbaMatchBreakdown, true, teleSpeakerAdjusted)));
+            teamsWhoDidNotParticipateInShutteling.forEach(map -> output.add(getMatchScoreRow(map, tbaMatchBreakdown, false, 0)));
 
         }else {
             //then nobody was recieving shuttled notes according to scouts
             for (HashMap<String, Object> matchScoutDatum : dataForThisAlliance) {
-                output.add(getStandardRow(matchScoutDatum, tbaMatchBreakdown, false, 0.0));
+                output.add(getMatchScoreRow(matchScoutDatum, tbaMatchBreakdown, false, 0.0));
             }
         }
     }
 
-    private ArrayList<String> getStandardRow(HashMap<String, Object> sqlRow, HashMap<String, HashMap<String, Object>> matchBreakdown, boolean isShuttlingMatch, double
+    private static ArrayList<String> getMatchScoreRow(HashMap<String, Object> sqlRow, HashMap<String, HashMap<String, Object>> matchBreakdown, boolean isShuttlingMatch, double
             teleSpeakerAdjusted) {
         ArrayList<String> output = new ArrayList<>();
-        //add all the raw data
-        for (Constants.SQLColumnName sqlColumnName : Constants.SQLColumnName.values()) {
-            output.add(sqlRow.get(sqlColumnName.toString()).toString());
-        }
+        //add all the raw data and adds to an arraylist with a corresponding #
+
+        HashMap<Constants.SQLColumnName,Object> tempHashmap = new HashMap<>();
+        ArrayList<HashMap<Constants.SQLColumnName,Object>> valueHolder = new ArrayList<>();
+        ArrayList<Constants.SQLColumnName> nameHolder = new ArrayList<>(Arrays.asList(Constants.SQLColumnName.values()));
+        AtomicInteger i = new AtomicInteger(0);
+        //Raw
+        getRawDataMetrics().forEach(dataMetric -> {
+                    output.add((String) sqlRow.get(nameHolder.get(i.get()).toString()));
+                    System.out.println(i.get() + ", " + nameHolder.get(i.get()).toString());
+                    i.getAndIncrement();
+                });
+        Configuration.getMetric(Constants.SQLColumnName.TELE_SPEAKER.name());
         //set default values for data from tba
         boolean autoLeave = false;
         int climbPoints = 0;
@@ -175,33 +195,39 @@ public class Exporter {
 
             }
         }
-
-        //calculate calculated values
-        int autoAmp = (int) sqlRow.get(Constants.SQLColumnName.AUTO_AMP.toString());
-        int autoSpeaker = (int) sqlRow.get(Constants.SQLColumnName.AUTO_SPEAKER.toString());
-        int teleAmp = (int) sqlRow.get(Constants.SQLColumnName.TELE_AMP.toString());
-        int teleSpeaker = (int) sqlRow.get(Constants.SQLColumnName.TELE_SPEAKER.toString());
-
+    int autoAmp = DatabaseViewerTabContent.getIntFromEntryMap(Constants.SQLColumnName.AUTO_AMP, sqlRow);
+    int autoSpeaker = DatabaseViewerTabContent.getIntFromEntryMap(Constants.SQLColumnName.AUTO_SPEAKER, sqlRow);
+    int teleAmp = DatabaseViewerTabContent.getIntFromEntryMap(Constants.SQLColumnName.TELE_AMP, sqlRow);
+    int teleSpeaker = DatabaseViewerTabContent.getIntFromEntryMap(Constants.SQLColumnName.TELE_SPEAKER, sqlRow);
+        //Custom
+//need to set function to make added value types
         int teleAmpPoints = teleAmp * Constants.TELE_AMP_NOTE_POINTS;
         int teleSpeakerPoints = teleSpeaker * Constants.TELE_SPEAKER_NOTE_POINTS;
         int trapPoints = ((int) sqlRow.get(Constants.SQLColumnName.TELE_TRAP.toString())) * Constants.TELE_TRAP_POINTS;
         int telePoints = teleAmpPoints + teleSpeakerPoints + trapPoints + climbPoints;
+        int teleNotes = teleAmp + teleSpeaker;
         int autoPoints = (autoAmp * Constants.AUTO_AMP_NOTE_POINTS) + (autoSpeaker * Constants.AUTO_SPEAKER_NOTE_POINTS) + (autoLeave ? 2 : 0);
-        int toalNotesMissed = ((int) sqlRow.get(Constants.SQLColumnName.AUTO_AMP_MISSED.toString())) + ((int) sqlRow.get(Constants.SQLColumnName.AUTO_SPEAKER_MISSED.toString())) + ((int) sqlRow.get(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString())) + ((int) sqlRow.get(Constants.SQLColumnName.TELE_AMP_MISSED.toString()));
-
+        int autoNotes = autoAmp + autoSpeaker;
+        int totalNotesMissed = ((int) sqlRow.get(Constants.SQLColumnName.AUTO_AMP_MISSED.toString())) + ((int) sqlRow.get(Constants.SQLColumnName.AUTO_SPEAKER_MISSED.toString())) + ((int) sqlRow.get(Constants.SQLColumnName.TELE_SPEAKER_MISSED.toString())) + ((int) sqlRow.get(Constants.SQLColumnName.TELE_AMP_MISSED.toString()));
+        int totalPoints = autoPoints + telePoints;
+        int totalNotesMade = autoAmp + autoSpeaker + teleAmp + teleSpeaker;
+        int totalNotes = totalNotesMissed + totalNotesMade;
+        //custom
         output.add(autoLeave?"1": "0");//auto leave
-        output.add(String.valueOf(endgame));//endgame positon
+        output.add(String.valueOf(endgame));//endgame position
         output.add("End Raw Data");//raw data divider
-        output.add(String.valueOf(autoAmp + autoSpeaker));//total auto notes
-        output.add(String.valueOf(teleAmp + teleSpeaker));//total tele notes
+        output.add(String.valueOf(autoNotes));//total auto notes
+        output.add(String.valueOf(teleNotes));//total tele notes
         output.add(String.valueOf(autoPoints));//auto points added
         output.add(String.valueOf(telePoints));//tele points added
-        output.add(String.valueOf(autoPoints + telePoints));//total points added
-        output.add(String.valueOf(autoAmp + autoSpeaker + teleAmp + teleSpeaker));//total notes scored
-        output.add(String.valueOf(toalNotesMissed));//total notes missed
-        output.add(String.valueOf(toalNotesMissed + autoAmp + autoSpeaker + teleAmp + teleSpeaker));//total notes
+        output.add(String.valueOf(totalPoints));//total points added
+        output.add(String.valueOf(totalNotesMade));//total notes scored
+        output.add(String.valueOf(totalNotesMissed));//total notes missed
+        output.add(String.valueOf(totalNotes));//total notes
         output.add(isShuttlingMatch?String.valueOf(teleSpeakerAdjusted):String.valueOf(teleSpeaker));
-        output.add(isShuttlingMatch?"1":"0");//boolean which indicated whethere there was a significant amount of shuttling done by this team
+        output.add(isShuttlingMatch?"1":"0");//boolean which indicated whether there was a significant amount of shuttling done by this team
+
+        //Comments V
         String scoutName = "No name provided";
         String[] commentData = sqlRow.get(Constants.SQLColumnName.TELE_COMMENTS.toString()).toString().split(":");
         if (commentData.length >= 4) {
@@ -218,8 +244,32 @@ public class Exporter {
         return output;
 
     }
-
-
-
-
+    public int PointValue(ArrayList output, int value, Constants.SQLColumnName n){
+        int newValue;
+        switch (n){
+            case AUTO_SPEAKER -> {
+                newValue = Constants.AUTO_SPEAKER_NOTE_POINTS * value;
+            }
+            case AUTO_AMP -> {
+                newValue =Constants.AUTO_AMP_NOTE_POINTS * value;
+                break;
+            }
+            case TELE_SPEAKER -> {
+                newValue =Constants.TELE_SPEAKER_NOTE_POINTS * value;
+                break;
+            }
+            case TELE_AMP -> {
+                newValue =Constants.TELE_AMP_NOTE_POINTS * value;
+                break;
+            }
+            case TELE_TRAP -> {
+                newValue =Constants.TELE_TRAP_POINTS * value;
+                break;
+            }
+            default -> {
+                newValue = value;
+            }
+        }
+        return newValue;
+    }
 }

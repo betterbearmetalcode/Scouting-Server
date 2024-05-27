@@ -5,6 +5,7 @@ import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
 import org.tahomarobotics.scouting.scoutingserver.Constants;
 import org.tahomarobotics.scouting.scoutingserver.DatabaseManager;
+import org.tahomarobotics.scouting.scoutingserver.Exporter;
 import org.tahomarobotics.scouting.scoutingserver.ScoutingServer;
 import org.tahomarobotics.scouting.scoutingserver.util.Logging;
 import org.tahomarobotics.scouting.scoutingserver.util.ServerUtil;
@@ -14,6 +15,8 @@ import org.tahomarobotics.scouting.scoutingserver.util.UI.NewItemDialog;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.Optional;
 
 public class MasterController {
@@ -129,6 +132,21 @@ public class MasterController {
 
 
     public static void export() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save Backup");
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooser.setInitialFileName("Backup " + new Date().toString().replaceAll(":", " ") + ".json");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", ".json"));
+        File selectedFile  = chooser.showSaveDialog(ScoutingServer.mainStage.getOwner());
         Logging.logInfo("Exporting");
+        try {
+            Exporter.export(ScoutingServer.mainTabPane.getSelectedTabContent().get().nameProperty().get(),selectedFile);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
+
+
 }

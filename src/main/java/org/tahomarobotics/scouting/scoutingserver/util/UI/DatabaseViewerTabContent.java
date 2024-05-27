@@ -32,6 +32,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLData;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -181,7 +182,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
 
         private final TreeItem<String> rootItem;
 
-        private String currentEventCode = "";
+        public static String currentEventCode = "";
 
 
 
@@ -260,22 +261,22 @@ public class DatabaseViewerTabContent extends GenericTabContent{
 
         public void export() {
             Logging.logInfo("Exporting");
-            //first gather the nessacary data from tba to export and check to make sure
+            //first gather the necessary data from tba to export and check to make sure
             //everything is good and ready before showing the user a save dialog
-            //save dialog should be the last dialog becuase in the user's mind the file is already created when that dialog comes up
+            //The save dialog should be the last dialog because in the user's mind the file is already created when that dialog comes up
 
 
 
             //gather TBA data
             //first figure out which competition we are at
-/*            if ("".equals(currentEventCode)) {
-                //if no event code has been selected
-                if (selectCompetition()) {
-                    //if the selection fails or is canceled etc
-                    Logging.logInfo("Export Aborted");
-                    return;
-                }
-            }*/
+//                if ("".equals(currentEventCode)) {
+//                Logging.logInfo("No Event Code");
+//                if (selectCompetition()) {
+//                    //if the selection fails or is canceled etc.
+//                    Logging.logInfo("Export Aborted");
+//                    return;
+//                }
+//            }
             //gather TBA data and prepare a list of teams who are at the comp
             Exporter exporter;
             try {
@@ -292,11 +293,11 @@ public class DatabaseViewerTabContent extends GenericTabContent{
             }
             //code here  will only run if exporter was successfully initialized
             ArrayList<ArrayList<String>> data = new ArrayList<>();
-            try {
-                data = exporter.export();
-            } catch (SQLException e) {
-                Logging.logError(e, "failed to generate exported data");
-            }
+//            try {
+//                data = exporter.export();
+//            } catch (SQLException e) {
+//                Logging.logError(e, "failed to generate exported data");
+//            }
 
             FileChooser chooser = new FileChooser();
             chooser.setInitialDirectory(new File(Constants.DATABASE_FILEPATH));
@@ -351,7 +352,7 @@ public class DatabaseViewerTabContent extends GenericTabContent{
         public void updateDisplay(boolean validateData) {
             Logging.logInfo("Updating database: " + tabName.get());
             if (validateData && tbaDataOptional.isEmpty()) {
-                Logging.logInfo("Cannont validate with no TBA Data. ", true);
+                Logging.logInfo("Cannot validate with no TBA Data. ", true);
                 validateData = false;
             }
             try {
