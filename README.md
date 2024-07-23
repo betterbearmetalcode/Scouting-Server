@@ -1,0 +1,4 @@
+## Bear Metal Scouting Server
+The Bear Metal Scouting Server (BMSS) is a java desktop data processing and manipulation tool, used a an imtermidiate step in the Bear Metal Robtics Scouting System. The purpose of the BMSS is to recieve data from the scouting app about FRC robot gameplay and enable to user to view, validate and make corrections to the raw data before exporting it to an excel spreadsheet to be processed with Tableau for gaphical representation. 
+To install simply download the installer from the releases page and make sure to have a current version of java installed. Once installed, use the built in tutorial or just figure out how to use the app based on 
+button names. There are several screens accesible using the buttons on the left for data collection, processing, and primitive graphiing. There is also the game specific automous period data viewer which is deprecated due to lack of maintnence. 
